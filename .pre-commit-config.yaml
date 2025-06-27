@@ -1,152 +1,77 @@
-# Pre commit hooks
-
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
 repos:
-
-# Text fixes
--   repo: local
-    hooks:
-    -   id: end_of_line_fixer
-        name: Check Python files end with blank line
-        entry: /home/cdsw/rap-project-example/dev_utils/pre-commit_helpers/end_of_line_fixer.py
-        stages: [commit]
-        language: system
-        types: [python]
-        exclude: _version.py
-
--   repo: local
-    hooks:
-    -   id: mixed_line_endings
-        name: Fix end of line characters
-        entry: /home/cdsw/rap-project-example/dev_utils/pre-commit_helpers/mixed_line_endings.py
-        stages: [commit]
-        language: system
-        types: [python]
-
--   repo: local
-    hooks:
-    -   id: remove_whitespace
-        name: Remove trailing whitespace
-        entry: /home/cdsw/rap-project-example/dev_utils/pre-commit_helpers/remove_whitespace.py
-        stages: [commit]
-        language: system
-        types: [python]
-
-
-# Security checks
--   repo: local
-    hooks:
-    -   id: check_added_large_files
-        name: Check for large added files
-        entry: /home/cdsw/rap-project-example/dev_utils/pre-commit_helpers/check_added_large_files.py
-        stages: [commit]
-        language: system
-        types: [python]
-        args: ["--maxkb=500"]
-
--   repo: local
-    hooks:
-    -   id: check_filetypes
-        name: Check for forbidden filetypes
-        entry: /home/cdsw/rap-project-example/dev_utils/pre-commit_helpers/check_filetypes.py
-        stages: [commit]
-        language: system
-        args: ["--filetypes=csv,sas,xlsx,xls,json,xml,parquet,avro,feather"]
-
--   repo: local
-    hooks:
-    -   id: detect_private_key
-        name: Detect private SSH keys
-        entry: /home/cdsw/rap-project-example/dev_utils/pre-commit_helpers/detect_private_key.py
-        stages: [commit]
-        language: system
-        types: [text]
-        exclude: detect_private_key.py
-
-
-# Linting and consistency checks
--   repo: local
-    hooks:
-    -   id: flake8
-        name: Run flake8
-        entry: flake8
-        stages: [commit]
-        language: system
-        types: [python]
-
--   repo: local
-    hooks:
-    -   id: pydocstyle
-        name: Run pydocstyle
-        entry: pydocstyle
-        stages: [commit]
-        language: system
-        types: [python]
-        exclude: __init__.py
-
--   repo: local
-    hooks:
-    -   id: python_func_type
-        name: Detect missing python typing
-        entry: /home/cdsw/rap-project-example/dev_utils/pre-commit_helpers/python_type_check.py
-        stages: [commit]
-        language: system
-        types: [python]
-        exclude: python_type_check.py
-
--   repo: local
-    hooks:
-    -   id: check_toml
-        name: Check TOML files parsing
-        entry: /home/cdsw/rap-project-example/dev_utils/pre-commit_helpers/check_toml.py
-        stages: [commit]
-        language: system
-        types: [toml]
-
--   repo: local
-    hooks:
-    -   id: name_tests_test
-        name: Check unit tests are named test_*.py
-        entry: /home/cdsw/rap-project-example/dev_utils/pre-commit_helpers/name_tests_test.py
-        stages: [commit]
-        language: system
-        types: [python]
-        files: (^|/)tests/.+\.py$
-
-
-# Commit messages and merge conflicts
--   repo: local
-    hooks:
-    -   id: check_merge_conflict
-        name: Check for unresolved merge conflicts
-        entry: /home/cdsw/rap-project-example/dev_utils/pre-commit_helpers/check_merge_conflict.py
-        stages: [commit]
-        language: system
-        types: [python]
-
--   repo: local
-    hooks:
-    -   id: commit_msg
-        name: Check commit message lengthis max 50 characters
-        entry: /home/cdsw/rap-project-example/dev_utils/pre-commit_helpers/commit_msg.py
-        stages: [commit-msg]
-        language: system
-
-# -  repo: local  # Commented out because this will auto-fail if there's no Jira board
-#    hooks:
-#    -   id: prepare_commit_msg
-#        name: Prepare commit message
-#        entry: /home/cdsw/rap-project-example/dev_utils/pre-commit_helpers/prepare_commit_msg.py
-#        stages: [prepare-commit-msg]
-#        language: system
-
-
-# Other hooks
-# -   repo: local  # Template for adding new hooks
-#     hooks:
-#     -   id: id
-#         name: Name to show during execution
-#         entry: /home/cdsw/rap-project-example/dev_utils/pre-commit_helpers/helper_name.py
-#         stages: [commit]
-#         language: system
-#         types: [python]
-#         args: ["--arguments=separated,by,commas"]
+    - repo: https://github.com/kynan/nbstripout
+      rev: 0.8.1
+      hooks:
+          - id: nbstripout
+            name: nbstripout - Strip outputs from notebooks (auto-fixes)
+            args:
+                - --extra-keys
+                - "metadata.colab metadata.kernelspec cell.metadata.colab cell.metadata.executionInfo cell.metadata.id cell.metadata.outputId"
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.0.1
+      hooks:
+          # - id: check-added-large-files
+          #   name: Check for files larger than 5 MB
+          #   args: ["--maxkb=5120"]
+          - id: end-of-file-fixer
+            name: Check for a blank line at the end of scripts (auto-fixes)
+            exclude: '\.Rd'
+          - id: trailing-whitespace
+            name: Check for trailing whitespaces (auto-fixes)
+    - repo: https://github.com/pycqa/isort
+      rev: 5.13.2
+      hooks:
+          - id: isort
+            name: isort - Sort Python imports (auto-fixes)
+            types: [cython, pyi, python]
+            args: ["--profile", "black", "--filter-files"]
+    - repo: https://github.com/psf/black
+      rev: 24.10.0 # Replace by any tag/version: https://github.com/psf/black/tags
+      hooks:
+          - id: black
+            name: black - consistent Python code formatting (auto-fixes)
+            language_version: python3.11 # Should be a command that runs python3.6+
+            exclude: .*/tests/.*|^\.cruft\.json$|.*\tests\.*|helpers/.*|^tests
+            args: ["--preview", "--line-length=88"]
+    - repo: https://github.com/PyCQA/flake8
+      rev: 7.1.1
+      hooks:
+          - id: flake8
+            name: flake8 - Python linting
+            exclude: .*/tests*|^\.cruft\.json|helpers/.*|.*\tests*$|^tests
+    - repo: https://github.com/nbQA-dev/nbQA
+      rev: 1.9.1
+      hooks:
+          - id: nbqa-isort
+            name: nbqa-isort - Sort Python imports (notebooks; auto-fixes)
+            language_version: python3.11 # Should be a command that runs python3.6+
+            args: [--nbqa-mutate]
+            additional_dependencies: [isort==5.8.0]
+            exclude: .*/tests/.*|^\.cruft\.json$|.*\tests\.*
+          - id: nbqa-black
+            name: nbqa-black - consistent Python code formatting (notebooks; auto-fixes)
+            language_version: python3.11 # Should be a command that runs python3.6+
+            args: [--nbqa-mutate]
+            additional_dependencies: [black==21.5b2]
+            exclude: .*/tests/.*|^\.cruft\.json$|.*\tests\.*
+          # TODO: Disabled for now until it's clear how to add noqa to specific cells of a Jupyter notebook
+          #- id: nbqa-flake8
+          #  name: nbqa-flake8 - Python linting (notebooks)
+          #  additional_dependencies: [ flake8==3.9.2 ]
+    - repo: https://github.com/Yelp/detect-secrets
+      rev: v1.5.0
+      hooks:
+          - id: detect-secrets
+            name: detect-secrets - Detect secrets in staged code
+            args: ["--baseline", ".secrets.baseline"]
+            exclude: .*/tests/.*|^\.cruft\.json$
+    - repo: local
+      hooks:
+          - id: restricted-filenames
+            name: Check commits for restricted file extensions
+            entry: WARNING- csvs for test about to be committed. Double check there is no sensitive data!
+            language: fail
+            files: .*\.(csv|feather|xlsx|zip|hdf5|h5|txt|json|xml|hd|parquet)
+            exclude: tests/.* | "requirements.txt"
