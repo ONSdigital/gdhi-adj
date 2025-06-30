@@ -2,7 +2,6 @@ import logging
 
 
 class CustomFormatter(logging.Formatter):
-
     """Define logging formatter with colors for different log levels."""
 
     grey = "\x1b[38;20m"

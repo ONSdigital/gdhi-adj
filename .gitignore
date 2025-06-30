@@ -12,6 +12,8 @@ dist/
 
 #Prevent data files from being committed
 *.csv
+D:/*.xlsx
+D:/*.csv
 *.xlsx
 *.xlsx
 *.zip

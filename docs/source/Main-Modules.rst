@@ -1,6 +1,6 @@
 
 ..
-   This file demonstrates how to automatically generate documentation for modules. 
+   This file demonstrates how to automatically generate documentation for modules.
 
 
 Staging

@@ -21,11 +21,11 @@ Or to create a local version of a branch that already exists::
 
 Committing Changes
 ==================
-To check changes, use ``git status`` to see changed files, or ``git diff`` on each file to see changes line by line. Use ``git add``, ``git mv``, or ``git rm`` to stage changes as appropriate, or ``git reset HEAD`` to unstage a changed file. Use ``git commit`` to commit staged changes. This opens the vi text editor, which can be intimidating if you don't know the basic commands. To begin typing press ``Shift+I``. To save and exit press ``Esc`` then type ``:wq`` and hit Enter. The commit will be aborted if the commit message is empty. 
+To check changes, use ``git status`` to see changed files, or ``git diff`` on each file to see changes line by line. Use ``git add``, ``git mv``, or ``git rm`` to stage changes as appropriate, or ``git reset HEAD`` to unstage a changed file. Use ``git commit`` to commit staged changes. This opens the vi text editor, which can be intimidating if you don't know the basic commands. To begin typing press ``Shift+I``. To save and exit press ``Esc`` then type ``:wq`` and hit Enter. The commit will be aborted if the commit message is empty.
 
 Commit Messages
 ---------------
-Writing good commit messages helps make sure the project's history is readable and understandable. Commit messages should be brief, clear and descriptive, plainly stating what was done. Commit messages should also be understandable without having to check another commit or a Jira ticket, but can refer to them if it makes the commit message simpler, shorter or more readable. 
+Writing good commit messages helps make sure the project's history is readable and understandable. Commit messages should be brief, clear and descriptive, plainly stating what was done. Commit messages should also be understandable without having to check another commit or a Jira ticket, but can refer to them if it makes the commit message simpler, shorter or more readable.
 
 Good commit messages:
 
@@ -48,7 +48,7 @@ Terrible commit messages:
 Commit messages must be 50 characters or less, and in vi the colour of the text will change to show if you have exceeded the limit. If you need to write more than this, you can use the first line as a summary and expand in the lines below, leaving a blank line between and beginning each line with a dash and a space::
 
     made a series of changes
-    
+
     - first change
     - second change
     - any further changes
@@ -58,11 +58,11 @@ Pre-Commit Checks
 -----------------
 When making a commit, `pre-commit <https://pre-commit.com>`_ hooks into the commit command to run some checks and quality control. These are:
 
-* ``end_of_line_fixer`` ensures that all Python scripts end with a blank newline. 
-* ``mixed_line_endings`` fixes end of line characters to avoid text parsing issues. 
-* ``remove_whitespace`` ensures that files do not contain any trailing whitespace. 
-* ``check_added_large_files`` prevents files over a certain size being committed. By default, the maximum size is 500 kb. 
-* ``check_filetypes`` prevents certain filetypes from being committed. By default, it forbids CSV and SAS files, as these usually contain data. 
+* ``end_of_line_fixer`` ensures that all Python scripts end with a blank newline.
+* ``mixed_line_endings`` fixes end of line characters to avoid text parsing issues.
+* ``remove_whitespace`` ensures that files do not contain any trailing whitespace.
+* ``check_added_large_files`` prevents files over a certain size being committed. By default, the maximum size is 500 kb.
+* ``check_filetypes`` prevents certain filetypes from being committed. By default, it forbids CSV and SAS files, as these usually contain data.
 * ``detect_private_key`` prevents committing text files that contain private SSH keys.
 * ``flake8`` checks that code follows the PEP8 guidelines and highlights any issues.
 * ``pydocstyle`` checks that docstrings follow the PEP257 guidelines and highlights any issues.

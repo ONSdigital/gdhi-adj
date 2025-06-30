@@ -56,10 +56,6 @@ repos:
             args: [--nbqa-mutate]
             additional_dependencies: [black==21.5b2]
             exclude: .*/tests/.*|^\.cruft\.json$|.*\tests\.*
-          # TODO: Disabled for now until it's clear how to add noqa to specific cells of a Jupyter notebook
-          #- id: nbqa-flake8
-          #  name: nbqa-flake8 - Python linting (notebooks)
-          #  additional_dependencies: [ flake8==3.9.2 ]
     - repo: https://github.com/Yelp/detect-secrets
       rev: v1.5.0
       hooks:
@@ -74,4 +70,4 @@ repos:
             entry: WARNING- csvs for test about to be committed. Double check there is no sensitive data!
             language: fail
             files: .*\.(csv|feather|xlsx|zip|hdf5|h5|txt|json|xml|hd|parquet)
-            exclude: tests/.* | "requirements.txt"
+            exclude: ^tests/.*|^requirements\.txt$

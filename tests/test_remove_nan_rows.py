@@ -1,6 +1,6 @@
 import pandas as pd
-import pytest
 from rap_project_example.preprocess import remove_nan_rows
+
 
 def test_remove_nan_rows():
     # Create a DataFrame with NaN values in 'Area' and 'ID'

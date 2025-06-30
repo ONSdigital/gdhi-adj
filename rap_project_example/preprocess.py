@@ -8,4 +8,4 @@ def remove_nan_rows(df):
     Returns:
     pd.DataFrame: The DataFrame with NaN rows removed.
     """
-    return df.dropna(subset=['Area', 'ID'])
+    return df.dropna(subset=["Area", "ID"])

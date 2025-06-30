@@ -1,7 +1,7 @@
 
 Version Numbering
 =================
-This project adheres to `semantic versioning <https://semver.org/spec/v2.0.0.html>`_, using the suffix ``-devX`` for in-development versions, where X is the number of the dev build starting from zero. The tool used to control versioning is `bump2version <https://pre-commit.com>`_, which can automatically change version numbers in files, as well as push git tags for versions. 
+This project adheres to `semantic versioning <https://semver.org/spec/v2.0.0.html>`_, using the suffix ``-devX`` for in-development versions, where X is the number of the dev build starting from zero. The tool used to control versioning is `bump2version <https://pre-commit.com>`_, which can automatically change version numbers in files, as well as push git tags for versions.
 
 bump-my-version is used on the command line:
 
@@ -15,7 +15,7 @@ where ``<increment>`` is one of:
 * ``build``, which increments the build number
 * ``release``, which changes a dev version to a release version
 
-If you increment the major/minor/patch version, the new version number will be appended with ``-dev0`` to indicate that it is a development build. If you want to produce new development builds, the ``build`` increment increases the build number. When you're happy that the changes can be released to users, the ``release`` option removes the ``-dev`` from the version number. While you can push versions to any branch, release versions should only be made on the main branch of the repository. 
+If you increment the major/minor/patch version, the new version number will be appended with ``-dev0`` to indicate that it is a development build. If you want to produce new development builds, the ``build`` increment increases the build number. When you're happy that the changes can be released to users, the ``release`` option removes the ``-dev`` from the version number. While you can push versions to any branch, release versions should only be made on the main branch of the repository.
 
 As an example, the steps for developing a minor version from 1.0.0 to 1.1.0:
 
@@ -32,7 +32,7 @@ And from 1.1.0 to 2.0.0:
 * ``build``   --> ``v2.0.0-dev1``
 * ``release`` --> ``v2.0.0``
 
-The behaviour of bump-my-version can be configured using the file ``.bumpversion.toml`` in the main directory. Make sure that any files that contain the version number are specified in the config file, so bump-my-version can change them. 
+The behaviour of bump-my-version can be configured using the file ``.bumpversion.toml`` in the main directory. Make sure that any files that contain the version number are specified in the config file, so bump-my-version can change them.
 
 
 Deploying A Release

@@ -6,10 +6,9 @@ import pathlib
 import toml
 import pandas as pd
 
-
-
-
 """Define helper functions that wrap regularly-used functions."""
+
+
 def load_toml_config(path: Union[str, pathlib.Path]) -> dict | None:
     """Load a .toml file from a path, with logging and safe error handling.
 
@@ -37,7 +36,6 @@ def load_toml_config(path: Union[str, pathlib.Path]) -> dict | None:
     except Exception as e:
         logger.error(f"Unexpected error loading TOML file: {e}")
         return None
-    
 
 
 def load_schema_from_toml(schema_path):
@@ -45,10 +43,11 @@ def load_schema_from_toml(schema_path):
     return {
         new_name: {
             "old_name": props["old_name"],
-            "Deduced_Data_Type": props["Deduced_Data_Type"]
+            "Deduced_Data_Type": props["Deduced_Data_Type"],
         }
         for new_name, props in raw_schema.items()
     }
+
 
 def validate_schema(df, schema):
     type_map = {"int": int, "float": float, "str": str, "bool": bool}
@@ -60,9 +59,11 @@ def validate_schema(df, schema):
         if column not in df.columns:
             raise ValueError(f"Missing expected column: {column}")
         if expected_type and not df[column].map(type).eq(expected_type).all():
-            raise TypeError(f"Column '{column}' does not match expected type {expected_type.__name__}")
+            raise TypeError(
+                f"Column '{column}' does not match expected type {expected_type.__name__}"
+            )
 
-        
+
 def rename_columns(df, schema, logger):
     """
     Renames columns in the DataFrame based on the schema.
@@ -87,14 +88,25 @@ def convert_column_types(df, schema, logger):
             original_dtype = df[column].dtype
             try:
                 if expected_type == int:
-                    df[column] = pd.to_numeric(df[column], errors='coerce').astype("Int64")
+                    df[column] = pd.to_numeric(df[column], errors="coerce").astype(
+                        "Int64"
+                    )
                 elif expected_type == float:
-                    df[column] = pd.to_numeric(df[column], errors='coerce').astype("float")
+                    df[column] = pd.to_numeric(df[column], errors="coerce").astype(
+                        "float"
+                    )
                 elif expected_type == str:
                     df[column] = df[column].astype(str)
                 elif expected_type == bool:
                     df[column] = df[column].astype(bool)
-                logger.info(f"Converted column '{column}' from {original_dtype} to {expected_type_str}")
+                logger.info(
+                    f"Converted column '{column}' from {original_dtype} to {expected_type_str}"
+                )
             except Exception as e:
-                logger.warning(f"Failed to convert column '{column}' from {original_dtype} to {expected_type_str}: {e}")
+                logger.warning(
+                    (
+                        f"Failed to convert column '{column}' from {original_dtype} "
+                        f"to {expected_type_str}: {e}"
+                    )
+                )
     return df

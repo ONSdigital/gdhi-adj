@@ -1,8 +1,13 @@
 import os
 import pandas as pd
 from rap_project_example.utils.logger import logger_creator
-from rap_project_example.preprocess import remove_nan_rows
-from rap_project_example.utils.helpers import load_schema_from_toml, validate_schema, convert_column_types, rename_columns, load_toml_config
+from rap_project_example.utils.helpers import (
+    load_schema_from_toml,
+    validate_schema,
+    convert_column_types,
+    rename_columns,
+    load_toml_config,
+)
 
 
 def run_pipeline(config_path):
@@ -38,16 +43,20 @@ def run_pipeline(config_path):
 
         # # Preprocess
         # logger.info("Preprocessing data")
-        #df = remove_nan_rows(df)
+        # df = remove_nan_rows(df)
 
         # Save output file with new filename if specified
         if config["pipeline_settings"]["output_data"]:
             new_filename = config["pipeline_settings"].get("output_filename", None)
             if new_filename:
-                new_output_path = os.path.join(os.path.dirname(output_dir), new_filename)
+                new_output_path = os.path.join(
+                    os.path.dirname(output_dir), new_filename
+                )
             else:
-                new_output_path = output_dir # fallback to original
+                new_output_path = output_dir  # fallback to original
             logger.info(f"Saving data to {new_output_path}")
             df.to_csv(new_output_path, index=False)
     except Exception as e:
-        logger.error(f"An error occurred during the pipeline execution: {e}", exc_info=True)
+        logger.error(
+            f"An error occurred during the pipeline execution: {e}", exc_info=True
+        )
