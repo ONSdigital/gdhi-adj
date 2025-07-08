@@ -32,7 +32,7 @@ repos:
       hooks:
           - id: black
             name: black - consistent Python code formatting (auto-fixes)
-            language_version: python3.11 # Should be a command that runs python3.6+
+            language_version: python3 # Should be a command that runs python3.6+
             exclude: .*/tests/.*|^\.cruft\.json$|.*\tests\.*|helpers/.*|^tests
             args: ["--preview", "--line-length=88"]
     - repo: https://github.com/PyCQA/flake8
