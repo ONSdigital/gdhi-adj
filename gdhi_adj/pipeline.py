@@ -17,22 +17,22 @@ def run_pipeline(config_path):
     config = load_toml_config(config_path)
     local_or_shared = config["user_settings"]["local_or_shared"]
     filepath_dict = config[f"{local_or_shared}_settings"]
-    input_dir = "C:/Users/" + os.getlogin() + filepath_dict["input_dir"]
+    input_file_path = "C:/Users/" + os.getlogin() + filepath_dict["input_file_path"]
     output_dir = "C:/Users/" + os.getlogin() + filepath_dict["output_dir"]
-    input_schema_dir = config["pipeline_settings"]["input_schema_path"]
-    output_schema_dir = config["pipeline_settings"]["output_schema_path"]
+    input_schema_path = config["pipeline_settings"]["input_schema_path"]
+    output_schema_path = config["pipeline_settings"]["output_schema_path"]
     new_filename = config["pipeline_settings"].get("output_filename", None)
 
     try:
 
-        df = read_with_schema(input_dir, input_schema_dir)
+        df = read_with_schema(input_file_path, input_schema_path)
 
         # Preprocess
 
         # Save output file with new filename if specified
         if config["pipeline_settings"]["output_data"]:
             # Write DataFrame to CSV
-            write_with_schema(df, output_schema_dir, output_dir, new_filename)
+            write_with_schema(df, output_schema_path, output_dir, new_filename)
     except Exception as e:
         logger.error(
             f"An error occurred during the pipeline execution: {e}", exc_info=True
