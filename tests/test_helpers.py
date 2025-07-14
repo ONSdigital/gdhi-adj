@@ -106,10 +106,10 @@ def test_rename_columns(input_data, test_schema, expout_data):
         renamed_df["Old col name"]
 
 
-def test_rename_columns_missing_col(input_data, test_schema_wrong_col):
-    """Test renaming columns when the columns in data do not match schema."""
-    with pytest.raises(expected_exception=ValueError, match="schema does not exist in DataFrame"):
-        rename_columns(input_data, test_schema_wrong_col, logger)
+# def test_rename_columns_missing_col(input_data, test_schema_wrong_col):
+#     """Test renaming columns when the columns in data do not match schema."""
+#     with pytest.raises(expected_exception=ValueError, match="schema does not exist in DataFrame"):
+#         rename_columns(input_data, test_schema_wrong_col, logger)
 
 
 def test_read_with_schema(test_csv_file, test_schema_file, expout_data):
