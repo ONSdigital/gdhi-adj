@@ -11,6 +11,8 @@ from gdhi_adj.preprocess import (
     pivot_long_dataframe,
     rate_of_change,
     calc_zscores,
+    calc_iqr,
+    create_master_flag,
 )
 
 
@@ -39,12 +41,23 @@ def run_pipeline(config_path):
         )
         df = rate_of_change(True, df, ["lsoa_code", "year"], "lsoa_code", "gdhi_annual")
 
-        df = calc_zscores(df, "bkwd", "lsoa_code", "backward_pct_change")
-        df = calc_zscores(df, "frwd", "lsoa_code", "forward_pct_change")
-        df = calc_zscores(df, "raw", "lsoa_code", "gdhi_annual")
+        # Assign prefixes
+        backward_prefix = "bkwd"
+        forward_prefix = "frwd"
+        raw_prefix = "raw"
 
-        # print(df.head(20))
-        # print(df.tail(20))
+        df = calc_zscores(df, backward_prefix, "lsoa_code", "backward_pct_change")
+        df = calc_zscores(df, forward_prefix, "lsoa_code", "forward_pct_change")
+        df = calc_zscores(df, raw_prefix, "lsoa_code", "gdhi_annual")
+
+        df = calc_iqr(df, backward_prefix, "lsoa_code", "backward_pct_change")
+        df = calc_iqr(df, forward_prefix, "lsoa_code", "forward_pct_change")
+        df = calc_iqr(df, raw_prefix, "lsoa_code", "gdhi_annual")
+
+        df = create_master_flag(df)
+
+        print(df.iloc[:, 5:19].head(40))
+        print(df.iloc[:, 5:19].tail(40))
 
         # Save output file with new filename if specified
         if config["pipeline_settings"]["output_data"]:
