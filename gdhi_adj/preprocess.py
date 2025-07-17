@@ -141,23 +141,15 @@ def create_master_flag(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: The DataFrame with an additional 'master_flag' columns.
     """
-    # # Create a master flag that is True if any of the IQR columns are True
+    # Create a master flag that is True if any of the IQR columns are True
     z_score_cols = [col for col in df.columns if col[0:2] == "z_"]
     z_count = df.groupby("lsoa_code").agg({col: "sum" for col in z_score_cols})
-    print(z_count)
-    z_count["z_master_flag"] = (z_count[z_score_cols] > 0).sum(axis=1) >= 2
-    print(z_count)
-    # df["z_master_flag"] = df[z_score_cols].sum(axis=1) >= 2
-    # df["z_master_flag"] = df.groupby("lsoa_code")[z_score_cols].apply(lambda x: x.sum()) >= 2
+    z_count["z_master_flag"] = (z_count[z_score_cols] >= 1).sum(axis=1) >= 2
 
-    # # Create a master flag that is True if any of the IQR columns are True
+    # Create a master flag that is True if any of the IQR columns are True
     iqr_score_cols = [col for col in df.columns if col[0:4] == "iqr_"]
-    # df["iqr_master_flag"] = df[iqr_score_cols].sum(axis=1) >= 2
-    # df["iqr_master_flag"] = df.groupby("lsoa_code")[iqr_score_cols].apply(lambda x: x.sum()) >= 2
     iqr_count = df.groupby("lsoa_code").agg({col: "sum" for col in iqr_score_cols})
-    print(iqr_count)
-    iqr_count["iqr_master_flag"] = (iqr_count[iqr_score_cols] > 0).sum(axis=1) >= 2
-    print(iqr_count)
+    iqr_count["iqr_master_flag"] = (iqr_count[iqr_score_cols] >= 1).sum(axis=1) >= 2
 
     # Join the master flags back to the original DataFrame
     df = df.join(z_count[["z_master_flag"]], on="lsoa_code", how="left")
@@ -166,4 +158,10 @@ def create_master_flag(df: pd.DataFrame) -> pd.DataFrame:
     # Create a master flag that is True if either z_master_flag or iqr_master_flag is True
     df["master_flag"] = df["z_master_flag"] | df["iqr_master_flag"]
 
-    return df.drop(columns=z_score_cols + iqr_score_cols)
+    return df.drop(
+        columns=(
+            z_score_cols
+            + iqr_score_cols
+            + ["backward_pct_change", "forward_pct_change"]
+        )
+    )

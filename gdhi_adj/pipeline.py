@@ -56,14 +56,12 @@ def run_pipeline(config_path):
 
         df = create_master_flag(df)
 
-        print(df.iloc[:, 5:19].head(40))
-        print(df.iloc[:, 5:19].tail(40))
-
         # Save output file with new filename if specified
         if config["pipeline_settings"]["output_data"]:
             # Write DataFrame to CSV
             write_with_schema(df, output_schema_path, output_dir, new_filename)
-            # print(df.head(1))
+            # print(df)
+            # print(df[df["master_flag"] == True]["lsoa_code"].unique())
     except Exception as e:
         logger.error(
             f"An error occurred during the pipeline execution: {e}", exc_info=True

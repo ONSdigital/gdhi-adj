@@ -2,6 +2,9 @@ import pandas as pd
 from gdhi_adj.preprocess import (
     pivot_long_dataframe,
     rate_of_change,
+    calc_zscores,
+    calc_iqr,
+    create_master_flag,
 )
 
 
@@ -69,6 +72,91 @@ def test_rate_of_change_backward():
         "year": [2002, 2001, 2002, 2001],
         "gdhi_annual": [240, 200, 110, 100],
         "backward_pct_change": [None, 0.83333, None, 0.90909]
+    })
+
+    pd.testing.assert_frame_equal(result_df, expected_df)
+
+
+def test_calc_zscores():
+    """Test the calc_zscores function."""
+    # Create a sample DataFrame
+    df = pd.DataFrame({
+        "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2",
+                      "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2"],
+        "year": [2002, 2002, 2003, 2003, 2004, 2004, 2005, 2005, 2006, 2006, 2007, 2007, 2008,
+                 2008, 2009, 2009, 2010, 2010, 2011, 2011, 2012, 2012, 2013, 2013],
+        "backward_pct_change": [1.0, 1.5, -1.2, 1.6, 50.0, 2.0, 1.1, -0.2, 1.2, -1.0, 0.9, -2.0,
+                                -0.6, 0.5, 0.8, 1.3, -1.0, 0.9, 1.3, -1.1, -0.7, 0.7, 1.1, -0.3]
+    })
+
+    # Calculate z-scores
+    result_df = calc_zscores(df, "bkwd", "lsoa_code", "backward_pct_change")
+
+    # Expected DataFrame after calculating z-scores
+    expected_df = pd.DataFrame({
+        "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2",
+                      "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2"],
+        "year": [2002, 2002, 2003, 2003, 2004, 2004, 2005, 2005, 2006, 2006, 2007, 2007, 2008,
+                 2008, 2009, 2009, 2010, 2010, 2011, 2011, 2012, 2012, 2013, 2013],
+        "backward_pct_change": [1.0, 1.5, -1.2, 1.6, 50.0, 2.0, 1.1, -0.2, 1.2, -1.0, 0.9, -2.0,
+                                -0.6, 0.5, 0.8, 1.3, -1.0, 0.9, 1.3, -1.1, -0.7, 0.7, 1.1, -0.3],
+        "z_bkwd_flag": [False, False, False, False, True, False, False, False, False, False, False,
+                        False, False, False, False, False, False, False, False, False, False, False,
+                        False, False]
+    })
+
+    pd.testing.assert_frame_equal(result_df, expected_df)
+
+
+def test_calc_iqr():
+    """Test the calc_iqr function."""
+    # Create a sample DataFrame
+    df = pd.DataFrame({
+        "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2"],
+        "year": [2001, 2002, 2001, 2002, 2001, 2002, 2001, 2002, 2001, 2002],
+        "backward_pct_change": [1.0, 1.1, -1.2, 1.6, 10.0, 2.0, -0.9, -1.5, -0.6, -2.5]
+    })
+
+    # Calculate IQR
+    result_df = calc_iqr(df, "bkwd", "lsoa_code", "backward_pct_change")
+
+    # Expected DataFrame after calculating IQR
+    expected_df = pd.DataFrame({
+        "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2"],
+        "year": [2001, 2002, 2001, 2002, 2001, 2002, 2001, 2002, 2001, 2002],
+        "backward_pct_change": [1.0, 1.1, -1.2, 1.6, 10.0, 2.0, -0.9, -1.5, -0.6, -2.5],
+        "iqr_bkwd_flag": [False, False, False, False, True, False, False, False, False, False]
+    })
+
+    pd.testing.assert_frame_equal(result_df, expected_df)
+
+
+def test_create_master_flag():
+    """Test the create_master_flag function."""
+    # Create a sample DataFrame
+    df = pd.DataFrame({
+        "lsoa_code": ["E1", "E1", "E2", "E2", "E3", "E3"],
+        "year": [2001, 2002, 2001, 2002, 2001, 2002],
+        "backward_pct_change": [1.0, 1.1, -1.2, 1.6, 10.0, 2.0],
+        "forward_pct_change": [1.0, 1.1, -1.2, 1.6, 10.0, 6.0],
+        "z_bkwd_flag": [True, False, False, False, True, True],
+        "z_frwd_flag": [True, False, False, False, False, False],
+        "z_raw_flag": [True, False, False, False, False, False],
+        "iqr_bkwd_flag": [False, False, False, False, False, False],
+        "iqr_frwd_flag": [False, False, True, False, False, False],
+        "iqr_raw_flag": [False, False, True, True, True, False],
+    })
+
+    # Create master flags
+    result_df = create_master_flag(df)
+
+    # Expected DataFrame after creating master flags
+    expected_df = pd.DataFrame({
+        "lsoa_code": ["E1", "E1", "E2", "E2", "E3", "E3"],
+        "year": [2001, 2002, 2001, 2002, 2001, 2002],
+        "z_master_flag": [True, True, False, False, False, False],
+        "iqr_master_flag": [False, False, True, True, False, False],
+        "master_flag": [True, True, True, True, False, False]
     })
 
     pd.testing.assert_frame_equal(result_df, expected_df)
