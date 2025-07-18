@@ -1,19 +1,16 @@
 """Title for pipeline.py module"""
 
 import os
-from gdhi_adj.utils.logger import logger_creator
-from gdhi_adj.utils.helpers import (
-    load_toml_config,
-    read_with_schema,
-    write_with_schema,
-)
+from logging import logger_creator
+
 from gdhi_adj.preprocess import (
+    calc_iqr,
+    calc_zscores,
+    create_master_flag,
     pivot_long_dataframe,
     rate_of_change,
-    calc_zscores,
-    calc_iqr,
-    create_master_flag,
 )
+from gdhi_adj.utils.helpers import load_toml_config, read_with_schema, write_with_schema
 
 
 def run_pipeline(config_path):
@@ -24,7 +21,9 @@ def run_pipeline(config_path):
     config = load_toml_config(config_path)
     local_or_shared = config["user_settings"]["local_or_shared"]
     filepath_dict = config[f"{local_or_shared}_settings"]
-    input_file_path = "C:/Users/" + os.getlogin() + filepath_dict["input_file_path"]
+    input_file_path = (
+        "C:/Users/" + os.getlogin() + filepath_dict["input_file_path"]
+    )
     output_dir = "C:/Users/" + os.getlogin() + filepath_dict["output_dir"]
     input_schema_path = config["pipeline_settings"]["input_schema_path"]
     output_schema_path = config["pipeline_settings"]["output_schema_path"]
@@ -39,15 +38,21 @@ def run_pipeline(config_path):
         df = rate_of_change(
             False, df, ["lsoa_code", "year"], "lsoa_code", "gdhi_annual"
         )
-        df = rate_of_change(True, df, ["lsoa_code", "year"], "lsoa_code", "gdhi_annual")
+        df = rate_of_change(
+            True, df, ["lsoa_code", "year"], "lsoa_code", "gdhi_annual"
+        )
 
         # Assign prefixes
         backward_prefix = "bkwd"
         forward_prefix = "frwd"
         raw_prefix = "raw"
 
-        df = calc_zscores(df, backward_prefix, "lsoa_code", "backward_pct_change")
-        df = calc_zscores(df, forward_prefix, "lsoa_code", "forward_pct_change")
+        df = calc_zscores(
+            df, backward_prefix, "lsoa_code", "backward_pct_change"
+        )
+        df = calc_zscores(
+            df, forward_prefix, "lsoa_code", "forward_pct_change"
+        )
         df = calc_zscores(df, raw_prefix, "lsoa_code", "gdhi_annual")
 
         df = calc_iqr(df, backward_prefix, "lsoa_code", "backward_pct_change")
@@ -64,5 +69,6 @@ def run_pipeline(config_path):
             # print(df[df["master_flag"] == True]["lsoa_code"].unique())
     except Exception as e:
         logger.error(
-            f"An error occurred during the pipeline execution: {e}", exc_info=True
+            f"An error occurred during the pipeline execution: {e}",
+            exc_info=True,
         )

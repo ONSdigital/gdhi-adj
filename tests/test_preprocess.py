@@ -1,10 +1,11 @@
 import pandas as pd
+
 from gdhi_adj.preprocess import (
+    calc_iqr,
+    calc_zscores,
+    create_master_flag,
     pivot_long_dataframe,
     rate_of_change,
-    calc_zscores,
-    calc_iqr,
-    create_master_flag,
 )
 
 

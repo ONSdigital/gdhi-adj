@@ -30,13 +30,19 @@ def pivot_long_dataframe(
 
 
 def rate_of_change(
-    ascending: bool, df: pd.DataFrame, sort_cols: list, group_col: str, val_col: str
+    ascending: bool,
+    df: pd.DataFrame,
+    sort_cols: list,
+    group_col: str,
+    val_col: str,
 ) -> pd.DataFrame:
     """
-    Calculates the rate of change going forward and backwards in time in the DataFrame.
+    Calculate the rate of change going forward and backwards in time in the
+    DataFrame.
 
     Args:
-        ascending (bool): If True, calculates forward rate of change; otherwise, backward.
+        ascending (bool): If True, calculates forward rate of change;
+        otherwise, backward.
         df (pd.DataFrame): The input DataFrame.
         sort_cols (list): Columns to sort by before calculating rate of change.
         group_col (str): The column to group by for rate of change calculation.
@@ -49,12 +55,18 @@ def rate_of_change(
         # If ascending, sort in ascending order
         df = df.sort_values(by=sort_cols).reset_index(drop=True)
 
-        df["forward_pct_change"] = df.groupby(group_col)[val_col].pct_change() + 1.0
+        df["forward_pct_change"] = (
+            df.groupby(group_col)[val_col].pct_change() + 1.0
+        )
 
     else:
         # If not ascending, sort in descending order
-        df = df.sort_values(by=sort_cols, ascending=ascending).reset_index(drop=True)
-        df["backward_pct_change"] = df.groupby(group_col)[val_col].pct_change() + 1.0
+        df = df.sort_values(by=sort_cols, ascending=ascending).reset_index(
+            drop=True
+        )
+        df["backward_pct_change"] = (
+            df.groupby(group_col)[val_col].pct_change() + 1.0
+        )
 
     return df
 
@@ -69,14 +81,15 @@ def calc_zscores(
         df (pd.DataFrame): The input DataFrame.
         score_prefix (str): Prefix for the zscore column names.
         group_col (str): The column to group by for z-score calculation.
-        pct_change_col (str): The column containing percent change values to calculate zscores.
+        pct_change_col (str): The column containing percent change values to
+        calculate zscores.
 
     Returns:
         pd.DataFrame: The DataFrame with an additional 'zscore' column.
     """
-    df[score_prefix + "_zscore"] = df.groupby(group_col)[pct_change_col].transform(
-        lambda x: zscore(x, nan_policy="omit")
-    )
+    df[score_prefix + "_zscore"] = df.groupby(group_col)[
+        pct_change_col
+    ].transform(lambda x: zscore(x, nan_policy="omit"))
 
     df["z_" + score_prefix + "_flag"] = df[score_prefix + "_zscore"] > 3.0
     return df.drop(columns=[score_prefix + "_zscore"])
@@ -95,7 +108,8 @@ def calc_iqr(
         val_col (str): The column containing values to calculate IQR.
 
     Returns:
-        pd.DataFrame: The DataFrame with additional columns for IQR and outlier bounds.
+        pd.DataFrame: The DataFrame with additional columns for IQR and outlier
+        bounds.
     """
     # Calculate quartiles for each LSOA
     df[iqr_prefix + "_q1"] = df.groupby(group_col)[val_col].transform(
@@ -148,14 +162,19 @@ def create_master_flag(df: pd.DataFrame) -> pd.DataFrame:
 
     # Create a master flag that is True if any of the IQR columns are True
     iqr_score_cols = [col for col in df.columns if col[0:4] == "iqr_"]
-    iqr_count = df.groupby("lsoa_code").agg({col: "sum" for col in iqr_score_cols})
-    iqr_count["iqr_master_flag"] = (iqr_count[iqr_score_cols] >= 1).sum(axis=1) >= 2
+    iqr_count = df.groupby("lsoa_code").agg(
+        {col: "sum" for col in iqr_score_cols}
+    )
+    iqr_count["iqr_master_flag"] = (iqr_count[iqr_score_cols] >= 1).sum(
+        axis=1
+    ) >= 2
 
     # Join the master flags back to the original DataFrame
     df = df.join(z_count[["z_master_flag"]], on="lsoa_code", how="left")
     df = df.join(iqr_count[["iqr_master_flag"]], on="lsoa_code", how="left")
 
-    # Create a master flag that is True if either z_master_flag or iqr_master_flag is True
+    # Create a master flag that is True if either z_master_flag or iqr_master
+    # flag is True
     df["master_flag"] = df["z_master_flag"] | df["iqr_master_flag"]
 
     return df.drop(
