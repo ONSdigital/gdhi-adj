@@ -10,7 +10,11 @@ from gdhi_adj.preprocess import (
     pivot_long_dataframe,
     rate_of_change,
 )
-from gdhi_adj.utils.helpers import load_toml_config, read_with_schema, write_with_schema
+from gdhi_adj.utils.helpers import (
+    load_toml_config,
+    read_with_schema,
+    write_with_schema,
+)
 
 
 def run_pipeline(config_path):
