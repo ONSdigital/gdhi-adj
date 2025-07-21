@@ -114,7 +114,7 @@ def rename_columns(
         if old_name not in df.columns:
             raise ValueError(
                 f"Column '{old_name}' specified in schema does not exist"
-                "in DataFrame"
+                " in DataFrame"
             )
         elif old_name and old_name in df.columns and old_name != new_name:
             df.rename(columns={old_name: new_name}, inplace=True)
