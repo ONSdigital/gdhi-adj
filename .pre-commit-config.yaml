@@ -1,14 +1,6 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
-    - repo: https://github.com/kynan/nbstripout
-      rev: 0.8.1
-      hooks:
-          - id: nbstripout
-            name: nbstripout - Strip outputs from notebooks (auto-fixes)
-            args:
-                - --extra-keys
-                - "metadata.colab metadata.kernelspec cell.metadata.colab cell.metadata.executionInfo cell.metadata.id cell.metadata.outputId"
     - repo: https://github.com/pre-commit/pre-commit-hooks
       rev: v4.0.1
       hooks:
@@ -40,21 +32,6 @@ repos:
           - id: flake8
             name: flake8 - Python linting
             exclude: .*/tests*|^\.cruft\.json|helpers/.*|.*\tests*$|^tests
-    - repo: https://github.com/nbQA-dev/nbQA
-      rev: 1.9.1
-      hooks:
-          - id: nbqa-isort
-            name: nbqa-isort - Sort Python imports (notebooks; auto-fixes)
-            language_version: python3 # Should be a command that runs python3.6+
-            args: [--nbqa-mutate]
-            additional_dependencies: [isort==5.8.0]
-            exclude: .*/tests/.*|^\.cruft\.json$|.*\tests\.*
-          - id: nbqa-black
-            name: nbqa-black - consistent Python code formatting (notebooks; auto-fixes)
-            language_version: python3 # Should be a command that runs python3.6+
-            args: [--nbqa-mutate]
-            additional_dependencies: [black==21.5b2]
-            exclude: .*/tests/.*|^\.cruft\.json$|.*\tests\.*
     - repo: https://github.com/Yelp/detect-secrets
       rev: v1.5.0
       hooks:

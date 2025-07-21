@@ -9,9 +9,10 @@ import pandas as pd
 import toml
 import tomli  # tomli can be upgraded to tomllib in Python 3.11+
 
-from gdhi_adj.utils.logger import logger_creator
+from gdhi_adj.utils.logger import GDHI_adj_logger
 
-logger = logger_creator()
+GDHI_adj_LOGGER = GDHI_adj_logger(__name__)
+logger = GDHI_adj_LOGGER.logger
 
 
 def load_toml_config(path: Union[str, pathlib.Path]) -> dict | None:

@@ -21,7 +21,8 @@ def test_pivot_long_dataframe():
     # Call the function to pivot the DataFrame
     result_df = pivot_long_dataframe(df, "year", "value_col")
 
-    # Expected DataFrame after pivoting, pivoting all columns that don't start with letters
+    # Expected DataFrame after pivoting, pivoting all columns that don't start
+    # with letters
     expected_df = pd.DataFrame({
         "lsoa_code": ["E1", "E2", "E3", "E1", "E2", "E3"],
         "lad_code": ["E01", "E02", "E03", "E01", "E02", "E03"],
@@ -42,7 +43,9 @@ def test_rate_of_change_forward():
     })
 
     # Calculate forward rate of change
-    result_df = rate_of_change(True, df, ["lsoa_code", "year"], "lsoa_code", "gdhi_annual")
+    result_df = rate_of_change(
+        True, df, ["lsoa_code", "year"], "lsoa_code", "gdhi_annual"
+    )
 
     # Expected DataFrame after forward rate of change
     expected_df = pd.DataFrame({
@@ -65,7 +68,9 @@ def test_rate_of_change_backward():
     })
 
     # Calculate backward rate of change
-    result_df = rate_of_change(False, df, ["lsoa_code", "year"], "lsoa_code", "gdhi_annual")
+    result_df = rate_of_change(
+        False, df, ["lsoa_code", "year"], "lsoa_code", "gdhi_annual"
+    )
 
     # Expected DataFrame after backward rate of change
     expected_df = pd.DataFrame({
@@ -82,12 +87,15 @@ def test_calc_zscores():
     """Test the calc_zscores function."""
     # Create a sample DataFrame
     df = pd.DataFrame({
-        "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2",
-                      "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2"],
-        "year": [2002, 2002, 2003, 2003, 2004, 2004, 2005, 2005, 2006, 2006, 2007, 2007, 2008,
-                 2008, 2009, 2009, 2010, 2010, 2011, 2011, 2012, 2012, 2013, 2013],
-        "backward_pct_change": [1.0, 1.5, -1.2, 1.6, 50.0, 2.0, 1.1, -0.2, 1.2, -1.0, 0.9, -2.0,
-                                -0.6, 0.5, 0.8, 1.3, -1.0, 0.9, 1.3, -1.1, -0.7, 0.7, 1.1, -0.3]
+        "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1",
+                      "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2",
+                      "E1", "E2", "E1", "E2", "E1", "E2"],
+        "year": [2002, 2002, 2003, 2003, 2004, 2004, 2005, 2005, 2006, 2006,
+                 2007, 2007, 2008, 2008, 2009, 2009, 2010, 2010, 2011, 2011,
+                 2012, 2012, 2013, 2013],
+        "backward_pct_change": [1.0, 1.5, -1.2, 1.6, 50.0, 2.0, 1.1, -0.2, 1.2,
+                                -1.0, 0.9, -2.0, -0.6, 0.5, 0.8, 1.3, -1.0,
+                                0.9, 1.3, -1.1, -0.7, 0.7, 1.1, -0.3]
     })
 
     # Calculate z-scores
@@ -95,15 +103,18 @@ def test_calc_zscores():
 
     # Expected DataFrame after calculating z-scores
     expected_df = pd.DataFrame({
-        "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2",
-                      "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2"],
-        "year": [2002, 2002, 2003, 2003, 2004, 2004, 2005, 2005, 2006, 2006, 2007, 2007, 2008,
-                 2008, 2009, 2009, 2010, 2010, 2011, 2011, 2012, 2012, 2013, 2013],
-        "backward_pct_change": [1.0, 1.5, -1.2, 1.6, 50.0, 2.0, 1.1, -0.2, 1.2, -1.0, 0.9, -2.0,
-                                -0.6, 0.5, 0.8, 1.3, -1.0, 0.9, 1.3, -1.1, -0.7, 0.7, 1.1, -0.3],
-        "z_bkwd_flag": [False, False, False, False, True, False, False, False, False, False, False,
-                        False, False, False, False, False, False, False, False, False, False, False,
-                        False, False]
+        "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1",
+                      "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2",
+                      "E1", "E2", "E1", "E2", "E1", "E2"],
+        "year": [2002, 2002, 2003, 2003, 2004, 2004, 2005, 2005, 2006, 2006,
+                 2007, 2007, 2008, 2008, 2009, 2009, 2010, 2010, 2011, 2011,
+                 2012, 2012, 2013, 2013],
+        "backward_pct_change": [1.0, 1.5, -1.2, 1.6, 50.0, 2.0, 1.1, -0.2, 1.2,
+                                -1.0, 0.9, -2.0, -0.6, 0.5, 0.8, 1.3, -1.0,
+                                0.9, 1.3, -1.1, -0.7, 0.7, 1.1, -0.3],
+        "z_bkwd_flag": [False, False, False, False, True, False, False, False,
+                        False, False, False, False, False, False, False, False,
+                        False, False, False, False, False, False, False, False]
     })
 
     pd.testing.assert_frame_equal(result_df, expected_df)
@@ -113,9 +124,11 @@ def test_calc_iqr():
     """Test the calc_iqr function."""
     # Create a sample DataFrame
     df = pd.DataFrame({
-        "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2"],
+        "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1",
+                      "E2"],
         "year": [2001, 2002, 2001, 2002, 2001, 2002, 2001, 2002, 2001, 2002],
-        "backward_pct_change": [1.0, 1.1, -1.2, 1.6, 10.0, 2.0, -0.9, -1.5, -0.6, -2.5]
+        "backward_pct_change": [1.0, 1.1, -1.2, 1.6, 10.0, 2.0, -0.9, -1.5,
+                                -0.6, -2.5]
     })
 
     # Calculate IQR
@@ -123,10 +136,13 @@ def test_calc_iqr():
 
     # Expected DataFrame after calculating IQR
     expected_df = pd.DataFrame({
-        "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2"],
+        "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1",
+                      "E2"],
         "year": [2001, 2002, 2001, 2002, 2001, 2002, 2001, 2002, 2001, 2002],
-        "backward_pct_change": [1.0, 1.1, -1.2, 1.6, 10.0, 2.0, -0.9, -1.5, -0.6, -2.5],
-        "iqr_bkwd_flag": [False, False, False, False, True, False, False, False, False, False]
+        "backward_pct_change": [1.0, 1.1, -1.2, 1.6, 10.0, 2.0, -0.9, -1.5,
+                                -0.6, -2.5],
+        "iqr_bkwd_flag": [False, False, False, False, True, False, False,
+                          False, False, False]
     })
 
     pd.testing.assert_frame_equal(result_df, expected_df)

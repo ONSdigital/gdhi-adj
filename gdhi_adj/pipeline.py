@@ -1,7 +1,6 @@
 """Title for pipeline.py module"""
 
 import os
-from logging import logger_creator
 
 from gdhi_adj.preprocess import (
     calc_iqr,
@@ -15,10 +14,13 @@ from gdhi_adj.utils.helpers import (
     read_with_schema,
     write_with_schema,
 )
+from gdhi_adj.utils.logger import GDHI_adj_logger
+
+GDHI_adj_LOGGER = GDHI_adj_logger(__name__)
+logger = GDHI_adj_LOGGER.logger
 
 
 def run_pipeline(config_path):
-    logger = logger_creator()
     logger.info("Pipeline started")
 
     # Load config

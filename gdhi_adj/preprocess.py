@@ -3,7 +3,10 @@
 import pandas as pd
 from scipy.stats import zscore
 
-# from gdhi_adj.utils.logger import logger_creator
+from gdhi_adj.utils.logger import GDHI_adj_logger
+
+GDHI_adj_LOGGER = GDHI_adj_logger(__name__)
+logger = GDHI_adj_LOGGER.logger
 
 
 def pivot_long_dataframe(
