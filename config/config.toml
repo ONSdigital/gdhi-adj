@@ -1,5 +1,7 @@
 [user_settings]
 local_or_shared = "shared"  # "local" or "shared"
+preprocessing = true  # Set to true if you want to run preprocessing
+manual_adjustment = false  # Set to true if you want to run manual adjustment
 
 [local_settings]
 input_gdhi_file_path = "D:/gdhi_adj_dummy.csv" #Run from D: drive here
