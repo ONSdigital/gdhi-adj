@@ -207,11 +207,17 @@ def test_calc_lad_mean():
     """Test the calc_lad_mean function."""
     # Create a sample DataFrame
     df = pd.DataFrame({
-        "lsoa_code": ["E1", "E1", "E2", "E2", "E3", "E3"],
-        "lad_code": ["E01", "E01", "E01", "E01", "E02", "E02"],
-        "year": [2001, 2002, 2001, 2002, 2001, 2002],
-        "gdhi_annual": [100, 110, 200, 220, 300, 330],
-        "master_flag": [False, False, False, False, True, True]
+        "lsoa_code": [
+            "E1", "E1", "E2", "E2", "E3", "E3", "E4", "E4", "E5", "E5"],
+        "lad_code": [
+            "E01", "E01", "E01", "E01", "E01", "E01", "E02", "E02", "E02",
+            "E02"],
+        "year": [2001, 2002, 2001, 2002, 2001, 2002, 2001, 2002, 2001, 2002],
+        "gdhi_annual": [
+            100.0, 110.0, 200.0, 220.0, 300.0, 330.0, 400.0, 440.0, 500.0,
+            550.0],
+        "master_flag": [
+            True, True, False, False, False, False, False, False, True, True]
     })
 
     # Calculate mean percentage difference
@@ -219,12 +225,12 @@ def test_calc_lad_mean():
 
     # Expected DataFrame after calculating mean percentage difference
     expected_df = pd.DataFrame({
-        "lsoa_code": ["E1", "E1", "E2", "E2", "E3", "E3"],
-        "lad_code": ["E01", "E01", "E01", "E01", "E02", "E02"],
-        "year": [2001, 2002, 2001, 2002, 2001, 2002],
-        "gdhi_annual": [100, 110, 200, 220, 300, 330],
-        "master_flag": [False, False, False, False, True, True],
-        "mean_non_out_gdhi": [150, 165, 150, 165, None, None]
+        "lsoa_code": ["E1", "E1", "E5", "E5"],
+        "lad_code": ["E01", "E01", "E02", "E02"],
+        "year": [2001, 2002, 2001, 2002],
+        "gdhi_annual": [100.0, 110.0, 500.0, 550.0],
+        "master_flag": [True, True, True, True],
+        "mean_non_out_gdhi": [250.0, 275.0, 400.0, 440.0]
     })
 
     pd.testing.assert_frame_equal(result_df, expected_df)

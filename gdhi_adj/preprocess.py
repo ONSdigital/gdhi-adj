@@ -192,9 +192,6 @@ def calc_lad_mean(
     """
     # Separate out LSOAs that are not flagged
     non_outlier_df = df[~df["master_flag"]]
-    # currently using this to match Jim's averages
-    # outlier_lsoas = ["E01015597", "E01018153"]
-    # non_outlier_df = df[~df["lsoa_code"].isin(outlier_lsoas)]
 
     # Aggregate GDHI values for non-outlier LSOAs by LADs
     non_outlier_df = non_outlier_df.groupby(["lad_code", "year"]).agg(
@@ -202,6 +199,7 @@ def calc_lad_mean(
     )
 
     df = df.join(non_outlier_df, on=["lad_code", "year"], how="left")
+    df = df[df["master_flag"]].reset_index(drop=True)
 
     return df
 
@@ -262,18 +260,86 @@ def pivot_wide_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: The pivoted DataFrame in wide format.
     """
-    df = df.pivot(
-        index="lsoa_code",
-        columns="year",
-        values=[
-            "gdhi_annual",
-            "mean_non_out_gdhi",
-            "conlsoa_gdhi",
-            "conlsoa_mean",
-        ],
+
+    def pivot_long_then_wide(df, annual_gdhi, con_gdhi):
+        df.rename(columns={annual_gdhi: "annual"}, inplace=True)
+        df.rename(columns={con_gdhi: "CONLSOA"}, inplace=True)
+
+        # Pivot long to get a single 'metric' column with names as values
+        df = df.melt(
+            id_vars=[
+                "lsoa_code",
+                "lsoa_name",
+                "lad_code",
+                "lad_name",
+                "transaction_code",
+                "year",
+                "master_z_flag",
+                "master_iqr_flag",
+                "master_flag",
+            ],
+            value_vars=["annual", "CONLSOA"],
+            var_name="metric",
+            value_name="value",
+        )
+
+        df["metric_date"] = df["metric"] + "_" + df["year"].astype(str)
+
+        # Pivot wide to get dates as columns
+        df = df.pivot(
+            index=[
+                "lsoa_code",
+                "lsoa_name",
+                "lad_code",
+                "lad_name",
+                "transaction_code",
+                "master_z_flag",
+                "master_iqr_flag",
+                "master_flag",
+            ],
+            columns="metric_date",
+            values="value",
+        ).reset_index()
+
+        df.rename(
+            columns=lambda col: (
+                col.replace("annual_", "") if "annual_" in col else col
+            ),
+            inplace=True,
+        )
+
+        # Reorder columns: move those with 'conlsoa' to the end
+        cols = df.columns.tolist()
+
+        reorder_cols = [
+            col for col in cols if "flag" in col or "CONLSOA" in col
+        ]
+        other_cols = [col for col in cols if col not in reorder_cols]
+
+        df = df[other_cols + reorder_cols]
+
+        return df
+
+    df_outlier = df.drop(columns=["mean_non_out_gdhi", "conlsoa_mean"])
+
+    df_long_outlier = pivot_long_then_wide(
+        df_outlier, "gdhi_annual", "conlsoa_gdhi"
     )
 
-    return df
+    df_mean = df.drop(columns=["gdhi_annual", "conlsoa_gdhi"])
+
+    df_long_mean = pivot_long_then_wide(
+        df_mean, "mean_non_out_gdhi", "conlsoa_mean"
+    )
+    df_long_mean["master_flag"] = "MEAN"
+
+    df_wide = pd.concat([df_long_outlier, df_long_mean], ignore_index=True)
+    df_wide.sort_values(
+        by=["lsoa_code", "master_flag"], ascending=[True, False], inplace=True
+    )
+    df_wide.reset_index(drop=True, inplace=True)
+
+    return df_wide
 
 
 def run_preprocessing(config: dict) -> None:
@@ -356,7 +422,6 @@ def run_preprocessing(config: dict) -> None:
 
     df = create_master_flag(df)
 
-    # Export interim scores for QA
     logger.info("Saving interim data")
     logger.info(f"{output_dir}manual_adj_preprocessing_interim_scores.csv")
     df.to_csv(
@@ -383,13 +448,19 @@ def run_preprocessing(config: dict) -> None:
 
     logger.info("Calculating LAD mean and constraining to regional accounts")
     df = calc_lad_mean(df)
+    # df.to_csv(
+    #     output_dir + "manual_adj_preprocessing_lad_mean.csv",
+    #     index=False,
+    # )
 
     df = constrain_to_reg_acc(df, ra_lad)
+    # df.to_csv(
+    #     output_dir + "manual_adj_preprocessing_constrained_reg_acc.csv",
+    #     index=False,
+    # )
 
     logger.info("Pivoting data back to wide format")
-    # print(df)
-    # df = pivot_wide_dataframe(df)
-    # print(df)
+    df = pivot_wide_dataframe(df)
 
     # Save output file with new filename if specified
     if config["pipeline_settings"]["output_data"]:
