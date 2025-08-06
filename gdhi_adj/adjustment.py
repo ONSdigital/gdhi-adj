@@ -29,7 +29,7 @@ def filter_lsoa_data(df: pd.DataFrame) -> pd.DataFrame:
             "Mismatch: master_flag and Adjust column booleans do not match."
         )
 
-    # df = df[df["adjust"] == True]
+    df = df[df["adjust"].fillna(False)]
 
     cols_to_keep = [
         "lsoa_code",
@@ -48,12 +48,12 @@ def join_analyst_constrained_data(
     df_constrained: pd.DataFrame, df_analyst: pd.DataFrame
 ) -> pd.DataFrame:
     """
-    Join analyst data with constrained data based on LSOA code and
+    Join analyst data to constrained data based on LSOA code, LAD code and
     transaction code.
 
     Args:
-        df_analyst (pd.DataFrame): DataFrame containing analyst data.
         df_constrained (pd.DataFrame): DataFrame containing constrained data.
+        df_analyst (pd.DataFrame): DataFrame containing analyst data.
 
     Returns:
         pd.DataFrame: Joined DataFrame with relevant columns.
@@ -79,16 +79,6 @@ def join_analyst_constrained_data(
 
     df = df.rename(columns=rename_dict)
 
-    # print(
-    #     df[df["adjust"] == True].shape[0], "rows to adjust in constrained
-    # data")
-    # print(df[df["adjust"] == True])
-    # print(
-    #     df_analyst[df_analyst["adjust"] == True].shape[0],
-    #     "rows to adjust in constrained data",
-    # )
-    # print(df_analyst[df_analyst["adjust"] == True])
-
     if df["adjust"].sum() != df_analyst["adjust"].sum():
         raise ValueError(
             "Number of rows to adjust between analyst and constrained data"
@@ -100,7 +90,39 @@ def join_analyst_constrained_data(
             "Number of rows of constrained data after join has increased."
         )
 
-    # print(df[df["adjust"] == True].shape[0], "rows to adjust")
+    return df
+
+
+def join_analyst_unconstrained_data(
+    df_unconstrained: pd.DataFrame, df_analyst: pd.DataFrame
+) -> pd.DataFrame:
+    """
+    Join analyst data to unconstrained data based on LSOA code, LAD code and
+    transaction code.
+
+    Args:
+        df_unconstrained (pd.DataFrame): DataFrame with unconstrained data.
+        df_analyst (pd.DataFrame): DataFrame containing analyst data.
+
+    Returns:
+        pd.DataFrame: Joined DataFrame with relevant columns.
+    """
+    df = df_unconstrained.merge(
+        df_analyst,
+        on=["lsoa_code", "lad_code", "transaction_code"],
+        how="left",
+    )
+
+    if df["adjust"].sum() != df_analyst["adjust"].sum():
+        raise ValueError(
+            "Number of rows to adjust between analyst and unconstrained data"
+            " do not match."
+        )
+
+    if df.shape[0] != df_unconstrained.shape[0]:
+        raise ValueError(
+            "Number of rows of unconstrained data after join has increased."
+        )
 
     return df
 
@@ -135,12 +157,20 @@ def run_adjustment(config: dict) -> None:
         + os.getlogin()
         + filepath_dict["input_constrained_file_path"]
     )
+    input_unconstrained_file_path = (
+        "C:/Users/"
+        + os.getlogin()
+        + filepath_dict["input_unconstrained_file_path"]
+    )
 
     input_adj_schema_path = config["pipeline_settings"][
         "input_adj_schema_path"
     ]
     input_constrained_schema_path = config["pipeline_settings"][
         "input_constrained_schema_path"
+    ]
+    input_unconstrained_schema_path = config["pipeline_settings"][
+        "input_unconstrained_schema_path"
     ]
 
     # output_dir = "C:/Users/" + os.getlogin() + filepath_dict["output_dir"]
@@ -150,15 +180,19 @@ def run_adjustment(config: dict) -> None:
     df_powerbi_output = read_with_schema(
         input_adj_file_path, input_adj_schema_path
     )
-    df_constrained_output = read_with_schema(
+    df_constrained = read_with_schema(
         input_constrained_file_path, input_constrained_schema_path
+    )
+    df_unconstrained = read_with_schema(
+        input_unconstrained_file_path, input_unconstrained_schema_path
     )
 
     logger.info("Filtering for data that requires adjustment.")
     df_powerbi_output = filter_lsoa_data(df_powerbi_output)
 
     logger.info("Joining analyst output and constrained DAP output")
-    df = join_analyst_constrained_data(
-        df_constrained_output, df_powerbi_output
-    )
+    df = join_analyst_constrained_data(df_constrained, df_powerbi_output)
+
+    logger.info("Joining analyst output and constrained DAP output")
+    df = join_analyst_unconstrained_data(df_unconstrained, df)
     print(df)

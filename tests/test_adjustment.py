@@ -1,7 +1,9 @@
 import pandas as pd
 import pytest
 
-from gdhi_adj.adjustment import filter_lsoa_data
+from gdhi_adj.adjustment import (  # join_analyst_constrained_data,
+    filter_lsoa_data,
+)
 
 
 def test_filter_lsoa_data():

@@ -1,7 +1,7 @@
 [user_settings]
-local_or_shared = "shared"  # "local" or "shared"
-preprocessing = false  # Set to true if you want to run preprocessing
-adjustment = true  # Set to true if you want to run manual adjustment
+local_or_shared = "shared" # "local" or "shared"
+preprocessing = false # Set to true if you want to run preprocessing
+adjustment = true # Set to true if you want to run manual adjustment
 
 [local_settings]
 input_gdhi_file_path = "D:/gdhi_adj_dummy.csv" #Run from D: drive here
@@ -21,6 +21,7 @@ output_dir = "/Office for National Statistics/Subnational Statistics - 2025_Manu
 #and click the 'sync' button to sync to your local OneDrive.
 input_adj_file_path = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Worked_Example/Manual_Adjustment_Adjustment_test_data.csv"
 input_constrained_file_path = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Worked_Example/Manual_Adjustment_Adjustment_con_dap_data.csv"
+input_unconstrained_file_path = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Worked_Example/Manual_Adjustment_Adjustment_uncon_dap_data.csv"
 output_dir = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Worked_Example/"
 
 [pipeline_settings]
@@ -30,6 +31,7 @@ input_gdhi_schema_path = "config/input_gdhi_schema.toml"
 input_ra_lad_schema_path = "config/input_ra_lad_schema.toml"
 input_adj_schema_path = "config/input_adj_schema.toml"
 input_constrained_schema_path = "config/input_constrained_schema.toml"
+input_unconstrained_schema_path = "config/input_unconstrained_schema.toml"
 output_schema_path = "config/output_schema.toml"
 
 # Application metadata

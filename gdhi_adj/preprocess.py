@@ -320,12 +320,14 @@ def pivot_wide_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
         return df
 
+    # Pivot outlier df
     df_outlier = df.drop(columns=["mean_non_out_gdhi", "conlsoa_mean"])
 
     df_long_outlier = pivot_long_then_wide(
         df_outlier, "gdhi_annual", "conlsoa_gdhi"
     )
 
+    # Pivot mean df
     df_mean = df.drop(columns=["gdhi_annual", "conlsoa_gdhi"])
 
     df_long_mean = pivot_long_then_wide(
@@ -333,6 +335,7 @@ def pivot_wide_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     )
     df_long_mean["master_flag"] = "MEAN"
 
+    # Join DataFrames and sort to match desired output for PowerBI
     df_wide = pd.concat([df_long_outlier, df_long_mean], ignore_index=True)
     df_wide.sort_values(
         by=["lsoa_code", "master_flag"], ascending=[True, False], inplace=True
