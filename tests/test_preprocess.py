@@ -5,15 +5,18 @@ from gdhi_adj.preprocess import (
     calc_iqr,
     calc_lad_mean,
     calc_zscores,
+    concat_wide_dataframes,
     constrain_to_reg_acc,
     create_master_flag,
-    pivot_long_dataframe,
+    pivot_output_long,
+    pivot_wide_dataframe,
+    pivot_years_long_dataframe,
     rate_of_change,
 )
 
 
-def test_pivot_long_dataframe():
-    """Test the pivot_long_dataframe function."""
+def test_pivot_years_long_dataframe():
+    """Test the pivot_years_long_dataframe function."""
     # Create a sample DataFrame with years as column names
     df = pd.DataFrame({
         "lsoa_code": ["E1", "E2", "E3"],
@@ -22,7 +25,7 @@ def test_pivot_long_dataframe():
         "2004": [11, 22, 33]
     })
     # Call the function to pivot the DataFrame
-    result_df = pivot_long_dataframe(df, "year", "value_col")
+    result_df = pivot_years_long_dataframe(df, "year", "value_col")
 
     # Expected DataFrame after pivoting, pivoting all columns that don't start
     # with letters
@@ -296,3 +299,121 @@ def test_constrain_to_reg_acc_col_mismatch():
         match="DataFrames have different columns"
     ):
         constrain_to_reg_acc(df, reg_acc)
+
+
+def test_pivot_output_long():
+    """Test the pivot_output_long function."""
+    # Create a sample DataFrame
+    df = pd.DataFrame({
+        "lsoa_code": ["E1", "E2", "E1", "E2"],
+        "lsoa_name": ["A", "B", "A", "B"],
+        "lad_code": ["E01", "E01", "E01", "E01"],
+        "lad_name": ["AA", "AA", "AA", "AA"],
+        "transaction_code": ["A1", "A1", "A1", "A1"],
+        "year": [2002, 2002, 2003, 2003],
+        "master_z_flag": [True, True, True, True],
+        "master_iqr_flag": [True, True, True, True],
+        "master_flag": ["TRUE", "TRUE", "TRUE", "TRUE"],
+        "gdhi_annual": [10.0, 11.0, 12.0, 13.0],
+        "mean_non_out_gdhi": [100.0, 110.0, 120.0, 130.0],
+    })
+
+    # Call the function to pivot the DataFrame
+    result_df = pivot_output_long(df, "gdhi_annual", "mean_non_out_gdhi")
+
+    # Expected DataFrame after pivoting
+    expected_df = pd.DataFrame({
+        "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2"],
+        "lsoa_name": ["A", "B", "A", "B", "A", "B", "A", "B"],
+        "lad_code": ["E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"],
+        "lad_name": ["AA", "AA", "AA", "AA", "AA", "AA", "AA", "AA"],
+        "transaction_code": ["A1", "A1", "A1", "A1", "A1", "A1", "A1", "A1"],
+        "year": [2002, 2002, 2003, 2003, 2002, 2002, 2003, 2003],
+        "master_z_flag": [True, True, True, True, True, True, True, True],
+        "master_iqr_flag": [True, True, True, True, True, True, True, True],
+        "master_flag": [
+            "TRUE", "TRUE", "TRUE", "TRUE", "TRUE", "TRUE", "TRUE", "TRUE"],
+        "metric": ["annual", "annual", "annual", "annual",
+                   "CONLSOA", "CONLSOA", "CONLSOA", "CONLSOA"],
+        "value": [10.0, 11.0, 12.0, 13.0, 100.0, 110.0, 120.0, 130.0],
+        "metric_date": [
+            "annual_2002", "annual_2002", "annual_2003", "annual_2003",
+            "CONLSOA_2002", "CONLSOA_2002", "CONLSOA_2003", "CONLSOA_2003"],
+    })
+
+    pd.testing.assert_frame_equal(result_df, expected_df)
+
+
+def test_pivot_wide_dataframe():
+    """Test the pivot_wide_dataframe function."""
+    # Create a sample DataFrame
+    df = pd.DataFrame({
+        "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2"],
+        "lsoa_name": ["A", "B", "A", "B", "A", "B", "A", "B"],
+        "lad_code": ["E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"],
+        "lad_name": ["AA", "AA", "AA", "AA", "AA", "AA", "AA", "AA"],
+        "transaction_code": ["A1", "A1", "A1", "A1", "A1", "A1", "A1", "A1"],
+        "year": [2002, 2002, 2003, 2003, 2002, 2002, 2003, 2003],
+        "master_z_flag": [True, True, True, True, True, True, True, True],
+        "master_iqr_flag": [True, True, True, True, True, True, True, True],
+        "master_flag": [
+            "TRUE", "TRUE", "TRUE", "TRUE", "TRUE", "TRUE", "TRUE", "TRUE"],
+        "metric": ["annual", "annual", "annual", "annual",
+                   "CONLSOA", "CONLSOA", "CONLSOA", "CONLSOA"],
+        "value": [10.0, 11.0, 12.0, 13.0, 100.0, 110.0, 120.0, 130.0],
+        "metric_date": [
+            "annual_2002", "annual_2002", "annual_2003", "annual_2003",
+            "CONLSOA_2002", "CONLSOA_2002", "CONLSOA_2003", "CONLSOA_2003"],
+    })
+
+    # Call the function to pivot the DataFrame
+    result_df = pivot_wide_dataframe(df)
+
+    # Expected DataFrame after pivoting
+    expected_df = pd.DataFrame({
+        "lsoa_code": ["E1", "E2"],
+        "lsoa_name": ["A", "B"],
+        "lad_code": ["E01", "E01"],
+        "lad_name": ["AA", "AA"],
+        "transaction_code": ["A1", "A1"],
+        "2002": [10.0, 11.0],
+        "2003": [12.0, 13.0],
+        "master_z_flag": [True, True],
+        "master_iqr_flag": [True, True],
+        "master_flag": ["TRUE", "TRUE"],
+        "CONLSOA_2002": [100.0, 110.0],
+        "CONLSOA_2003": [120.0, 130.0],
+    })
+
+    pd.testing.assert_frame_equal(result_df, expected_df)
+
+
+def test_concat_wide_dataframes():
+    """Test the concat_wide_dataframes function."""
+    # Create two sample DataFrames
+    df_outlier = pd.DataFrame({
+        "lsoa_code": ["E1", "E2"],
+        "2002": [10.0, 11.0],
+        "master_flag": ["TRUE", "TRUE"],
+        "CONLSOA_2002": [100.0, 110.0]
+    })
+
+    df_mean = pd.DataFrame({
+        "lsoa_code": ["E1", "E2"],
+        "2002": [20.0, 21.0],
+        "master_flag": ["MEAN", "MEAN"],
+        "CONLSOA_2002": [200.0, 210.0]
+    })
+
+    # Concatenate the DataFrames
+    result_df = concat_wide_dataframes(df_outlier, df_mean)
+
+    # Expected DataFrame after concatenation
+    expected_df = pd.DataFrame({
+        "lsoa_code": ["E1", "E1", "E2", "E2"],
+        "2002": [10.0, 20.0, 11.0, 21.0],
+        "master_flag": ["TRUE", "MEAN", "TRUE", "MEAN"],
+        "CONLSOA_2002": [100.0, 200.0, 110.0, 210.0]
+    })
+
+    pd.testing.assert_frame_equal(result_df, expected_df)
