@@ -205,7 +205,7 @@ def calc_lad_mean(
 
 
 def constrain_to_reg_acc(
-    df: pd.DataFrame, reg_acc: pd.DataFrame
+    df: pd.DataFrame, reg_acc: pd.DataFrame, transaction_code: str
 ) -> pd.DataFrame:
     """
     Calculate contrained and unconstrained values for each outlier case.
@@ -213,10 +213,14 @@ def constrain_to_reg_acc(
     Args:
         df (pd.DataFrame): The input DataFrame with outliers to be constrained.
         reg_acc (pd.DataFrame): The regional accounts DataFrame.
+        transaction_code (str): Transaction code to filter regional accounts.
 
     Returns:
         pd.DataFrame: The constrained DataFrame.
     """
+    reg_acc = reg_acc[reg_acc["transaction_code"] == transaction_code].drop(
+        columns=["transaction_code", "Region", "Region name", "Transaction"]
+    )
     # Ensure that both DataFrames have the same columns for merging
     if not reg_acc.columns.isin(df.columns).all():
         raise ValueError("DataFrames have different columns for joining.")
@@ -396,6 +400,9 @@ def run_preprocessing(config: dict) -> None:
     input_ra_lad_schema_path = config["pipeline_settings"][
         "input_ra_lad_schema_path"
     ]
+    transaction_code = config["preprocessing_shared_settings"][
+        "transaction_code"
+    ]
 
     output_dir = "C:/Users/" + os.getlogin() + filepath_dict["output_dir"]
     output_schema_path = filepath_dict["output_schema_path"]
@@ -460,7 +467,7 @@ def run_preprocessing(config: dict) -> None:
     logger.info("Calculating LAD mean and constraining to regional accounts")
     df = calc_lad_mean(df)
 
-    df = constrain_to_reg_acc(df, ra_lad)
+    df = constrain_to_reg_acc(df, ra_lad, transaction_code)
 
     logger.info("Pivoting data back to wide format")
     # Pivot outlier df
