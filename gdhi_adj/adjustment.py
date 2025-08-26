@@ -29,12 +29,12 @@ def filter_lsoa_data(df: pd.DataFrame) -> pd.DataFrame:
             "Mismatch: master_flag and Adjust column booleans do not match."
         )
 
-    df = df[df["adjust"].fillna(False).astype(bool)]
+    df["adjust"] = df["adjust"].where(pd.notnull(df["adjust"]), False)
+    df = df[df["adjust"]]
 
     cols_to_keep = [
         "lsoa_code",
         "lad_code",
-        "transaction_code",
         "adjust",
         "year",
     ]
@@ -48,8 +48,7 @@ def join_analyst_constrained_data(
     df_constrained: pd.DataFrame, df_analyst: pd.DataFrame
 ) -> pd.DataFrame:
     """
-    Join analyst data to constrained data based on LSOA code, LAD code and
-    transaction code.
+    Join analyst data to constrained data based on LSOA code and LAD code.
 
     Args:
         df_constrained (pd.DataFrame): DataFrame containing constrained data.
@@ -60,7 +59,7 @@ def join_analyst_constrained_data(
     """
     df = df_constrained.merge(
         df_analyst,
-        on=["lsoa_code", "lad_code", "transaction_code"],
+        on=["lsoa_code", "lad_code"],
         how="left",
     )
 
@@ -68,7 +67,6 @@ def join_analyst_constrained_data(
     exclude_cols = [
         "lsoa_code",
         "lad_code",
-        "transaction_code",
         "adjust",
         "year",
     ]
@@ -97,8 +95,7 @@ def join_analyst_unconstrained_data(
     df_unconstrained: pd.DataFrame, df_analyst: pd.DataFrame
 ) -> pd.DataFrame:
     """
-    Join analyst data to unconstrained data based on LSOA code, LAD code and
-    transaction code.
+    Join analyst data to unconstrained data based on LSOA code and LAD code.
 
     Args:
         df_unconstrained (pd.DataFrame): DataFrame with unconstrained data.
@@ -109,9 +106,11 @@ def join_analyst_unconstrained_data(
     """
     df = df_unconstrained.merge(
         df_analyst,
-        on=["lsoa_code", "lad_code", "transaction_code"],
+        on=["lsoa_code", "lad_code"],
         how="left",
     )
+
+    df["adjust"] = df["adjust"].where(pd.notnull(df["adjust"]), False)
 
     if df["adjust"].sum() != df_analyst["adjust"].sum():
         raise ValueError(
@@ -129,7 +128,7 @@ def join_analyst_unconstrained_data(
 
 def pivot_adjustment_long(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Pivot the adjustment DataFrame from wide to long format.
+    Un-pivot (melt) the adjustment DataFrame from wide to long format.
 
     Args:
         df (pd.DataFrame): DataFrame containing data to be adjusted.
@@ -147,7 +146,6 @@ def pivot_adjustment_long(df: pd.DataFrame) -> pd.DataFrame:
         id_vars=[
             "lsoa_code",
             "lad_code",
-            "transaction_code",
             "adjust",
             "year_to_adjust",
         ],
@@ -160,7 +158,6 @@ def pivot_adjustment_long(df: pd.DataFrame) -> pd.DataFrame:
         id_vars=[
             "lsoa_code",
             "lad_code",
-            "transaction_code",
             "adjust",
             "year_to_adjust",
         ],
@@ -175,7 +172,6 @@ def pivot_adjustment_long(df: pd.DataFrame) -> pd.DataFrame:
         on=[
             "lsoa_code",
             "lad_code",
-            "transaction_code",
             "adjust",
             "year_to_adjust",
             "year",
@@ -197,27 +193,17 @@ def calc_scaling_factors(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame with scaling factors added.
     """
-    df_uncon = (
-        df.groupby(["transaction_code", "year"])["uncon_gdhi"]
-        .sum()
-        .reset_index()
-    )
-    df_con = (
-        df.groupby(["transaction_code", "year"])["con_gdhi"]
-        .sum()
-        .reset_index()
-    )
+    df_uncon = df.groupby(["year"])["uncon_gdhi"].sum().reset_index()
+    df_con = df.groupby(["year"])["con_gdhi"].sum().reset_index()
 
-    df_scaling = df_uncon.merge(
-        df_con, on=["transaction_code", "year"], how="left"
-    )
+    df_scaling = df_uncon.merge(df_con, on=["year"], how="left")
 
     df_scaling["scaling"] = df_scaling["con_gdhi"] / df_scaling["uncon_gdhi"]
 
     return df_scaling
 
 
-def create_anaomaly_list(df: pd.DataFrame) -> pd.DataFrame:
+def create_anomaly_list(df: pd.DataFrame) -> pd.DataFrame:
     """
     Create a list of anomalies in the DataFrame.
 
@@ -227,9 +213,9 @@ def create_anaomaly_list(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame with unique anomalies listed.
     """
-    anomaly_lsoa = df[df["adjust"].fillna(False).astype(bool)]
+    anomaly_lsoa = df[df["adjust"]]
     anomaly_lsoa = (
-        anomaly_lsoa[["lsoa_code", "transaction_code", "year_to_adjust"]]
+        anomaly_lsoa[["lsoa_code", "year_to_adjust"]]
         .drop_duplicates()
         .reset_index(drop=True)
     )
@@ -241,7 +227,6 @@ def calc_adjustment_headroom_val(
     df: pd.DataFrame,
     df_scaling: pd.DataFrame,
     lsoa_code: str,
-    transaction_code: str,
     year_to_adjust: int,
 ) -> pd.DataFrame:
     """
@@ -252,28 +237,23 @@ def calc_adjustment_headroom_val(
         data.
         df_scaling (pd.DataFrame): DataFrame containing scaling factors.
         lsoa_code (str): LSOA code for the adjustment.
-        transaction_code (str): Transaction code for the adjustment.
         year_to_adjust (int): Year for the adjustment.
 
     Returns:
         uncon_non_out_sum (float): The sum of non outlier unconstrained GDHI.
         headroom_val (float): The calculated headroom for adjustment.
     """
-    mean_scaling = df_scaling[
-        (df_scaling["transaction_code"] == transaction_code)
-        & (df_scaling["year"] != year_to_adjust)
-    ]["scaling"].mean()
+    mean_scaling = df_scaling[df_scaling["year"] != year_to_adjust][
+        "scaling"
+    ].mean()
 
     uncon_non_out_sum = df[
-        (df["lsoa_code"] != lsoa_code)
-        & (df["transaction_code"] == transaction_code)
-        & (df["year"] == year_to_adjust)
+        (df["lsoa_code"] != lsoa_code) & (df["year"] == year_to_adjust)
     ]["uncon_gdhi"].sum()
 
-    con_out_val = df_scaling[
-        (df_scaling["transaction_code"] == transaction_code)
-        & (df_scaling["year"] == year_to_adjust)
-    ]["con_gdhi"].iloc[0]
+    con_out_val = df_scaling[df_scaling["year"] == year_to_adjust][
+        "con_gdhi"
+    ].iloc[0]
 
     headroom_val = con_out_val - (uncon_non_out_sum * mean_scaling)
 
@@ -283,7 +263,6 @@ def calc_adjustment_headroom_val(
 def calc_midpoint_val(
     df: pd.DataFrame,
     lsoa_code: str,
-    transaction_code: str,
     year_to_adjust: int,
 ) -> float:
     """
@@ -292,7 +271,6 @@ def calc_midpoint_val(
     Args:
         df (pd.DataFrame): DataFrame containing data to calculate midpoint.
         lsoa_code (str): LSOA code for the adjustment.
-        transaction_code (str): Transaction code for the adjustment.
         year_to_adjust (int): Year for the adjustment.
 
     Returns:
@@ -301,21 +279,15 @@ def calc_midpoint_val(
     # if year_to_adjust is the first or last year in the series,
     # method required for determining what to do with midpoint
     outlier_val = df[
-        (df["lsoa_code"] == lsoa_code)
-        & (df["transaction_code"] == transaction_code)
-        & (df["year"] == year_to_adjust)
+        (df["lsoa_code"] == lsoa_code) & (df["year"] == year_to_adjust)
     ]["con_gdhi"].iloc[0]
 
     prev_year_val = df[
-        (df["lsoa_code"] == lsoa_code)
-        & (df["transaction_code"] == transaction_code)
-        & (df["year"] == (year_to_adjust - 1))
+        (df["lsoa_code"] == lsoa_code) & (df["year"] == (year_to_adjust - 1))
     ]["con_gdhi"].iloc[0]
 
     next_year_val = df[
-        (df["lsoa_code"] == lsoa_code)
-        & (df["transaction_code"] == transaction_code)
-        & (df["year"] == (year_to_adjust + 1))
+        (df["lsoa_code"] == lsoa_code) & (df["year"] == (year_to_adjust + 1))
     ]["con_gdhi"].iloc[0]
 
     midpoint_val = (prev_year_val + next_year_val) / 2
@@ -347,7 +319,6 @@ def calc_adjustment_val(
 
 def apply_adjustment(
     df: pd.DataFrame,
-    transaction_code: str,
     year_to_adjust: int,
     adjustment_val: float,
     uncon_non_out_sum: float,
@@ -357,7 +328,6 @@ def apply_adjustment(
 
     Args:
         df (pd.DataFrame): DataFrame containing data to adjust.
-        transaction_code (str): Transaction code for the adjustment.
         year_to_adjust (int): Year for the adjustment.
         adjustment_val (float): Adjustment value to be applied.
         uncon_non_out_sum (float): Sum of non-outlier unconstrained GDHI.
@@ -365,17 +335,13 @@ def apply_adjustment(
     Returns:
         pd.DataFrame: DataFrame with adjustment values calculated.
     """
-    condition_outlier = (
-        (df["adjust"].fillna(False))
-        & (df["transaction_code"] == transaction_code)
-        & (df["year"] == year_to_adjust)
+    condition_outlier = (df["adjust"].fillna(False)) & (
+        df["year"] == year_to_adjust
     )
     df.loc[condition_outlier, "con_gdhi"] = df["con_gdhi"] + adjustment_val
 
-    condition_non_outlier = (
-        (~df["adjust"].fillna(False))
-        & (df["transaction_code"] == transaction_code)
-        & (df["year"] == year_to_adjust)
+    condition_non_outlier = (~df["adjust"].fillna(False)) & (
+        df["year"] == year_to_adjust
     )
     df.loc[condition_non_outlier, "con_gdhi"] = df["con_gdhi"] + (
         abs(adjustment_val) * (df["uncon_gdhi"] / uncon_non_out_sum)
@@ -399,17 +365,14 @@ def pivot_wide_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
     # Pivot wide to get dates as columns
     df_wide = df.pivot(
-        index=[
-            "lsoa_code",
-            "transaction_code",
-        ],
+        index=["lsoa_code"],
         columns="year",
         values="con_gdhi",
     )
     df_wide.columns.name = None  # This removes the label from columns
     df_wide = df_wide.reset_index()
 
-    id_cols = ["lsoa_code", "transaction_code"]
+    id_cols = ["lsoa_code"]
 
     # Rename only numeric column names
     df_wide = df_wide.rename(
@@ -503,22 +466,21 @@ def run_adjustment(config: dict) -> None:
     df_scaling = calc_scaling_factors(df)
 
     logger.info("Calculating adjustment")
-    df_anomaly_lsoas = create_anaomaly_list(df)
+    df_anomaly_lsoas = create_anomaly_list(df)
 
     for i in range(len(df_anomaly_lsoas)):
         lsoa_code = df_anomaly_lsoas.iloc[i]["lsoa_code"]
         print(lsoa_code)
-        transaction_code = df_anomaly_lsoas.iloc[i]["transaction_code"]
         year_to_adjust = df_anomaly_lsoas.iloc[i]["year_to_adjust"].astype(int)
 
         logger.info("Calculating adjustment headroom")
         uncon_non_out_sum, headroom_val = calc_adjustment_headroom_val(
-            df, df_scaling, lsoa_code, transaction_code, year_to_adjust
+            df, df_scaling, lsoa_code, year_to_adjust
         )
         print(uncon_non_out_sum, headroom_val)
         logger.info("Calculating adjustment midpoint")
         outlier_val, midpoint_val = calc_midpoint_val(
-            df, lsoa_code, transaction_code, year_to_adjust
+            df, lsoa_code, year_to_adjust
         )
         print(outlier_val, midpoint_val)
         logger.info("Calculating adjustment value")
@@ -529,7 +491,6 @@ def run_adjustment(config: dict) -> None:
         logger.info("Updating anomaly year")
         df = apply_adjustment(
             df,
-            transaction_code,
             year_to_adjust,
             adjustment_val,
             uncon_non_out_sum,
