@@ -47,7 +47,11 @@ def calc_rate_of_change(
 
 
 def calc_zscores(
-    df: pd.DataFrame, score_prefix: str, group_col: str, val_col: str
+    df: pd.DataFrame,
+    score_prefix: str,
+    group_col: str,
+    val_col: str,
+    zscore_threshold: float,
 ) -> pd.DataFrame:
     """
     Calculates the z-scores for percent changes and raw data in DataFrame.
@@ -76,13 +80,19 @@ def calc_zscores(
 
     # If the value column is 1, the data has been rolled back so should not be
     # flagged, else flag based on zscore
-    df["z_" + score_prefix + "_flag"] = df[score_prefix + "_zscore"] > 3.0
+    df["z_" + score_prefix + "_flag"] = (
+        df[score_prefix + "_zscore"] > zscore_threshold
+    )
 
     return df
 
 
 def calc_iqr(
-    df: pd.DataFrame, iqr_prefix: str, group_col: str, val_col: str
+    df: pd.DataFrame,
+    iqr_prefix: str,
+    group_col: str,
+    val_col: str,
+    iqr_multiplier: float,
 ) -> pd.DataFrame:
     """
     Calculates the interquartile range (IQR) for each LSOA in the DataFrame.
@@ -121,10 +131,10 @@ def calc_iqr(
 
     # Calculate lower and upper bounds for outliers for each LSOA
     df[iqr_prefix + "_lower_bound"] = df[iqr_prefix + "_q1"] - (
-        3 * df[iqr_prefix + "_iqr"]
+        iqr_multiplier * df[iqr_prefix + "_iqr"]
     )
     df[iqr_prefix + "_upper_bound"] = df[iqr_prefix + "_q3"] + (
-        3 * df[iqr_prefix + "_iqr"]
+        iqr_multiplier * df[iqr_prefix + "_iqr"]
     )
 
     # If the value column is 1, the data has been rolled back so should not be

@@ -56,6 +56,7 @@ def run_preprocessing(config: dict) -> None:
     logger.info("Loading configuration settings")
     local_or_shared = config["user_settings"]["local_or_shared"]
     filepath_dict = config[f"preprocessing_{local_or_shared}_settings"]
+    schema_path = config["pipeline_settings"]["schema_path"]
 
     input_gdhi_file_path = (
         "C:/Users/" + os.getlogin() + filepath_dict["input_gdhi_file_path"]
@@ -64,18 +65,22 @@ def run_preprocessing(config: dict) -> None:
         "C:/Users/" + os.getlogin() + filepath_dict["input_ra_lad_file_path"]
     )
 
-    input_gdhi_schema_path = config["pipeline_settings"][
-        "input_gdhi_schema_path"
-    ]
-    input_ra_lad_schema_path = config["pipeline_settings"][
-        "input_ra_lad_schema_path"
-    ]
-    transaction_name = config["preprocessing_shared_settings"][
-        "transaction_name"
-    ]
+    input_gdhi_schema_path = (
+        schema_path + config["pipeline_settings"]["input_gdhi_schema_name"]
+    )
+    input_ra_lad_schema_path = (
+        schema_path + config["pipeline_settings"]["input_ra_lad_schema_name"]
+    )
+    transaction_name = config["user_settings"]["transaction_name"]
+
+    zscore_threshold = config["user_settings"]["zscore_threshold"]
+    iqr_multiplier = config["user_settings"]["iqr_multiplier"]
 
     output_dir = "C:/Users/" + os.getlogin() + filepath_dict["output_dir"]
-    output_schema_path = filepath_dict["output_schema_path"]
+    output_schema_path = (
+        schema_path
+        + config["pipeline_settings"]["output_preprocess_schema_path"]
+    )
     new_filename = filepath_dict.get("output_filename", None)
     logger.info("Configuration settings loaded successfully")
 
@@ -102,13 +107,28 @@ def run_preprocessing(config: dict) -> None:
     raw_prefix = "raw"
 
     logger.info("Calculating z-scores")
-    df = calc_zscores(df, backward_prefix, "lsoa_code", "backward_pct_change")
-    df = calc_zscores(df, forward_prefix, "lsoa_code", "forward_pct_change")
-    df = calc_zscores(df, raw_prefix, "lsoa_code", "gdhi_annual")
+    df = calc_zscores(
+        df,
+        backward_prefix,
+        "lsoa_code",
+        "backward_pct_change",
+        zscore_threshold,
+    )
+    df = calc_zscores(
+        df, forward_prefix, "lsoa_code", "forward_pct_change", zscore_threshold
+    )
+    df = calc_zscores(
+        df, raw_prefix, "lsoa_code", "gdhi_annual", zscore_threshold
+    )
+
     logger.info("Calculating IQRs")
-    df = calc_iqr(df, backward_prefix, "lsoa_code", "backward_pct_change")
-    df = calc_iqr(df, forward_prefix, "lsoa_code", "forward_pct_change")
-    df = calc_iqr(df, raw_prefix, "lsoa_code", "gdhi_annual")
+    df = calc_iqr(
+        df, backward_prefix, "lsoa_code", "backward_pct_change", iqr_multiplier
+    )
+    df = calc_iqr(
+        df, forward_prefix, "lsoa_code", "forward_pct_change", iqr_multiplier
+    )
+    df = calc_iqr(df, raw_prefix, "lsoa_code", "gdhi_annual", iqr_multiplier)
 
     df = create_master_flag(df)
 
@@ -155,6 +175,6 @@ def run_preprocessing(config: dict) -> None:
     df = concat_wide_dataframes(df_outlier, df_mean)
 
     # Save output file with new filename if specified
-    if config["pipeline_settings"]["output_data"]:
+    if config["user_settings"]["output_data"]:
         # Write DataFrame to CSV
         write_with_schema(df, output_schema_path, output_dir, new_filename)

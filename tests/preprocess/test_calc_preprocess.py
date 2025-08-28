@@ -72,7 +72,11 @@ def test_calc_zscores():
                           False, False, False, True]
     })
 
-    result_df = calc_zscores(df, "bkwd", "lsoa_code", "backward_pct_change")
+    zscore_threshold = 3.0
+
+    result_df = calc_zscores(
+        df, "bkwd", "lsoa_code", "backward_pct_change", zscore_threshold
+    )
 
     expected_df = pd.DataFrame({
         "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1",
@@ -115,7 +119,11 @@ def test_calc_iqr():
                           False, False, False, True]
     })
 
-    result_df = calc_iqr(df, "bkwd", "lsoa_code", "backward_pct_change")
+    iqr_multiplier = 3.0
+
+    result_df = calc_iqr(
+        df, "bkwd", "lsoa_code", "backward_pct_change", iqr_multiplier
+    )
 
     expected_df = pd.DataFrame({
         "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2", "E1",

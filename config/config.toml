@@ -1,7 +1,21 @@
 [user_settings]
 local_or_shared = "shared" # "local" or "shared"
-preprocessing = false # Set to true if you want to run preprocessing
-adjustment = true # Set to true if you want to run manual adjustment
+preprocessing = true # Set to true if you want to run preprocessing
+adjustment = false # Set to true if you want to run manual adjustment
+zscore_threshold = 3.0
+iqr_multiplier = 3.0
+transaction_name = "Compensation of employees"
+output_data = true
+
+[pipeline_settings]
+schema_path = "config/schemas/"
+input_gdhi_schema_name = "input_gdhi_schema.toml"
+input_ra_lad_schema_name = "input_ra_lad_schema.toml"
+input_adj_schema_name = "input_adj_schema.toml"
+input_constrained_schema_name = "input_constrained_schema.toml"
+input_unconstrained_schema_name = "input_unconstrained_schema.toml"
+output_preprocess_schema_path = "output_preprocess_schema.toml"
+output_adjustment_schema_path = "output_adjustment_schema.toml"
 
 [local_settings]
 input_gdhi_file_path = "D:/gdhi_adj_dummy.csv" #Run from D: drive here
@@ -13,10 +27,8 @@ output_file_path = "D:/" #Set output directory here to D:drive
 #and click the 'sync' button to sync to your local OneDrive.
 input_gdhi_file_path = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Testing_Data/DAP_Exported/GDHI_Preproc_HMRC_PIR_Unconstrained.csv"
 input_ra_lad_file_path = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Testing_Data/Reg_Accounts/uk_gdhi_by_component_2022.csv"
-transaction_name = "Compensation of employees"
 output_dir = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Testing_Data/Output/"
 output_filename = "gdhi_manual_adj_preprocessed_output.csv" #Change name of file here
-output_schema_path = "config/output_preprocess_schema.toml"
 
 [adjustment_shared_settings]
 #To run from SharePoint, you need to to go the Subnational Statistics - Regional Accounts
@@ -27,15 +39,6 @@ input_constrained_file_path = "/Office for National Statistics/Subnational Stati
 input_unconstrained_file_path = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Worked_Example/Manual_Adjustment_Adjustment_uncon_dap_data.csv"
 output_dir = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Testing_Data/Output/"
 output_filename = "gdhi_manual_adj_adjusted_output.csv" #Change name of file here
-output_schema_path = "config/output_adjustment_schema.toml"
-
-[pipeline_settings]
-output_data = true
-input_gdhi_schema_path = "config/input_gdhi_schema.toml"
-input_ra_lad_schema_path = "config/input_ra_lad_schema.toml"
-input_adj_schema_path = "config/input_adj_schema.toml"
-input_constrained_schema_path = "config/input_constrained_schema.toml"
-input_unconstrained_schema_path = "config/input_unconstrained_schema.toml"
 
 # Application metadata
 app_name = "simple_pipeline"

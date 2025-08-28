@@ -78,7 +78,8 @@ This project runs controlled adjustments of GDHI figures at LSOA levels and reno
     - Check settings in config/config.toml to ensure pipeline runs as intended.
     - Only need run either preprocessing or adjustment at any one time, as the
       output from preprocessing requires manual analysis before the input is
-      created for the adjustment module.
+      created for the adjustment module. The true/false switches for these
+      can be found in user_settings.
       ```
       preprocessing = true
       adjustment = false
@@ -86,13 +87,19 @@ This project runs controlled adjustments of GDHI figures at LSOA levels and reno
     - Provided you have been able to sync Subnational Staistics sharepoint
       to your OneDrive, set local_or_shared to "shared", if using local:
       local filepaths will have to be input manually.
+    - Check that the z-score threshold and IQR multiplier values under
+      user_settings are the desired values.
+      ```
+      zscore_threshold = 3.0
+      iqr_multiplier = 3.0
+      ```
     - For preprocessing the Regional Accounts data, it needs to be filtered by
-      transaction_name in the preprocessing_shared_settings.
+      transaction_name in the user_settings.
       ```
       transaction_name = "Compensation of employees"
       ```
     - If you want to export the final output from the module you are running,
-      set output_data in pipeline_settings to true.
+      set output_data in user_settings to true.
       ```
       output_data = true
       ```

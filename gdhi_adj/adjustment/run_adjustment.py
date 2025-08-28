@@ -56,6 +56,7 @@ def run_adjustment(config: dict) -> None:
     logger.info("Loading configuration settings")
     local_or_shared = config["user_settings"]["local_or_shared"]
     filepath_dict = config[f"adjustment_{local_or_shared}_settings"]
+    schema_path = config["pipeline_settings"]["schema_path"]
 
     input_adj_file_path = (
         "C:/Users/" + os.getlogin() + filepath_dict["input_adj_file_path"]
@@ -71,18 +72,23 @@ def run_adjustment(config: dict) -> None:
         + filepath_dict["input_unconstrained_file_path"]
     )
 
-    input_adj_schema_path = config["pipeline_settings"][
-        "input_adj_schema_path"
-    ]
-    input_constrained_schema_path = config["pipeline_settings"][
-        "input_constrained_schema_path"
-    ]
-    input_unconstrained_schema_path = config["pipeline_settings"][
-        "input_unconstrained_schema_path"
-    ]
+    input_adj_schema_path = (
+        schema_path + config["pipeline_settings"]["input_adj_schema_name"]
+    )
+    input_constrained_schema_path = (
+        schema_path
+        + config["pipeline_settings"]["input_constrained_schema_name"]
+    )
+    input_unconstrained_schema_path = (
+        schema_path
+        + config["pipeline_settings"]["input_unconstrained_schema_name"]
+    )
 
     output_dir = "C:/Users/" + os.getlogin() + filepath_dict["output_dir"]
-    output_schema_path = filepath_dict["output_schema_path"]
+    output_schema_path = (
+        schema_path
+        + config["pipeline_settings"]["output_adjustment_schema_path"]
+    )
     new_filename = filepath_dict.get("output_filename", None)
 
     logger.info("Reading in data with schemas")
@@ -143,6 +149,6 @@ def run_adjustment(config: dict) -> None:
     df = pivot_wide_dataframe(df)
 
     # Save output file with new filename if specified
-    if config["pipeline_settings"]["output_data"]:
+    if config["user_settings"]["output_data"]:
         # Write DataFrame to CSV
         write_with_schema(df, output_schema_path, output_dir, new_filename)
