@@ -1,7 +1,7 @@
 [user_settings]
 local_or_shared = "shared" # "local" or "shared"
-preprocessing = true # Set to true if you want to run preprocessing
-adjustment = false # Set to true if you want to run manual adjustment
+preprocessing = false # Set to true if you want to run preprocessing
+adjustment = true # Set to true if you want to run manual adjustment
 
 [local_settings]
 input_gdhi_file_path = "D:/gdhi_adj_dummy.csv" #Run from D: drive here
@@ -25,7 +25,7 @@ output_schema_path = "config/output_preprocess_schema.toml"
 input_adj_file_path = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Worked_Example/Manual_Adjustment_Adjustment_test_data.csv"
 input_constrained_file_path = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Worked_Example/Manual_Adjustment_Adjustment_con_dap_data.csv"
 input_unconstrained_file_path = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Worked_Example/Manual_Adjustment_Adjustment_uncon_dap_data.csv"
-output_dir = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Worked_Example/"
+output_dir = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Testing_Data/Output/"
 output_filename = "gdhi_manual_adj_adjusted_output.csv" #Change name of file here
 output_schema_path = "config/output_adjustment_schema.toml"
 
