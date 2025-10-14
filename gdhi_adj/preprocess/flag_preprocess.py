@@ -27,45 +27,56 @@ def flag_rollback_years(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def create_master_flag(df: pd.DataFrame) -> pd.DataFrame:
+def create_master_flag(
+    df: pd.DataFrame, zscore_calculation: bool, iqr_calculation: bool
+) -> pd.DataFrame:
     """
     Creates a master flag based on z score and IQR flag columns.
 
     Args:
         df (pd.DataFrame): The input DataFrame.
+        zscore_calculation (bool): Whether z-score calculation is performed.
+        iqr_calculation (bool): Whether IQR calculation is performed.
 
     Returns:
         pd.DataFrame: The DataFrame with an additional 'master_flag' columns.
     """
-    # Create list of zscore flag columns (these should be the only columns
-    # prefixed with 'z_')
-    z_score_cols = [col for col in df.columns if col.startswith("z_")]
-    # Create a master flag that is True if any of the IQR columns are True
-    z_count = df.groupby("lsoa_code").agg({col: "sum" for col in z_score_cols})
-    z_count["master_z_flag"] = (z_count[z_score_cols] >= 1).sum(axis=1) >= 1
+    if zscore_calculation:
+        # Create list of zscore flag columns (these should be the only columns
+        # prefixed with 'z_')
+        z_score_cols = [col for col in df.columns if col.startswith("z_")]
+        # Create a master flag that is True if any of the IQR columns are True
+        # Only group by LSOA as if any year is flagged, the LSOA is flagged
+        z_count = df.groupby("lsoa_code").agg(
+            {col: "sum" for col in z_score_cols}
+        )
+        z_count["master_z_flag"] = (z_count[z_score_cols] >= 1).sum(
+            axis=1
+        ) >= 1
 
-    # Create list of IQR flag columns (these should be the only columns
-    # prefixed with 'iqr_')
-    iqr_score_cols = [col for col in df.columns if col.startswith("iqr_")]
-    # Create a master flag that is True if any of the IQR columns are True
-    iqr_count = df.groupby("lsoa_code").agg(
-        {col: "sum" for col in iqr_score_cols}
-    )
-    iqr_count["master_iqr_flag"] = (iqr_count[iqr_score_cols] >= 1).sum(
-        axis=1
-    ) >= 1
+        # Join the master flags back to the original DataFrame
+        df = df.join(z_count[["master_z_flag"]], on="lsoa_code", how="left")
 
-    # # Create a master flag that is True if any IQR flag is true and if any
-    # # zscore flag is true
-    # df["master_flag"] = (df[iqr_score_cols].any(axis=1)
-    #                      & df[z_score_cols].any(axis=1))
+    if iqr_calculation:
+        # Create list of IQR flag columns (these should be the only columns
+        # prefixed with 'iqr_')
+        iqr_score_cols = [col for col in df.columns if col.startswith("iqr_")]
+        # Create a master flag that is True if any of the IQR columns are True
+        # Only group by LSOA as if any year is flagged, the LSOA is flagged
+        iqr_count = df.groupby("lsoa_code").agg(
+            {col: "sum" for col in iqr_score_cols}
+        )
+        iqr_count["master_iqr_flag"] = (iqr_count[iqr_score_cols] >= 1).sum(
+            axis=1
+        ) >= 1
 
-    # Join the master flags back to the original DataFrame
-    df = df.join(z_count[["master_z_flag"]], on="lsoa_code", how="left")
-    df = df.join(iqr_count[["master_iqr_flag"]], on="lsoa_code", how="left")
+        # Join the master flags back to the original DataFrame
+        df = df.join(
+            iqr_count[["master_iqr_flag"]], on="lsoa_code", how="left"
+        )
 
-    # Create a master flag that is True if either master_z_flag or iqr_master
-    # flag is True
-    df["master_flag"] = df["master_z_flag"] | df["master_iqr_flag"]
+    # Create a master flag that is True if any master flag is True.
+    flag_cols = [col for col in df.columns if col.startswith("master_")]
+    df["master_flag"] = df[flag_cols].any(axis=1)
 
     return df

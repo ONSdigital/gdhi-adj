@@ -84,6 +84,9 @@ def run_preprocessing(config: dict) -> None:
         schema_path + config["pipeline_settings"]["input_ra_lad_schema_name"]
     )
 
+    zscore_calculation = config["user_settings"]["zscore_calculation"]
+    iqr_calculation = config["user_settings"]["iqr_calculation"]
+
     zscore_upper_threshold = config["user_settings"]["zscore_upper_threshold"]
     zscore_lower_threshold = config["user_settings"]["zscore_lower_threshold"]
 
@@ -139,7 +142,7 @@ def run_preprocessing(config: dict) -> None:
     raw_prefix = "raw"
 
     logger.info("Flagging of outliers")
-    if config["user_settings"]["zscore_calculation"]:
+    if zscore_calculation:
 
         logger.info("Calculating z-scores")
         df = calc_zscores(
@@ -159,7 +162,7 @@ def run_preprocessing(config: dict) -> None:
             zscore_lower_threshold=zscore_lower_threshold,
         )
 
-    if config["user_settings"]["iqr_calculation"]:
+    if iqr_calculation:
 
         logger.info("Calculating IQRs")
         df = calc_iqr(
@@ -172,7 +175,7 @@ def run_preprocessing(config: dict) -> None:
             iqr_multiplier=iqr_multiplier,
         )
 
-    df = create_master_flag(df)
+    df = create_master_flag(df, zscore_calculation, iqr_calculation)
 
     logger.info("Saving interim data")
     logger.info(f"{output_dir + interim_filename}")
@@ -183,6 +186,7 @@ def run_preprocessing(config: dict) -> None:
     logger.info("Data saved successfully")
 
     # Keep base data and flags, dropping scores columns
+    flag_cols = [col for col in df.columns if col.startswith("master_")]
     cols_to_keep = [
         "lsoa_code",
         "lsoa_name",
@@ -190,10 +194,7 @@ def run_preprocessing(config: dict) -> None:
         "lad_name",
         "year",
         "gdhi_annual",
-        "master_z_flag",
-        "master_iqr_flag",
-        "master_flag",
-    ]
+    ] + flag_cols
 
     df = df[cols_to_keep]
 

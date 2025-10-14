@@ -67,7 +67,8 @@ def calc_zscores(
         zscore_lower_threshold (float): The lower threshold for z-score flag.
 
     Returns:
-        pd.DataFrame: The DataFrame with an additional 'zscore' column.
+        pd.DataFrame: The DataFrame with an additional 'zscore' and 'threshold'
+        columns, indicating which threshold the zscore breached.
     """
     # Mask for when rollback_flag is false
     mask = ~df["rollback_flag"]
@@ -121,8 +122,9 @@ def calc_iqr(
             outlier bounds.
 
     Returns:
-        pd.DataFrame: The DataFrame with additional columns for IQR and outlier
-        bounds.
+        pd.DataFrame: The DataFrame with additional columns for IQR, outlier
+        bounds and 'threshold' columns, indicating which threshold the zscore
+        breached.
     """
     # Mask for when rollback_flag is false
     mask = ~df["rollback_flag"]
@@ -153,11 +155,22 @@ def calc_iqr(
         iqr_multiplier * df[f"{iqr_prefix}_iqr"]
     )
 
+    # Descriptor whether the zscore exceeds the upper or lower threshold
+    conditions = [
+        df[val_col] > df[f"{iqr_prefix}_upper_bound"],
+        df[val_col] < df[f"{iqr_prefix}_lower_bound"],
+    ]
+    descriptors = ["upper", "lower"]
+
+    df[f"{iqr_prefix}_iqr_threshold"] = np.select(
+        conditions, descriptors, default=None
+    )
+
     # If the value column is 1, the data has been rolled back so should not be
     # flagged
-    df[f"iqr_{iqr_prefix}_flag"] = (
-        df[val_col] < df[f"{iqr_prefix}_lower_bound"]
-    ) | (df[val_col] > df[f"{iqr_prefix}_upper_bound"])
+    df[f"iqr_{iqr_prefix}_flag"] = np.select(
+        conditions, [True, True], default=False
+    )
 
     return df
 

@@ -81,6 +81,9 @@ This project runs controlled adjustments of GDHI figures at LSOA levels and reno
 
 1. **Config settings `config/config.toml`:**
     - Check settings in config/config.toml to ensure pipeline runs as intended.
+    - Provided you have been able to sync Subnational Staistics sharepoint
+      to your OneDrive, set local_or_shared to "shared", if using local:
+      local filepaths will have to be input manually.
     - Only need run either preprocessing or adjustment at any one time, as the
       output from preprocessing requires manual analysis before the input is
       created for the adjustment module. The true/false switches for these
@@ -89,13 +92,19 @@ This project runs controlled adjustments of GDHI figures at LSOA levels and reno
       preprocessing = true
       adjustment = false
       ```
-    - Provided you have been able to sync Subnational Staistics sharepoint
-      to your OneDrive, set local_or_shared to "shared", if using local:
-      local filepaths will have to be input manually.
-    - Check that the z-score threshold and IQR multiplier values under
-      user_settings are the desired values.
+    - Choose if you want to run both or either of the z-score and inter-
+      quartile range (IQR) calculations.
       ```
-      zscore_threshold = 3.0
+      zscore_calculation = true
+      iqr_calculation = true
+      ```
+    - Check that the z-score threshold and IQR quantiles and multiplier values
+      under user_settings are the desired values.
+      ```
+      zscore_lower_threshold = -3.0
+      zscore_upper_threshold = 3.0
+      iqr_lower_quantile = 0.25
+      iqr_upper_quantile = 0.75
       iqr_multiplier = 3.0
       ```
     - For preprocessing the Regional Accounts data, it needs to be filtered by

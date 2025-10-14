@@ -41,18 +41,17 @@ def pivot_output_long(
     df.rename(columns={annual_gdhi: "annual"}, inplace=True)
     df.rename(columns={con_gdhi: "CONLSOA"}, inplace=True)
 
+    id_cols = [
+        "lsoa_code",
+        "lsoa_name",
+        "lad_code",
+        "lad_name",
+        "year",
+    ] + [col for col in df.columns if col.startswith("master_")]
+
     # Pivot long to get a single 'metric' column with names as values
     df = df.melt(
-        id_vars=[
-            "lsoa_code",
-            "lsoa_name",
-            "lad_code",
-            "lad_name",
-            "year",
-            "master_z_flag",
-            "master_iqr_flag",
-            "master_flag",
-        ],
+        id_vars=id_cols,
         value_vars=["annual", "CONLSOA"],
         var_name="metric",
         value_name="value",
@@ -72,17 +71,16 @@ def pivot_wide_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: The pivoted DataFrame in wide format.
     """
+    id_cols = [
+        "lsoa_code",
+        "lsoa_name",
+        "lad_code",
+        "lad_name",
+    ] + [col for col in df.columns if col.startswith("master_")]
+
     # Pivot wide to get dates as columns
     df = df.pivot(
-        index=[
-            "lsoa_code",
-            "lsoa_name",
-            "lad_code",
-            "lad_name",
-            "master_z_flag",
-            "master_iqr_flag",
-            "master_flag",
-        ],
+        index=id_cols,
         columns="metric_date",
         values="value",
     )
