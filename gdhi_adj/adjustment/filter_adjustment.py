@@ -21,7 +21,7 @@ def filter_lsoa_data(df: pd.DataFrame) -> pd.DataFrame:
             "Mismatch: master_flag and Adjust column booleans do not match."
         )
 
-    df["adjust"] = df["adjust"].where(pd.notnull(df["adjust"]), False)
+    df["adjust"] = df["adjust"].astype("boolean").fillna(False)
     df = df[df["adjust"]]
 
     cols_to_keep = [

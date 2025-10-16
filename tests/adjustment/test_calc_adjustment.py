@@ -9,26 +9,48 @@ from gdhi_adj.adjustment.calc_adjustment import (
 )
 
 
-def test_calc_scaling_factors():
-    """Test the calc_scaling_factors function."""
-    df = pd.DataFrame({
-        "lsoa_code": ["E1", "E2", "E3", "E1", "E2", "E3"],
-        "lad_code": ["E01", "E01", "E01", "E01", "E01", "E01"],
-        "year": [2002, 2002, 2002, 2003, 2003, 2003],
-        "uncon_gdhi": [10.0, 15.0, 25.0, 30.0, 50.0, 40.0],
-        "con_gdhi": [30.0, 40.0, 10.0, 10.0, 20.0, 30.0]
-    })
+class TestCalcScalingFactors:
+    def test_calc_scaling_factors_normal(self):
+        """Test the calc_scaling_factors function."""
+        df = pd.DataFrame({
+            "lsoa_code": ["E1", "E2", "E3", "E1", "E2", "E3"],
+            "lad_code": ["E01", "E01", "E01", "E01", "E01", "E01"],
+            "year": [2002, 2002, 2002, 2003, 2003, 2003],
+            "uncon_gdhi": [10.0, 15.0, 25.0, 30.0, 50.0, 40.0],
+            "con_gdhi": [30.0, 40.0, 10.0, 10.0, 20.0, 30.0]
+        })
 
-    result_df = calc_scaling_factors(df)
+        result_df = calc_scaling_factors(df)
 
-    expected_df = pd.DataFrame({
-        "year": [2002, 2003],
-        "uncon_gdhi": [50.0, 120.0],
-        "con_gdhi": [80.0, 60.0],
-        "scaling": [1.6, 0.5]
-    })
+        expected_df = pd.DataFrame({
+            "year": [2002, 2003],
+            "uncon_gdhi": [50.0, 120.0],
+            "con_gdhi": [80.0, 60.0],
+            "scaling": [1.6, 0.5]
+        })
 
-    pd.testing.assert_frame_equal(result_df, expected_df)
+        pd.testing.assert_frame_equal(result_df, expected_df)
+
+    def test_calc_scaling_factors_div_zero(self):
+        """Test the calc_scaling_factors when denominator is 0."""
+        df = pd.DataFrame({
+            "lsoa_code": ["E1", "E2", "E3", "E1", "E2", "E3"],
+            "lad_code": ["E01", "E01", "E01", "E01", "E01", "E01"],
+            "year": [2002, 2002, 2002, 2003, 2003, 2003],
+            "uncon_gdhi": [10.0, 15.0, 25.0, 0.0, 0.0, 0.0],
+            "con_gdhi": [30.0, 40.0, 10.0, 10.0, 20.0, 30.0]
+        })
+
+        result_df = calc_scaling_factors(df)
+
+        expected_df = pd.DataFrame({
+            "year": [2002, 2003],
+            "uncon_gdhi": [50.0, 0.0],
+            "con_gdhi": [80.0, 60.0],
+            "scaling": [1.6, 0.0]
+        })
+
+        pd.testing.assert_frame_equal(result_df, expected_df)
 
 
 def test_calc_adjustment_headroom_val():

@@ -1,5 +1,6 @@
 """Module for calculations to adjust data in the gdhi_adj project."""
 
+import numpy as np
 import pandas as pd
 
 
@@ -13,12 +14,16 @@ def calc_scaling_factors(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame with scaling factors added.
     """
-    df_uncon = df.groupby(["year"])["uncon_gdhi"].sum().reset_index()
-    df_con = df.groupby(["year"])["con_gdhi"].sum().reset_index()
+    df_uncon = df[["year", "uncon_gdhi"]].groupby("year", as_index=False).sum()
+    df_con = df[["year", "con_gdhi"]].groupby("year", as_index=False).sum()
 
     df_scaling = df_uncon.merge(df_con, on=["year"], how="left")
 
-    df_scaling["scaling"] = df_scaling["con_gdhi"] / df_scaling["uncon_gdhi"]
+    df_scaling["scaling"] = np.where(
+        df_scaling["uncon_gdhi"] != 0,
+        df_scaling["con_gdhi"] / df_scaling["uncon_gdhi"],
+        0,
+    )
 
     return df_scaling
 
@@ -64,7 +69,7 @@ def calc_midpoint_val(
     df: pd.DataFrame,
     lsoa_code: str,
     year_to_adjust: int,
-) -> float:
+) -> tuple[float, float]:
     """
     Calculate the midpoint value for a given LSOA code.
 
@@ -74,7 +79,8 @@ def calc_midpoint_val(
         year_to_adjust (int): Year for the adjustment.
 
     Returns:
-        float: Midpoint value for the specified LSOA code.
+        tuple[float, float]: The isolated outlier value and calculated midpoint
+        value for the specified LSOA code.
     """
     # if year_to_adjust is the first or last year in the series,
     # method required for determining what to do with midpoint
@@ -135,12 +141,12 @@ def apply_adjustment(
     Returns:
         pd.DataFrame: DataFrame with adjustment values calculated.
     """
-    condition_outlier = (df["adjust"].fillna(False)) & (
+    condition_outlier = (df["adjust"].astype("boolean").fillna(False)) & (
         df["year"] == year_to_adjust
     )
     df.loc[condition_outlier, "con_gdhi"] += adjustment_val
 
-    condition_non_outlier = (~df["adjust"].fillna(False)) & (
+    condition_non_outlier = (~df["adjust"].astype("boolean").fillna(False)) & (
         df["year"] == year_to_adjust
     )
     df.loc[condition_non_outlier, "con_gdhi"] = df["con_gdhi"] + (

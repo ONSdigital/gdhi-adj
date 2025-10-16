@@ -66,7 +66,6 @@ def pivot_wide_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
     Args:
         df (pd.DataFrame): The input DataFrame in long format.
-        index_cols (list): List of columns to use as index in the pivot.
 
     Returns:
         pd.DataFrame: The pivoted DataFrame in wide format.
