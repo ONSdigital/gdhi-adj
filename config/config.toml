@@ -1,0 +1,52 @@
+[user_settings]
+local_or_shared = "shared" # "local" or "shared"
+preprocessing = true # Set to true if you want to run preprocessing
+zscore_calculation = true # Set to true if you want to run z-score calculation
+iqr_calculation = true # Set to true if you want to run IQR calculation
+adjustment = false # Set to true if you want to run manual adjustment
+zscore_lower_threshold = -3.0
+zscore_upper_threshold = 3.0
+iqr_lower_quantile = 0.25
+iqr_upper_quantile = 0.75
+iqr_multiplier = 3.0
+transaction_name = "Compensation of employees"
+output_data = true
+
+[pipeline_settings]
+schema_path = "config/schemas/"
+input_gdhi_schema_name = "input_gdhi_schema.toml"
+input_ra_lad_schema_name = "input_ra_lad_schema.toml"
+input_adj_schema_name = "input_adj_schema.toml"
+input_constrained_schema_name = "input_constrained_schema.toml"
+input_unconstrained_schema_name = "input_unconstrained_schema.toml"
+output_preprocess_schema_path = "output_preprocess_schema.toml"
+output_adjustment_schema_path = "output_adjustment_schema.toml"
+
+[local_settings]
+input_gdhi_file_path = "D:/gdhi_adj_dummy.csv" #Run from D: drive here
+output_file_path = "D:/" #Set output directory here to D:drive
+
+[preprocessing_shared_settings]
+#To run from SharePoint, you need to to go the Subnational Statistics - Regional Accounts
+#sharepoint site, go into the subfolder 'GDHI' and open '2025_manual_adjustments'
+#and click the 'sync' button to sync to your local OneDrive.
+input_dir = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Testing_Data/"
+input_gdhi_file_path = "DAP_Exported/GDHI_Preproc_HMRC_PIR_Unconstrained.csv"
+input_ra_lad_file_path = "Reg_Accounts/uk_gdhi_by_component_2022.csv"
+output_dir = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Testing_Data/Output/"
+interim_filename = "manual_adj_preprocessing_interim_scores.csv" #Change name of file here
+output_filename = "manual_adj_preprocessed_output.csv" #Change name of file here
+
+[adjustment_shared_settings]
+#To run from SharePoint, you need to to go the Subnational Statistics - Regional Accounts
+#sharepoint site, go into the subfolder 'GDHI' and open '2025_manual_adjustments'
+#and click the 'sync' button to sync to your local OneDrive.
+input_adj_file_path = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Worked_Example/Manual_Adjustment_Adjustment_test_data.csv"
+input_constrained_file_path = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Worked_Example/Manual_Adjustment_Adjustment_con_dap_data.csv"
+input_unconstrained_file_path = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Worked_Example/Manual_Adjustment_Adjustment_uncon_dap_data.csv"
+output_dir = "/Office for National Statistics/Subnational Statistics - 2025_Manual_Adjustments/Testing_Data/Output/"
+output_filename = "gdhi_manual_adj_adjusted_output.csv" #Change name of file here
+
+# Application metadata
+app_name = "simple_pipeline"
+app_description = "A simple pipeline for processing data."
