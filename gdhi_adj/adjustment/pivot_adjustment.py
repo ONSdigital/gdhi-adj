@@ -22,7 +22,9 @@ def pivot_adjustment_long(df: pd.DataFrame) -> pd.DataFrame:
     df_uncon = df.melt(
         id_vars=[
             "lsoa_code",
+            "lsoa_name",
             "lad_code",
+            "lad_name",
             "adjust",
             "year_to_adjust",
         ],
@@ -34,7 +36,9 @@ def pivot_adjustment_long(df: pd.DataFrame) -> pd.DataFrame:
     df_con = df.melt(
         id_vars=[
             "lsoa_code",
+            "lsoa_name",
             "lad_code",
+            "lad_name",
             "adjust",
             "year_to_adjust",
         ],
@@ -48,7 +52,9 @@ def pivot_adjustment_long(df: pd.DataFrame) -> pd.DataFrame:
         df_con,
         on=[
             "lsoa_code",
+            "lsoa_name",
             "lad_code",
+            "lad_name",
             "adjust",
             "year_to_adjust",
             "year",

@@ -26,7 +26,9 @@ def join_analyst_constrained_data(
     # Obtain list of columns to rename
     exclude_cols = [
         "lsoa_code",
+        "lsoa_name",
         "lad_code",
+        "lad_name",
         "adjust",
         "year",
     ]
@@ -42,7 +44,7 @@ def join_analyst_constrained_data(
             "Number of rows to adjust between analyst and constrained data"
             " do not match."
         )
-    breakpoint()
+
     if df.shape[0] != df_constrained.shape[0]:
         raise ValueError(
             "Number of rows of constrained data after join has increased."
@@ -66,7 +68,7 @@ def join_analyst_unconstrained_data(
     """
     df = df_unconstrained.merge(
         df_analyst,
-        on=["lsoa_code", "lad_code"],
+        on=["lsoa_code", "lsoa_name", "lad_code", "lad_name"],
         how="left",
     )
 

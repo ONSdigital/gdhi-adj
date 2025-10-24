@@ -112,38 +112,35 @@ def run_adjustment(config: dict) -> None:
 
     logger.info("Reformatting adjust and year columns.")
     df_powerbi_output = reformat_adjust_col(df_powerbi_output)
-    breakpoint()
 
     df_powerbi_output = reformat_year_col(df_powerbi_output)
-    breakpoint()
 
     logger.info("Filtering for data that requires adjustment.")
     df_powerbi_output = filter_lsoa_data(df_powerbi_output)
-    breakpoint()
 
     logger.info("Joining analyst output and constrained DAP output")
     df = join_analyst_constrained_data(df_constrained, df_powerbi_output)
-    breakpoint()
 
     logger.info("Joining analyst output and unconstrained DAP output")
     df = join_analyst_unconstrained_data(df_unconstrained, df)
-    breakpoint()
 
     logger.info("Pivoting DataFrame long")
     df = pivot_adjustment_long(df)
 
     logger.info("Filtering DataFrame by year range")
     df = filter_by_year(df, start_year, end_year)
+    print(df)
 
     logger.info("Calculate scaling factors")
     df_scaling = calc_scaling_factors(df)
-
+    print(df_scaling)
     logger.info("Calculating adjustment")
     df_anomaly_lsoas = filter_anomaly_list(df)
 
     for i in range(len(df_anomaly_lsoas)):
+        breakpoint()
         lsoa_code = df_anomaly_lsoas.iloc[i]["lsoa_code"]
-        year_to_adjust = df_anomaly_lsoas.iloc[i]["year_to_adjust"].astype(int)
+        year_to_adjust = df_anomaly_lsoas.iloc[i]["year_to_adjust"]
 
         logger.info("Calculating adjustment headroom")
         uncon_non_out_sum, headroom_val = calc_adjustment_headroom_val(
