@@ -42,14 +42,19 @@ def run_adjustment(config: dict) -> None:
     This function performs the following steps:
     1. Load the configuration settings.
     2. Load the input data.
-    3. Filter PowerBI adjustment selection data.
-    4. Join analyst output with Regional Accounts data.
-    5. Pivot the DataFrame to long format for manipulation.
-    6. Calculate scaling factors.
-    7. Calculate headroom and midpoint of time series.
-    8. Calculate adjustment and distribute amongst time series.
-    9. Pivot data back to wide format.
-    10. Save the adjusted data.
+    3. Reformat adjust and year columns.
+    4. Filter for data that requires adjustment.
+    5. Join analyst output with constrained and unconstrained data.
+    6. Pivot the DataFrame to long format for manipulation.
+    7. Filter data by the specified year range.
+    8. Calculate the midpoints for outlier years.
+    9. Calculate adjustment values based on midpoints.
+    10. Apportion adjustment values to all years.
+    11. Save interim data with all calculated values.
+    12. Pivot data to wide format for PowerBI QA reiteration.
+    13. Pivot final DataFrame to wide format for exporting.
+    14. Save the final adjusted data.
+
 
     Args:
         config (dict): Configuration dictionary containing user settings and
@@ -177,8 +182,6 @@ def run_adjustment(config: dict) -> None:
     ).rename(columns={"adjusted_con_gdhi": "con_gdhi"})
 
     logger.info("Pivoting DataFrame wide for PowerBI QA")
-    print(df)
-    breakpoint()
     powerbi_qa_df = pivot_output_long(df, "uncon_gdhi", "con_gdhi")
     powerbi_qa_df = pivot_wide_dataframe(powerbi_qa_df)
 
@@ -193,7 +196,6 @@ def run_adjustment(config: dict) -> None:
         )
 
     logger.info("Pivoting final DataFrame wide for exporting")
-    breakpoint()
     df = pivot_wide_final_dataframe(df)
 
     # Save output file with new filename if specified

@@ -37,13 +37,14 @@ def run_preprocessing(config: dict) -> None:
     1. Load the configuration settings.
     2. Load the input data.
     3. Pivot the DataFrame to long format.
-    4. Calculate backward and forward rate of change.
-    5. Calculate z-scores and IQRs.
+    4. Calculate percentage rate of change and flag rollback years.
+    5. Calculate z-scores and IQRs if desired as per config.
     6. Create master flags.
-    7. Calculate LAD mean GDHI.
-    8. Constrain outliers to regional accounts.
-    9. Pivot the DataFrame back to wide format.
-    10. Save the processed data.
+    7. Save interim data with all calculated values.
+    8. Calculate LAD mean GDHI.
+    9. Constrain outliers to regional accounts.
+    10. Pivot the DataFrame back to wide format.
+    11. Save the preprocessed data ready for PowerBI analysis.
 
     Args:
         config (dict): Configuration dictionary containing user settings and
