@@ -1,5 +1,6 @@
 """Module for flagging preprocessing data in the gdhi_adj project."""
 
+import numpy as np
 import pandas as pd
 
 
@@ -27,9 +28,15 @@ def constrain_to_reg_acc(
             "transaction_name",
         ]
     )
+
     # Ensure that both DataFrames have the same columns for merging
     if not reg_acc.columns.isin(df.columns).all():
         raise ValueError("DataFrames have different columns for joining.")
+
+    # Remove commas separating thousands and convert to numeric
+    reg_acc["uncon_gdhi"] = (
+        reg_acc["uncon_gdhi"].str.replace(",", "").astype("Int64")
+    )
 
     reg_acc.rename(columns={"uncon_gdhi": "conlad_gdhi"}, inplace=True)
 
@@ -41,7 +48,10 @@ def constrain_to_reg_acc(
 
     df["unconlad"] = df["uncon_gdhi"] + df["mean_non_out_gdhi"]
 
-    df["rate"] = df["conlad_gdhi"] / df["unconlad"]
+    df["rate"] = np.where(
+        df["unconlad"] == 0, 0, df["conlad_gdhi"] / df["unconlad"]
+    )
+    print(df["rate"])
 
     df["conlsoa_gdhi"] = df["uncon_gdhi"] * df["rate"]
     df["conlsoa_mean"] = df["mean_non_out_gdhi"] * df["rate"]
