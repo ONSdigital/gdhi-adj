@@ -77,6 +77,6 @@ def create_master_flag(
 
     # Create a master flag that is True if any master flag is True.
     flag_cols = [col for col in df.columns if col.startswith("master_")]
-    df["master_flag"] = df[flag_cols].any(axis=1)
+    df["master_flag"] = df[flag_cols].all(axis=1)
 
     return df
