@@ -157,12 +157,15 @@ def lau_lad_main(config_path="config/config.toml", df=pd.DataFrame()):
         joined_df = join_mapper(df, mapper_df)
 
         agg_df = aggregate_lad(joined_df)
-
-    reformatted_df = reformat(agg_df, original_columns)
-    print(reformatted_df.head())
-    save_output(config, reformatted_df)
-    logger.info("Completed mapping LAUs to LADs")
-    return reformatted_df
+        reformatted_df = reformat(agg_df, original_columns)
+        save_output(config, reformatted_df)
+        logger.info("Completed mapping LAUs to LADs")
+        return reformatted_df
+    else:
+        logger.info(
+            "Mapping LAUs to LADs not needed. Returning original dataframe."
+        )
+        return df
 
 
 if __name__ == "__main__":
