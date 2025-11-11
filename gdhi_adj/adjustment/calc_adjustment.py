@@ -2,9 +2,11 @@
 
 import numpy as np
 import pandas as pd
-from pandas.api.types import is_list_like
 
-# from scipy.interpolate import interp1d
+from gdhi_adj.utils.transform_helpers import (
+    ensure_list,
+    increment_until_not_in,
+)
 
 
 def calc_imputed_val(
@@ -29,19 +31,7 @@ def calc_imputed_val(
     Returns:
         pd.DataFrame: DataFrame containing outlier imputed values.
     """
-
     # ensure year_to_adjust is list-like and normalize missing
-    def ensure_list(x):
-        # handle list-like first — avoids calling pd.isna on arrays/Series
-        if is_list_like(x) and not isinstance(x, (str, bytes)):
-            return list(x)
-        elif pd.isna(x):
-            return []
-        elif isinstance(x, (list, tuple, set)):
-            return list(x)
-        else:
-            return [x]
-
     df["year_to_adjust"] = df["year_to_adjust"].apply(ensure_list)
 
     mask = df.apply(lambda r: (r["year"] in r["year_to_adjust"]), axis=1)
@@ -52,18 +42,9 @@ def calc_imputed_val(
     lookup = df[["lsoa_code", "year", "con_gdhi"]].copy()
 
     # Find previous year value not flagged to adjust
-    def decrease_until_not_in(year, adjust_years, start_year):
-        # convert to set for speed (if it's not already)
-        adjust_years_set = (
-            set(adjust_years) if adjust_years is not None else set()
-        )
-        while year in adjust_years_set and year > (start_year - 1):
-            year -= 1
-        return year
-
     imputed_df["prev_safe_year"] = imputed_df.apply(
-        lambda r: decrease_until_not_in(
-            r["year"], r["year_to_adjust"], start_year
+        lambda r: increment_until_not_in(
+            r["year"], r["year_to_adjust"], start_year, is_increasing=False
         ),
         axis=1,
     )
@@ -76,18 +57,9 @@ def calc_imputed_val(
     )
 
     # Find next year value not flagged to adjust
-    def increase_until_not_in(year, adjust_years, end_year):
-        # convert to set for speed (if it's not already)
-        adjust_years_set = (
-            set(adjust_years) if adjust_years is not None else set()
-        )
-        while year in adjust_years_set and year < (end_year + 1):
-            year += 1
-        return year
-
     imputed_df["next_safe_year"] = imputed_df.apply(
-        lambda r: increase_until_not_in(
-            r["year"], r["year_to_adjust"], end_year
+        lambda r: increment_until_not_in(
+            r["year"], r["year_to_adjust"], end_year, is_increasing=True
         ),
         axis=1,
     )
@@ -99,6 +71,7 @@ def calc_imputed_val(
         how="left",
     )
 
+    # Interpolate imputed_gdhi where both previous and next safe years exist
     imputed_df["imputed_gdhi"] = np.where(
         (
             imputed_df["prev_con_gdhi"].notna()
@@ -112,6 +85,7 @@ def calc_imputed_val(
     )
 
     # Handle cases where only one side is available for extrapolation
+    # Get additional safe year and its value
     imputed_df["additional_safe_year"] = np.where(
         imputed_df["prev_con_gdhi"].isna(),
         (imputed_df["next_safe_year"] + 1),
@@ -132,6 +106,7 @@ def calc_imputed_val(
         how="left",
     )
 
+    # Extrapolate imputed_gdhi where only one side is available
     imputed_df["imputed_gdhi"] = np.where(
         imputed_df["imputed_gdhi"].isna()
         & imputed_df["additional_con_gdhi"].notna(),
