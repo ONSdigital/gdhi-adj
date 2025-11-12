@@ -30,7 +30,7 @@ This project flags outliers of GDHI data at LSOA levels and adjusts the outlier 
 5. **Install the required packages:**
     - In the top level gdhi_adj folder where you can see the config folder, right click in blank space and clikc open in terminal
    ```sh
-   pip install -r requirements.txt
+   pip install -e .
    ```
 6. **Open in Spyder and set project directory**
     - Ensure that the project is open with only the first gdhi_adj folder showing at the top level.
