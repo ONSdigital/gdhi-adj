@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 - Formatting of input data for adjustment.
 - Test coverage report.
 - Apportion over adjusted negative values.
+- GDHIDAP-58: aggregation from LAU to LAD level.
+- GDHIDAP-59: negative value apportionment after adjustment.
 
 ### Changed
 - Adjustment values now determined by interpolation/ extrapolation.
