@@ -37,6 +37,12 @@ This project flags outliers of GDHI data at LSOA levels and adjusts the outlier 
 
 ### Developer Installation:
 
+You can either follow the steps below manually **or** run the automated setup script:
+
+```sh
+setup_gdhi_env.bat
+```
+
 1. **Clone the repository:**
    ```sh
    git clone https://github.com/ONSdigital/gdhi_adj.git
