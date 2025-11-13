@@ -30,12 +30,19 @@ This project flags outliers of GDHI data at LSOA levels and adjusts the outlier 
 5. **Install the required packages:**
     - In the top level gdhi_adj folder where you can see the config folder, right click in blank space and clikc open in terminal
    ```sh
-   pip install -r requirements.txt
+   pip install -e .
    ```
 6. **Open in Spyder and set project directory**
     - Ensure that the project is open with only the first gdhi_adj folder showing at the top level.
 
 ### Developer Installation:
+
+You can either follow the steps below manually **or** run the automated setup script:
+- If a condaHTTPS timeout error or similar occurs, and the pip.ini and/or the .condarc file already existed. Try deleting your original pip.ini and .condarc files, and running the .bat script again.
+
+```sh
+setup_gdhi_env.bat
+```
 
 1. **Clone the repository:**
    ```sh
@@ -57,9 +64,9 @@ This project flags outliers of GDHI data at LSOA levels and adjusts the outlier 
 
    conda activate gdhi_adj_312
    ```
-6. **Install the required packages:**
+6. **Install the package and its dependencies in "editable" mode (so changes to the code are reflected immediately without reinstalling):**
    ```sh
-   pip install -r requirements.txt
+   pip install -e .
    ```
 7. **Install and run all pre-commits:**
    ```sh
