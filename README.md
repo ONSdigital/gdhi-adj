@@ -38,6 +38,7 @@ This project flags outliers of GDHI data at LSOA levels and adjusts the outlier 
 ### Developer Installation:
 
 You can either follow the steps below manually **or** run the automated setup script:
+- If a condaHTTPS timeout error or similar occurs, and the pip.ini and/or the .condarc file already existed. Try deleting your original pip.ini and .condarc files, and running the .bat script again.
 
 ```sh
 setup_gdhi_env.bat
