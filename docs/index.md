@@ -16,5 +16,5 @@ The following prerequisites are required for `gdhi-adj`:
 
 ## 📬 Contact
 
-For questions, support, or feedback about `rdsa-utils`,
+For questions, support, or feedback about `gdhi-adj`,
 please email [RDSA.Support@ons.gov.uk](mailto:RDSA.Support@ons.gov.uk).
