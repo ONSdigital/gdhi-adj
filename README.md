@@ -89,17 +89,29 @@ dwelling stock -- are used to distribute LA-level totals into LSOA-level estimat
 
 However, while administrative data provides exceptional coverage and granularity,
 it also introduces predictable challenges because it is collected for operational,
-not statistical, purposes. Issues such as conceptual misalignment, administrative volatility,
-partial coverage, and anomalous proxy distributions can lead to implausible or
-unstable LSOA-level estimates. These distortions are well-documented in the statistical
-literature and are inherent to using administrative data as proxies rather than direct
-measures. As a result, a final, rules-based correction step is not merely optional -- it
-is an **essential** and widely accepted part of the quality-assurance framework required
-to produce reliable small-area statistics.
+not statistical, purposes. Issues such as conceptual misalignment, administrative
+volatility, partial coverage, and anomalous proxy distributions can lead to implausible
+or unstable LSOA-level estimates. These challenges are *well recognised within
+official statistics*: for example, the ONS notes that “administrative data are generally
+not collected for the sole purpose of producing statistics… [which] can lead to challenges
+when using them” in its report on [Exploring the quality of administrative data using qualitative methods](https://www.ons.gov.uk/methodology/methodologicalpublications/generalmethodology/onsworkingpaperseries/exploringthequalityofadministrativedatausingqualitativemethods),
+and further documents a range of inherent error sources—such as representation and
+measurement errors—in its guidance on [Cataloguing errors in administrative and alternative data sources](https://www.ons.gov.uk/methodology/methodologicalpublications/generalmethodology/onsworkingpaperseries/cataloguingerrorsinadministrativeandalternativedatasourceswhatwhenandhow).
+These distortions are therefore inherent to using administrative data as proxies
+rather than direct measures.
 
-For a detailed report on the use of administrative data, the inherent challenges,
-and the full quality-assurance framework for the GDHI pipeline, please see our
-[GitHub Pages Documentation](https://).
+This adjustment stage also aligns with internationally recognised best practice in
+**Statistical Data Editing (SDE)** -- the formal set of methods used to detect, correct,
+and validate anomalies in statistical outputs. International guidance from bodies
+such as the UNECE and Eurostat, including the
+[UNECE Statistical Data Editing Handbook](https://unece.org/DAM/stats/publications/editing/SDE3.pdf)
+and Eurostat’s [Quality Assurance Framework](https://ec.europa.eu/eurostat/documents/3859598/13925930/KS-GQ-21-021-EN-N.pdf),
+emphasises that statistical production is a multi-stage process
+involving cleaning, validation, editing, and imputation.
+
+In this context, a final, rules-based correction step is not merely desirable -- it is
+an **essential and widely accepted component** of producing reliable small-area
+statistics, particularly when administrative data is used as a proxy input.
 
 ## 🔍 Our Approach to Transparency and Reproducibility
 
