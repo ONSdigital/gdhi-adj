@@ -43,7 +43,7 @@ LSOA-level estimates from administrative, demographic, and housing-based dataset
 
 This `gdhi-adj` repository provides the **final, open-source quality assurance module**
 for that process. Its purpose is to transform the initial, proxy-based estimates -- which
-may contain statistical artifacts or implausible outliers -- into final, publishable data.
+may contain statistical artefacts or implausible outliers -- into final, publishable data.
 (See the section below *Why Are Adjustments Needed?* below for an explanation
 of why these initial estimates require correction.)
 
@@ -147,10 +147,10 @@ This "noise" can creep in from many sources; **here are just a few below**:
 In the initial GDHI model, the apportionment process is forced to treat this noisy
 share as a perfect, error-free coefficient. It has no mechanism to distinguish the
 signal from the noise. This means it can **"overfit to the noise"** producing volatile or
-implausible LSOA estimates that look precise but are actually just statistical artifacts.
+implausible LSOA estimates that look precise but are actually just statistical artefacts.
 
 The risk is that sharp year-on-year fluctuations may not reflect a true change in
-economic fortunes but rather an artifact of noise in one of the proxy indicators.
+economic fortunes but rather an artefact of noise in one of the proxy indicators.
 
 ### Inherent Property: Spatial Smoothing
 
@@ -159,7 +159,7 @@ property known as **spatial smoothing**. This occurs because the **apportionment
 itself naturally averages out local extremes, leading to smaller measured differences
 between neighbouring areas.
 
-Crucially, **unlike the "noisy-shares" problem** -- which introduces statistical artifacts
+Crucially, **unlike the "noisy-shares" problem** -- which introduces statistical artefacts
 that the `gdhi-adj` pipeline is designed to correct -- this smoothing is an unavoidable
 consequence of the apportionment methodology and the limits of the available proxy data.
 
@@ -198,13 +198,13 @@ the exact "noisy-share" errors described above.
 This highlights a key distinction: **Statistical Integrity vs. Statistical Literalism**.
 
 - A **literal-minded** approach would publish the raw, proxy-based outputs 'as-is,' even
-  when they are known to contain these noisy-share artifacts.
+  when they are known to contain these noisy-share artefacts.
 - **Statistical integrity**, however, demands that producers use their expertise to
   correct for known biases and errors. The goal is to ensure the final data is the
   **best possible statistical estimate** of the underlying economic reality,
   given all available information.
 
-Publishing known artifacts without correction would fail this test of integrity,
+Publishing known artefacts without correction would fail this test of integrity,
 as it would present a flawed figure as a precise fact. This adjustment process is
 therefore an essential act of **bias reduction**, moving the estimate *away* from
 the known administrative bias and *closer* to the economic truth. This provides the
