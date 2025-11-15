@@ -147,9 +147,11 @@ economic fortunes but rather an artifact of noise in one of the proxy indicators
 In addition to noisy-shares, the estimates also display an inherent statistical
 property known as **spatial smoothing**. This occurs because the **apportionment process**
 itself naturally averages out local extremes, leading to smaller measured differences
-between neighbouring areas. Like noisy-shares, this is not a flaw to be corrected
-but an unavoidable consequence of the apportionment methodology and the
-limits of the available proxy data.
+between neighbouring areas.
+
+Crucially, **unlike the "noisy-shares" problem** -- which introduces statistical artifacts
+that the `gdhi-adj` pipeline is designed to correct -- this smoothing is an unavoidable
+consequence of the apportionment methodology and the limits of the available proxy data.
 
 In reality, incomes can differ sharply even between adjacent neighbourhoods -- for example,
 a high-income apartment complex next to a social housing estate. The true variation can
