@@ -197,7 +197,7 @@ the exact "noisy-share" errors described above.
 
 This highlights a key distinction: **Statistical Integrity vs. Statistical Literalism**.
 
-- A **literal-minded** approach would publish the raw, proxy-based outputs 'as-is,' even
+- A **literal-minded** approach would publish the raw, proxy-based outputs "as-is", even
   when they are known to contain these noisy-share artefacts.
 - **Statistical integrity**, however, demands that producers use their expertise to
   correct for known biases and errors. The goal is to ensure the final data is the
