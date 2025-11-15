@@ -27,7 +27,6 @@ This apportionment approach uses administrative, demographic, and housing-based 
 is documented in the ONS article
 [Disaggregating UK subnational gross disposable household income to lower levels of geography: 2002 to 2021](https://www.ons.gov.uk/economy/regionalaccounts/grossdisposablehouseholdincome/articles/disaggregatinguksubnationalgrossdisposablehouseholdincometolowerlevelsofgeography/2002to2021)
 
-
 Because these proxy datasets come from operational administrative systems, they can
 introduce artefacts or instability at very fine geographies. The `gdhi-adj`
 pipeline provides the final quality-assurance step in the workflow; the pipeline ingests
@@ -43,20 +42,32 @@ handled by a core `PySpark` pipeline. This internal process manages **Preprocess
 LSOA-level estimates from administrative, demographic, and housing-based datasets.
 
 This `gdhi-adj` repository provides the **final, open-source quality assurance module**
-for that process.
+for that process. Its purpose is to transform the initial, proxy-based estimates -- which
+may contain statistical artifacts or implausible outliers -- into final, publishable data.
+(See the section below *Why Are Adjustments Needed?* below for an explanation
+of why these initial estimates require correction.)
 
 It is a lightweight Python pipeline, built using `pandas` and `NumPy`, and developed
 in line with the [Government Statistical Service's (GSS) Reproducible Analytical Pipeline (RAP) principles](https://analysisfunction.civilservice.gov.uk/support/reproducible-analytical-pipelines/) and [modern best practices](https://best-practice-and-impact.github.io/qa-of-code-guidance/intro.html#).
 
-The `gdhi-adj` pipeline ingests the initial LSOA estimates and applies a transparent
-process to refine the data, which includes:
+The `gdhi-adj` pipeline ingests the initial LSOA estimates and
+applies a transparent, rules-based **constrained statistical editing** process.
 
-- Outlier detection
-- Rules-based adjustments
-- Ensuring the final small-area data preserves the exact local authority (LA) totals
+This refinement operates on a core methodological principle: the
+high-level **Local Authority (LA) total is treated as a fixed "anchor."**
+This establishes a clear hierarchy of trust, where the LA-level total is
+accepted as statistically robust and correct, while the *intra-LA distribution* (
+the apportionment to LSOAs) is treated as potentially flawed and in need of refinement.
 
-The result is the final, quality-assured set of GDHI statistics at the LSOA level,
-ready for publication. The diagram below summarises this two-stage process.
+Therefore, the pipeline's adjustments are a **constrained re-distribution**. When an
+LSOA outlier is corrected (e.g., its value is reduced), that same amount is **not**
+removed from the system. Instead, it is proportionally re-apportioned to all
+other LSOAs *within that same LA*. This "zero-sum" approach ensures that the final,
+refined LSOA estimates perfectly sum back to the original, unchanged LA totals.
+
+The result is a reliable and statistically consistent set of GDHI statistics at
+the LSOA level, ready for publication. The diagram below summarises this
+two-stage process.
 
 ```mermaid
 flowchart TD
@@ -91,23 +102,81 @@ However, while administrative data provides exceptional coverage and granularity
 it also introduces predictable challenges because it is collected for operational,
 not statistical, purposes. Issues such as conceptual misalignment, administrative
 volatility, partial coverage, and anomalous proxy distributions can lead to implausible
-or unstable LSOA-level estimates. These challenges are *well recognised within
-official statistics*: for example, the ONS notes that “administrative data are generally
-not collected for the sole purpose of producing statistics… [which] can lead to challenges
-when using them” in its report on [Exploring the quality of administrative data using qualitative methods](https://www.ons.gov.uk/methodology/methodologicalpublications/generalmethodology/onsworkingpaperseries/exploringthequalityofadministrativedatausingqualitativemethods),
+or unstable LSOA-level estimates.
+
+These challenges are *well recognised within official statistics*: for example, the
+ONS notes that “administrative data are generally not collected for the sole purpose of
+producing statistics… [which] can lead to challenges when using them” in its report on [Exploring the quality of administrative data using qualitative methods](https://www.ons.gov.uk/methodology/methodologicalpublications/generalmethodology/onsworkingpaperseries/exploringthequalityofadministrativedatausingqualitativemethods),
 and further documents a range of inherent error sources—such as representation and
 measurement errors—in its guidance on [Cataloguing errors in administrative and alternative data sources](https://www.ons.gov.uk/methodology/methodologicalpublications/generalmethodology/onsworkingpaperseries/cataloguingerrorsinadministrativeandalternativedatasourceswhatwhenandhow).
 These distortions are therefore inherent to using administrative data as proxies
 rather than direct measures.
 
-This adjustment stage also aligns with internationally recognised best practice in
-**Statistical Data Editing (SDE)** -- the formal set of methods used to detect, correct,
-and validate anomalies in statistical outputs. International guidance from bodies
-such as the UNECE and Eurostat, including the
+### The "Noisy-Shares" Problem: From Proxy Data to Flawed Estimates
+
+This challenge stems from what we'll call the **"Noisy-Shares Problem"**. This concept
+describes the potential for inaccuracy that arises because our LSOA-level estimate
+is only as good as the proxy data used to create it. The calculated "share" for an
+LSOA is only an *estimate* of the true, unobservable proportion of the LA's
+income that genuinely originates in that LSOA.
+
+This estimated share is inevitably a composite of two things:
+1. **The True Economic Signal**
+2. **Statistical Noise**
+
+This "noise" can creep in from many sources; **here are just a few below**:
+- **Measurement Errors:** Quirks in how administrative records are kept.
+- **Sampling Errors:** When a survey, rather than a full census, is used to create
+  a proxy indicator.
+- **Random Anomalies (Idiosyncratic Events):** A few high-income individuals
+  temporarily boosting one LSOA’s tax total for a single year.
+- **Persistent Biases:** An LSOA hosting a corporate headquarters or many P.O. boxes
+  might repeatedly receive an overestimated GDHI allocation because the proxy
+  (e.g., self-employment business addresses) over-allocates income there.
+
+In the initial GDHI model, the apportionment process is forced to treat this noisy
+share as a perfect, error-free coefficient. It has no mechanism to distinguish the
+signal from the noise. This means it can **"overfit to the noise"** producing volatile or
+implausible LSOA estimates that look precise but are actually just statistical artifacts.
+
+The risk is that sharp year-on-year fluctuations may not reflect a true change in
+economic fortunes but rather an artifact of noise in one of the proxy indicators.
+
+### Addressing the "Raw Data" Misconception
+
+This reality addresses a common misconception: that statistical production should
+be a simple, linear flow of **Raw Data $\rightarrow$ Processing $\rightarrow$ Publication**.
+
+This view is incorrect. Official statistics are not just raw data; they are
+a **curated product**. The production pipeline for any National Statistical Institute (NSI)
+is an iterative process of validation, imputation, and correction designed to ensure the
+final data is fit for purpose. Raw administrative data is notoriously "dirty," containing
+the exact "noisy-share" errors described above.
+
+This highlights a key distinction: **Statistical Integrity vs. Statistical Literalism**.
+
+- A **literal-minded** approach would publish the raw, proxy-based outputs 'as-is,' even
+  when they are known to contain these noisy-share artifacts.
+- **Statistical integrity**, however, demands that producers use their expertise to
+  correct for known biases and errors. The goal is to ensure the final data is the
+  **best possible statistical estimate** of the underlying economic reality,
+  given all available information.
+
+Publishing known artifacts without correction would fail this test of integrity,
+as it would present a flawed figure as a precise fact. This adjustment process is
+therefore an essential act of **bias reduction**, moving the estimate *away* from
+the known administrative bias and *closer* to the economic truth. This provides the
+reliable neighbourhood-level insight that local authorities, policymakers, researchers,
+and the like need to understand the true economic picture of their areas.
+
+### An Essential Part of Statistical Best Practice
+
+This formal quality control discipline is known as **Statistical Data Editing (SDE)**.
+International guidance from bodies such as the UNECE and Eurostat, including the
 [UNECE Statistical Data Editing Handbook](https://unece.org/DAM/stats/publications/editing/SDE3.pdf)
-and Eurostat’s [Quality Assurance Framework](https://ec.europa.eu/eurostat/documents/3859598/13925930/KS-GQ-21-021-EN-N.pdf),
-emphasises that statistical production is a multi-stage process
-involving cleaning, validation, editing, and imputation.
+and [Eurostat’s Quality Assurance Framework](https://ec.europa.eu/eurostat/documents/3859598/13925930/KS-GQ-21-021-EN-N.pdf),
+emphasises that statistical production is a multi-stage process involving cleaning,
+validation, editing, and imputation.
 
 In this context, a final, rules-based correction step is not merely desirable -- it is
 an **essential and widely accepted component** of producing reliable small-area
@@ -116,10 +185,14 @@ statistics, particularly when administrative data is used as a proxy input.
 ## 🔍 Our Approach to Transparency and Reproducibility
 
 The core GDHI Pipeline is implemented using `PySpark`, enabling it to efficiently
-process, integrate, and transform very large administrative datasets. Although
-this `PySpark` pipeline is currently closed-source due to infrastructure
-and governance constraints, it is still a Python-based RAP and follows the same
-principles of reproducibility, modularity, version control, and automated data processing.
+process, integrate, and transform very large administrative datasets.
+
+Although this `PySpark` pipeline is currently closed-source, this is primarily due to
+infrastructure and governance constraints. Specifically, it contains
+**bespoke Statistical Disclosure Control (SDC) methods** designed to protect sensitive
+administrative microdata from partners like **HMRC and DWP**. Despite being internal,
+it is still a Python-based RAP and follows the same principles of reproducibility,
+modularity, version control, and automated data processing.
 
 Our long-term aim is to make as much of this core `PySpark` pipeline open-source as
 possible to further increase transparency and encourage methodological scrutiny.
