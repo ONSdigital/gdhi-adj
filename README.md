@@ -107,8 +107,8 @@ or unstable LSOA-level estimates.
 These challenges are *well recognised within official statistics*: for example, the
 ONS notes that “administrative data are generally not collected for the sole purpose of
 producing statistics… [which] can lead to challenges when using them” in its report on [Exploring the quality of administrative data using qualitative methods](https://www.ons.gov.uk/methodology/methodologicalpublications/generalmethodology/onsworkingpaperseries/exploringthequalityofadministrativedatausingqualitativemethods),
-and further documents a range of inherent error sources—such as representation and
-measurement errors—in its guidance on [Cataloguing errors in administrative and alternative data sources](https://www.ons.gov.uk/methodology/methodologicalpublications/generalmethodology/onsworkingpaperseries/cataloguingerrorsinadministrativeandalternativedatasourceswhatwhenandhow).
+and further documents a range of inherent error sources -- such as representation and
+measurement errors -- in its guidance on [Cataloguing errors in administrative and alternative data sources](https://www.ons.gov.uk/methodology/methodologicalpublications/generalmethodology/onsworkingpaperseries/cataloguingerrorsinadministrativeandalternativedatasourceswhatwhenandhow).
 These distortions are therefore inherent to using administrative data as proxies
 rather than direct measures.
 
