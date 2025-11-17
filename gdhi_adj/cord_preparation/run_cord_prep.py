@@ -2,8 +2,10 @@
 
 import os
 
+import pandas as pd
+
 from gdhi_adj.cord_preparation.impute_cord_prep import impute_suppression_x
-from gdhi_adj.utils.helpers import read_with_schema, write_with_schema
+from gdhi_adj.utils.helpers import write_with_schema
 from gdhi_adj.utils.logger import GDHI_adj_logger
 
 GDHI_adj_LOGGER = GDHI_adj_logger(__name__)
@@ -31,20 +33,20 @@ def run_cord_preparation(config: dict) -> None:
 
     logger.info("Loading configuration settings")
     local_or_shared = config["user_settings"]["local_or_shared"]
-    adjustment_filepath_dict = config[f"adjustment_{local_or_shared}_settings"]
+    mapping_filepath_dict = config["mapping"]
     filepath_dict = config[f"cord_prep_{local_or_shared}_settings"]
     schema_path = config["pipeline_settings"]["schema_path"]
 
     input_cord_file_path = os.path.join(
         "C:/Users/",
         os.getlogin(),
-        adjustment_filepath_dict["output_dir"],
-        adjustment_filepath_dict["output_filename"],
+        mapping_filepath_dict["output_dir"],
+        filepath_dict["input_filemame"],
     )
-    input_cord_prep_schema_path = os.path.join(
-        schema_path,
-        config["pipeline_settings"]["output_adjustment_schema_path"],
-    )
+    # input_cord_prep_schema_path = os.path.join(
+    #     schema_path,
+    #     config["pipeline_settings"]["output_adjustment_schema_path"],
+    # )
 
     output_data_prefix = config["user_settings"]["output_data_prefix"] + "_"
     output_dir = "C:/Users/" + os.getlogin() + filepath_dict["output_dir"]
@@ -56,8 +58,8 @@ def run_cord_preparation(config: dict) -> None:
         "output_filename", None
     )
 
-    logger.info("Reading in data with schemas")
-    df = read_with_schema(input_cord_file_path, input_cord_prep_schema_path)
+    logger.info("Reading in mapped data for CORD preparation")
+    df = pd.read_csv(input_cord_file_path)
 
     logger.info("Applying CORD-specific transformations and filters")
     df = impute_suppression_x(
