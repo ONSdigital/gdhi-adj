@@ -231,7 +231,7 @@ process, integrate, and transform very large administrative datasets.
 
 Although this `PySpark` pipeline is currently closed-source, this is primarily due to
 infrastructure and governance constraints. Specifically, it contains
-**bespoke Statistical Disclosure Control (SDC) methods** designed to protect sensitive
+**bespoke** [Statistical Disclosure Control (SDC) methods](https://www.ons.gov.uk/aboutus/transparencyandgovernance/datastrategy/datapolicies/statisticaldisclosurecontrol) designed to protect sensitive
 administrative microdata from partners like **HMRC and DWP**. Despite being internal,
 it is still a Python-based RAP and follows the same principles of reproducibility,
 modularity, version control, and automated data processing.
