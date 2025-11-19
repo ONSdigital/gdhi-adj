@@ -4,17 +4,22 @@ import os
 
 import pandas as pd
 
-from gdhi_adj.adjustment.calc_adjustment import (
+from gdhi_adj.adjustment.apportion_adjustment import (
     apportion_adjustment,
     apportion_negative_adjustment,
+)
+from gdhi_adj.adjustment.calc_adjustment import (
     calc_imputed_adjustment,
-    calc_imputed_val,
+    calc_lad_totals,
+    extrapolate_imputed_val,
+    interpolate_imputed_val,
 )
 from gdhi_adj.adjustment.filter_adjustment import (
     filter_adjust,
     filter_component,
     filter_year,
 )
+from gdhi_adj.adjustment.flag_adjustment import identify_safe_years
 from gdhi_adj.adjustment.join_adjustment import (
     join_analyst_constrained_data,
     join_analyst_unconstrained_data,
@@ -131,14 +136,14 @@ def run_adjustment(config: dict) -> None:
         input_unconstrained_file_path, input_unconstrained_schema_path
     )
 
-    logger.info("Reformatting adjust and year columns.")
+    logger.info("Reformatting adjust and year columns")
     df_powerbi_output = reformat_adjust_col(df_powerbi_output)
 
     df_powerbi_output = reformat_year_col(
         df_powerbi_output, start_year, end_year
     )
 
-    logger.info("Filtering for data that requires adjustment.")
+    logger.info("Filtering for data that requires adjustment")
     df_powerbi_output = filter_adjust(df_powerbi_output)
     df_constrained = filter_component(
         df_constrained, sas_code_filter, cord_code_filter, credit_debit_filter
@@ -153,11 +158,21 @@ def run_adjustment(config: dict) -> None:
     logger.info("Pivoting DataFrame long")
     df = pivot_adjustment_long(df)
 
+    logger.info("Calculate LAD total GDHI for each year")
+    lad_totals_df = calc_lad_totals(df)
+    lad_totals_df
+
     logger.info("Filtering data for specified years")
     df = filter_year(df, start_year, end_year)
 
     logger.info("Calculating outlier year imputed_gdhi values")
-    imputed_df = calc_imputed_val(df, start_year, end_year)
+    breakpoint()
+    imputed_df = identify_safe_years(df, start_year, end_year)
+    breakpoint()
+    imputed_df = interpolate_imputed_val(imputed_df)
+    breakpoint()
+    imputed_df = extrapolate_imputed_val(imputed_df)
+    breakpoint()
 
     logger.info("Calculating adjustment values based on imputed gdhi")
     df = calc_imputed_adjustment(df, imputed_df)

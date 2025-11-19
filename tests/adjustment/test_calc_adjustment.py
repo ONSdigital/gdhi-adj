@@ -1,84 +1,170 @@
-import numpy as np
 import pandas as pd
-import pytest
 
 from gdhi_adj.adjustment.calc_adjustment import (
-    apportion_adjustment,
-    apportion_negative_adjustment,
     calc_imputed_adjustment,
-    calc_imputed_val,
+    calc_lad_totals,
+    extrapolate_imputed_val,
+    interpolate_imputed_val,
 )
 
 
-class TestCalcImputedVal:
-    """Tests for the calc_imputed_val function."""
-    def test_calc_imputed_val_interpolation(self):
-        """Test the calc_imputed_val function returns the expected imputed
-        values when values are within the year range.
+def test_calc_lad_totals_aggregates_sum_per_lad_and_year():
+    """Test calc_lad_totals correctly aggregates con_gdhi sums per
+    (lad_code, year) group."""
+    df = pd.DataFrame({
+        "lsoa_code": ["E1", "E2", "E1", "E3"],
+        "lad_code": ["E01", "E01", "E01", "E02"],
+        "year": [2000, 2000, 2001, 2000],
+        "con_gdhi": [100.0, 50.0, 30.0, 20.0],
+    })
+
+    result_df = calc_lad_totals(df)
+
+    expected_df = pd.DataFrame({
+        "lad_code": ["E01", "E01", "E02"],
+        "year": [2000, 2001, 2000],
+        "con_gdhi": [150.0, 30.0, 20.0],
+    })
+
+    pd.testing.assert_frame_equal(result_df, expected_df)
+
+
+class TestInterpolateImputedVal:
+    """Tests for the interpolate_imputed_val function."""
+    def test_interpolate_imputed_val(self):
+        """Test the interpolate_imputed_val function returns the expected
+        imputed values.
         """
         df = pd.DataFrame({
-            "lsoa_code": ["E1", "E1", "E1", "E1"],
-            "year": [2002, 2003, 2004, 2005],
-            "con_gdhi": [10.0, 8.0, 10.0, 16.0],
-            "year_to_adjust": [
-                [2003, 2004], [2003, 2004], [2003, 2004], [2003, 2004]
-            ],
-        })
-
-        start_year = 2002
-        end_year = 2005
-        result_df = calc_imputed_val(df, start_year, end_year)
-
-        expected_df = pd.DataFrame({
             "lsoa_code": ["E1", "E1"],
-            "year": [2003, 2004],
-            "con_gdhi": [8.0, 10.0],
-            # only the 2003 row for E1 should be flagged for adjustment
-            "year_to_adjust": [[2003, 2004], [2003, 2004]],
-            "prev_safe_year": [2002, 2002],
+            "year": [2001, 2002],
+            "con_gdhi": [12.0, 13.0],
+            "year_to_adjust": [[2001, 2002], [2001, 2002]],
+            "prev_safe_year": [2000, 2000],
             "prev_con_gdhi": [10.0, 10.0],
-            "next_safe_year": [2005, 2005],
-            "next_con_gdhi": [16.0, 16.0],
-            "imputed_gdhi": [12.0, 14.0],
+            "next_safe_year": [2003, 2003],
+            "next_con_gdhi": [40.0, 40.0],
         })
 
-        pd.testing.assert_frame_equal(
-            result_df, expected_df, check_names=False
-        )
-
-    def test_calc_imputed_val_extrapolation(self):
-        """Test the calc_imputed_val function returns the expected imputed
-        values when values are at the end of the year range.
-        """
-        df = pd.DataFrame({
-            "lsoa_code": ["E1", "E1", "E1", "E1"],
-            "year": [2002, 2003, 2004, 2005],
-            "con_gdhi": [35.0, 32.0, 24.0, 26.0],
-            "year_to_adjust": [
-                [2002, 2003], [2002, 2003], [2002, 2003], [2002, 2003]
-            ],
-        })
-
-        start_year = 2002
-        end_year = 2005
-        result_df = calc_imputed_val(df, start_year, end_year)
+        result_df = interpolate_imputed_val(df)
 
         expected_df = pd.DataFrame({
             "lsoa_code": ["E1", "E1"],
-            "year": [2002, 2003],
-            "con_gdhi": [35.0, 32.0],
-            # only the 2003 row for E1 should be flagged for adjustment
-            "year_to_adjust": [[2002, 2003], [2002, 2003]],
-            "prev_safe_year": [2001, 2001],
-            "prev_con_gdhi": [np.nan, np.nan],
-            "next_safe_year": [2004, 2004],
-            "next_con_gdhi": [24.0, 24.0],
-            "imputed_gdhi": [20.0, 22.0],
+            "year": [2001, 2002],
+            "con_gdhi": [12.0, 13.0],
+            "year_to_adjust": [[2001, 2002], [2001, 2002]],
+            "prev_safe_year": [2000, 2000],
+            "prev_con_gdhi": [10.0, 10.0],
+            "next_safe_year": [2003, 2003],
+            "next_con_gdhi": [40.0, 40.0],
+            "imputed_gdhi": [20.0, 30.0],
         })
 
         pd.testing.assert_frame_equal(
             result_df, expected_df, check_names=False
         )
+
+
+class TestExtrapolateImputedVal:
+    """Tests for the extrapolate_imputed_val function."""
+    def test_extrapolate_imputed_val(self):
+        """Test the extrapolate_imputed_val function returns the expected
+        imputed values.
+        """
+        df = pd.DataFrame({
+            "lsoa_code": ["E1", "E1"],
+            "year": [2000, 2001],
+            "con_gdhi": [35.0, 32.0],
+            "year_to_adjust": [[2000, 2001], [2000, 2001]],
+            "prev_safe_year": [1999, 1999],
+            "prev_con_gdhi": [None, None],
+            "next_safe_year": [2002, 2002],
+            "next_con_gdhi": [24.0, 24.0],
+        })
+
+        result_df = extrapolate_imputed_val(df)
+
+        expected_df = pd.DataFrame({
+            "lsoa_code": ["E1", "E1"],
+            "year": [2000, 2001],
+            "con_gdhi": [35.0, 32.0],
+            "year_to_adjust": [[2000, 2001], [2000, 2001]],
+            "prev_safe_year": [1999, 1999],
+            "prev_con_gdhi": [None, None],
+            "next_safe_year": [2002, 2002],
+            "next_con_gdhi": [24.0, 24.0],
+            "imputed_gdhi": [17.0, 21.0],
+        })
+
+        pd.testing.assert_frame_equal(
+            result_df, expected_df, check_names=False
+        )
+
+
+# class TestCalcImputedVal:
+#     """Tests for the calc_imputed_val function."""
+#     def test_calc_imputed_val_interpolation(self):
+#         """Test the calc_imputed_val function returns the expected imputed
+#         values when values are within the year range.
+#         """
+#         df = pd.DataFrame({
+#             "lsoa_code": ["E1", "E1", "E1", "E1"],
+#             "year": [2002, 2003, 2004, 2005],
+#             "con_gdhi": [10.0, 8.0, 10.0, 16.0],
+#             "year_to_adjust": [
+#                 [2003, 2004], [2003, 2004], [2003, 2004], [2003, 2004]
+#             ],
+#         })
+
+#         result_df = calc_imputed_val(df)
+
+#         expected_df = pd.DataFrame({
+#             "lsoa_code": ["E1", "E1"],
+#             "year": [2003, 2004],
+#             "con_gdhi": [8.0, 10.0],
+#             "year_to_adjust": [[2003, 2004], [2003, 2004]],
+#             "prev_safe_year": [2002, 2002],
+#             "prev_con_gdhi": [10.0, 10.0],
+#             "next_safe_year": [2005, 2005],
+#             "next_con_gdhi": [16.0, 16.0],
+#             "imputed_gdhi": [12.0, 14.0],
+#         })
+
+#         pd.testing.assert_frame_equal(
+#             result_df, expected_df, check_names=False
+#         )
+
+#     def test_calc_imputed_val_extrapolation(self):
+#         """Test the calc_imputed_val function returns the expected imputed
+#         values when values are at the end of the year range.
+#         """
+#         df = pd.DataFrame({
+#             "lsoa_code": ["E1", "E1", "E1", "E1", "E1", "E1", "E1"],
+#             "year": [2002, 2003, 2004, 2005, 2006, 2007, 2008],
+#             "con_gdhi": [35.0, 32.0, 24.0, 26.0, 30.0, 28.0, 36.0],
+#             "year_to_adjust": [
+#                 [2002, 2003], [2002, 2003], [2002, 2003], [2002, 2003],
+#                 [2002, 2003], [2002, 2003], [2002, 2003],
+#             ],
+#         })
+
+#         result_df = calc_imputed_val(df)
+
+#         expected_df = pd.DataFrame({
+#             "lsoa_code": ["E1", "E1"],
+#             "year": [2002, 2003],
+#             "con_gdhi": [35.0, 32.0],
+#             "year_to_adjust": [[2002, 2003], [2002, 2003]],
+#             "prev_safe_year": [2001, 2001],
+#             "prev_con_gdhi": [np.nan, np.nan],
+#             "next_safe_year": [2004, 2004],
+#             "next_con_gdhi": [24.0, 24.0],
+#             "imputed_gdhi": [18.0, 21.0],
+#         })
+
+#         pd.testing.assert_frame_equal(
+#             result_df, expected_df, check_names=False
+#         )
 
 
 def test_calc_imputed_adjustment():
@@ -117,150 +203,3 @@ def test_calc_imputed_adjustment():
     })
 
     pd.testing.assert_frame_equal(result_df, expected_df, check_dtype=False)
-
-
-class TestApportionAdjustment:
-    """Test suite for apportion_adjustment function."""
-    def test_apportion_adjustment_base(self):
-        """Test apportion_adjustment computes year_count and adjusted_con_gdhi
-        correctly and returns the full dataframe sorted.
-        """
-
-    df = pd.DataFrame({
-        "lsoa_code": ["E1", "E2", "E3", "E1"],
-        "lad_code": ["E01", "E01", "E01", "E01"],
-        "year": [2002, 2002, 2002, 2003],
-        "con_gdhi": [5.0, 8.0, 10.0, 15.0],
-        # imputed_gdhi only present for E1 2003
-        "imputed_gdhi": [None, 7.4, None, None],
-        # adjustment_val is set for E1 (will be apportioned), None for E2
-        "adjustment_val": [0.6, 0.6, 0.6, None],
-    })
-
-    result_df = apportion_adjustment(df)
-
-    expected_df = pd.DataFrame({
-        "lsoa_code": ["E1", "E2", "E3", "E1"],
-        "lad_code": ["E01", "E01", "E01", "E01"],
-        "year": [2002, 2002, 2002, 2003],
-        "con_gdhi": [5.0, 8.0, 10.0, 15.0],
-        "imputed_gdhi": [None, 7.4, None, None],
-        "adjustment_val": [0.6, 0.6, 0.6, None],
-        "lsoa_count": [3, 3, 3, 1],
-        "adjusted_con_gdhi": [5.2, 7.6, 10.2, 15.0],
-    })
-
-    pd.testing.assert_frame_equal(
-        result_df, expected_df, check_dtype=False
-    )
-
-
-class TestApportionNegativeAdjustment:
-    """Test suite for apportion_negative_adjustment function."""
-    def test_apportion_negative_adjustment_negatives(self):
-        """Test apportion_negative_adjustment computes adjusted_con_gdhi
-        correctly when adjusted_con_gdhi is negative for a given (lad_code,
-        year) group.
-        """
-
-        df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2", "E3", "E4", "E5", "E6"],
-            "lad_code": ["E01", "E01", "E01", "E02", "E02", "E02"],
-            "year": [2002, 2002, 2002, 2002, 2002, 2002],
-            "con_gdhi": [1.0, 0.2, 4.0, 2.0, 0.0, 0.0],
-            # old column that needs to be overwritten
-            "lsoa_count": [2, 2, 2, 2, 2, 2],
-            "adjustment_val": [-0.6, -0.6, 1.2, 1.0, -0.5, -0.5],
-            "adjusted_con_gdhi": [0.4, -0.4, 5.2, 3.0, -0.5, -0.5],
-        })
-
-        result_df = apportion_negative_adjustment(df)
-
-        expected_df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2", "E3", "E4", "E5", "E6"],
-            "lad_code": ["E01", "E01", "E01", "E02", "E02", "E02"],
-            "year": [2002, 2002, 2002, 2002, 2002, 2002],
-            "con_gdhi": [1.0, 0.2, 4.0, 2.0, 0.0, 0.0],
-            "lsoa_count": [2, None, 2, 1, None, None],
-            "adjustment_val": [0.4, 0.4, 0.4, 1.0, 1.0, 1.0],
-            "adjusted_con_gdhi": [0.2, 0.0, 5.0, 2.0, 0.0, 0.0],
-            "negative_diff": [0.0, 0.4, 0.0, 0.0, 0.5, 0.5],
-        })
-
-        pd.testing.assert_frame_equal(
-            result_df, expected_df, check_dtype=False
-        )
-
-    def test_apportion_negative_adjustment_no_negatives(self):
-        """Test apportion_negative_adjustment returns the same
-        adjusted_con_gdhi values.
-        """
-
-        df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2", "E3"],
-            "lad_code": ["E01", "E01", "E01"],
-            "year": [2002, 2002, 2002],
-            "con_gdhi": [5.0, 8.0, 10.0],
-            "lsoa_count": [3, 3, 3],
-            "adjustment_val": [0.6, 0.6, 0.6],
-            "adjusted_con_gdhi": [5.2, 7.6, 10.2],
-        })
-
-        result_df = apportion_negative_adjustment(df)
-
-        expected_df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2", "E3"],
-            "lad_code": ["E01", "E01", "E01"],
-            "year": [2002, 2002, 2002],
-            "con_gdhi": [5.0, 8.0, 10.0],
-            "lsoa_count": [3, 3, 3],
-            "adjustment_val": [0.0, 0.0, 0.0],
-            "adjusted_con_gdhi": [5.2, 7.6, 10.2],
-            "negative_diff": [0.0, 0.0, 0.0],
-        })
-
-        pd.testing.assert_frame_equal(
-            result_df, expected_df, check_dtype=False
-        )
-
-    # def test_apportion_negative_adjustment_zero_lsoa_count(self):
-    #     """Test apportion_negative_adjustment returns ValueError when the
-    #     lsoa_count is zero for a (lad_code, year) group.
-    #     """
-
-    #     df = pd.DataFrame({
-    #         "lsoa_code": ["E1", "E2"],
-    #         "lad_code": ["E01", "E01"],
-    #         "year": [2002, 2002],
-    #         "con_gdhi": [1.0, 0.0],
-    #         "lsoa_count": [0, 0],
-    #         "adjustment_val": [-1.5, -1.5],
-    #         "adjusted_con_gdhi": [-5.0, -1.0],
-    #     })
-
-    #     with pytest.raises(
-    #         ValueError,
-    #         match="Zero LSOA count check failed:"
-    #     ):
-    #         apportion_negative_adjustment(df)
-
-    def test_apportion_negative_adjustment_remains_negative(self):
-        """Test apportion_negative_adjustment returns ValueError when the
-        adjusted_con_gdhi still contains a negative value after adjustment.
-        """
-
-        df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2"],
-            "lad_code": ["E01", "E01"],
-            "year": [2002, 2002],
-            "con_gdhi": [10.0, 1.0],
-            "lsoa_count": [2, 2],
-            "adjustment_val": [-1.5, -1.5],
-            "adjusted_con_gdhi": [-5.0, 1.0],
-        })
-
-        with pytest.raises(
-            ValueError,
-            match="Negative value check failed:"
-        ):
-            apportion_negative_adjustment(df)
