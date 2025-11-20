@@ -179,8 +179,11 @@ def run_adjustment(config: dict) -> None:
 
     logger.info("Apportioning adjustment values to all years")
     df = apportion_adjustment(df)
-    df = apportion_negative_adjustment(df)
+    if config["user_settings"]["accept_negatives"] is False:
+        print("false test")
+        df = apportion_negative_adjustment(df)
 
+    breakpoint()
     logger.info("Saving interim data")
     qa_df = pd.DataFrame(
         {

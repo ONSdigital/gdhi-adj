@@ -5,6 +5,8 @@ start_year = 2010
 end_year = 2023
 output_data = true
 output_data_prefix = "test"
+rollback_year_start = 2010
+rollback_year_end = 2014
 # Preprocessing settings
 preprocessing = false # Set to true if you want to run preprocessing
 zscore_calculation = true # Set to true if you want to run z-score calculation
@@ -20,6 +22,9 @@ adjustment = true # Set to true if you want to run manual adjustment
 sas_code_filter = "G866BTR"
 cord_code_filter = "D75"
 credit_debit_filter = "D"
+accept_negatives = true
+# Set to true to accept negative values and not run
+# apportion_negative_adjustment
 
 [pipeline_settings]
 schema_path = "config/schemas/"
