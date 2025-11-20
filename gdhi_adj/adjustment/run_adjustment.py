@@ -32,6 +32,8 @@ from gdhi_adj.adjustment.reformat_adjustment import (
     reformat_adjust_col,
     reformat_year_col,
 )
+from gdhi_adj.preprocess.calc_preprocess import calc_rate_of_change
+from gdhi_adj.preprocess.flag_preprocess import flag_rollback_years
 from gdhi_adj.utils.helpers import read_with_schema, write_with_schema
 from gdhi_adj.utils.logger import GDHI_adj_logger
 
@@ -165,14 +167,37 @@ def run_adjustment(config: dict) -> None:
     logger.info("Filtering data for specified years")
     df = filter_year(df, start_year, end_year)
 
-    logger.info("Calculating outlier year imputed_gdhi values")
-    breakpoint()
-    imputed_df = identify_safe_years(df, start_year, end_year)
-    breakpoint()
+    logger.info(
+        "Flagging rollback yearsfrom: "
+        f"{config["user_settings"]["rollback_year_start"]}:"
+        f"{config["user_settings"]["rollback_year_end"]}"
+    )
+    df = calc_rate_of_change(
+        df,
+        ascending=False,
+        sort_cols=["lsoa_code", "year"],
+        group_col="lsoa_code",
+        val_col="uncon_gdhi",
+    )
+    df = calc_rate_of_change(
+        df,
+        ascending=True,
+        sort_cols=["lsoa_code", "year"],
+        group_col="lsoa_code",
+        val_col="uncon_gdhi",
+    )
+    df = flag_rollback_years(
+        df,
+        rollback_year_start=config["user_settings"]["rollback_year_start"],
+        rollback_year_end=config["user_settings"]["rollback_year_end"],
+    )
+
+    logger.info("Identifying non-outlier years for imputation")
+    df, imputed_df = identify_safe_years(df, start_year, end_year)
+
+    logger.info("Calculating values to be imputed")
     imputed_df = interpolate_imputed_val(imputed_df)
-    breakpoint()
-    imputed_df = extrapolate_imputed_val(imputed_df)
-    breakpoint()
+    imputed_df = extrapolate_imputed_val(df, imputed_df)
 
     logger.info("Calculating adjustment values based on imputed gdhi")
     df = calc_imputed_adjustment(df, imputed_df)
@@ -180,10 +205,8 @@ def run_adjustment(config: dict) -> None:
     logger.info("Apportioning adjustment values to all years")
     df = apportion_adjustment(df)
     if config["user_settings"]["accept_negatives"] is False:
-        print("false test")
         df = apportion_negative_adjustment(df)
 
-    breakpoint()
     logger.info("Saving interim data")
     qa_df = pd.DataFrame(
         {

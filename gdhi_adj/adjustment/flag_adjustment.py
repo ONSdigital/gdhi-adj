@@ -67,4 +67,4 @@ def identify_safe_years(
         how="left",
     )
 
-    return safe_years_df
+    return df, safe_years_df

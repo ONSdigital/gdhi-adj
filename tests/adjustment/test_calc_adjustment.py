@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from gdhi_adj.adjustment.calc_adjustment import (
@@ -40,6 +41,7 @@ class TestInterpolateImputedVal:
             "year": [2001, 2002],
             "con_gdhi": [12.0, 13.0],
             "year_to_adjust": [[2001, 2002], [2001, 2002]],
+            "rollback_flag": [True, False],
             "prev_safe_year": [2000, 2000],
             "prev_con_gdhi": [10.0, 10.0],
             "next_safe_year": [2003, 2003],
@@ -53,11 +55,12 @@ class TestInterpolateImputedVal:
             "year": [2001, 2002],
             "con_gdhi": [12.0, 13.0],
             "year_to_adjust": [[2001, 2002], [2001, 2002]],
+            "rollback_flag": [True, False],
             "prev_safe_year": [2000, 2000],
             "prev_con_gdhi": [10.0, 10.0],
             "next_safe_year": [2003, 2003],
             "next_con_gdhi": [40.0, 40.0],
-            "imputed_gdhi": [20.0, 30.0],
+            "imputed_gdhi": [np.NaN, 30.0],
         })
 
         pd.testing.assert_frame_equal(
@@ -72,28 +75,41 @@ class TestExtrapolateImputedVal:
         imputed values.
         """
         df = pd.DataFrame({
-            "lsoa_code": ["E1", "E1"],
-            "year": [2000, 2001],
-            "con_gdhi": [35.0, 32.0],
-            "year_to_adjust": [[2000, 2001], [2000, 2001]],
-            "prev_safe_year": [1999, 1999],
-            "prev_con_gdhi": [None, None],
-            "next_safe_year": [2002, 2002],
-            "next_con_gdhi": [24.0, 24.0],
+            "lsoa_code": ["E1", "E1", "E1", "E1", "E1", "E1", "E1"],
+            "year": [2001, 2002, 2003, 2004, 2005, 2006, 2007],
+            "con_gdhi": [12.0, 13.0, 40.0, 49.0, 55.0, 63.0, 72.0],
+            "year_to_adjust": [[2001, 2002], [2001, 2002], [2001, 2002],
+                               [2001, 2002], [2001, 2002], [2001, 2002],
+                               [2001, 2002]],
+            "rollback_flag": [True, False, False, False, False, False, False],
         })
 
-        result_df = extrapolate_imputed_val(df)
+        imputed_df = pd.DataFrame({
+            "lsoa_code": ["E1", "E1"],
+            "year": [2001, 2002],
+            "con_gdhi": [12.0, 13.0],
+            "year_to_adjust": [[2001, 2002], [2001, 2002]],
+            "rollback_flag": [True, False],
+            "prev_safe_year": [2000, 2000],
+            "prev_con_gdhi": [10.0, 10.0],
+            "next_safe_year": [2003, 2003],
+            "next_con_gdhi": [40.0, 40.0],
+            "imputed_gdhi": [np.NaN, 30.0],
+        })
+
+        result_df = extrapolate_imputed_val(df, imputed_df)
 
         expected_df = pd.DataFrame({
             "lsoa_code": ["E1", "E1"],
-            "year": [2000, 2001],
-            "con_gdhi": [35.0, 32.0],
-            "year_to_adjust": [[2000, 2001], [2000, 2001]],
-            "prev_safe_year": [1999, 1999],
-            "prev_con_gdhi": [None, None],
-            "next_safe_year": [2002, 2002],
-            "next_con_gdhi": [24.0, 24.0],
-            "imputed_gdhi": [17.0, 21.0],
+            "year": [2001, 2002],
+            "con_gdhi": [12.0, 13.0],
+            "year_to_adjust": [[2001, 2002], [2001, 2002]],
+            "rollback_flag": [True, False],
+            "prev_safe_year": [2000, 2000],
+            "prev_con_gdhi": [10.0, 10.0],
+            "next_safe_year": [2003, 2003],
+            "next_con_gdhi": [40.0, 40.0],
+            "imputed_gdhi": [24.0, 30.0],
         })
 
         pd.testing.assert_frame_equal(

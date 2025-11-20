@@ -15,7 +15,9 @@ class TestIdentifySafeYears:
             ],
         })
 
-        result_df = identify_safe_years(df, start_year=2000, end_year=2003)
+        base_df, result_df = identify_safe_years(
+            df, start_year=2000, end_year=2003
+        )
 
         expected_df = pd.DataFrame({
             "lsoa_code": ["E1", "E1"],
@@ -28,6 +30,7 @@ class TestIdentifySafeYears:
             "next_con_gdhi": [40.0, 40.0],
         })
 
+        pd.testing.assert_frame_equal(base_df, df)
         pd.testing.assert_frame_equal(result_df, expected_df)
 
     def test_identify_safe_years_end(self):
@@ -40,7 +43,9 @@ class TestIdentifySafeYears:
             ],
         })
 
-        result_df = identify_safe_years(df, start_year=2000, end_year=2003)
+        base_df, result_df = identify_safe_years(
+            df, start_year=2000, end_year=2003
+        )
 
         expected_df = pd.DataFrame({
             "lsoa_code": ["E1", "E1"],
@@ -53,4 +58,5 @@ class TestIdentifySafeYears:
             "next_con_gdhi": [30.0, 30.0],
         })
 
+        pd.testing.assert_frame_equal(base_df, df)
         pd.testing.assert_frame_equal(result_df, expected_df)
