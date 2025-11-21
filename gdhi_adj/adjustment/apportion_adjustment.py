@@ -3,39 +3,81 @@
 import numpy as np
 import pandas as pd
 
+from gdhi_adj.utils.transform_helpers import sum_match_check
 
-def apportion_adjustment(df: pd.DataFrame) -> pd.DataFrame:
+
+def calc_non_outlier_proportions(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Calculate the proportion of a non-outlier LSOA to the LAD for each year.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing all GDHI data.
+
+    Returns:
+        pd.DataFrame: DataFrame with proportions for non-outlier LSOAs
+        calculated per year/LAD group.
+    """
+    # Filter into outlier and non-outlier LSOAs that need adjusting
+    mask = df.apply(lambda r: (r["year"] in r["year_to_adjust"]), axis=1)
+
+    # Calculate the total GDHI for each LAD per year
+    df["lad_total"] = df.groupby(["lad_code", "year"])["con_gdhi"].transform(
+        "sum"
+    )
+
+    # Calculate the total GDHI for each LAD per year for non outlier years
+    df["non_outlier_total"] = (
+        df[~mask].groupby(["lad_code", "year"])["con_gdhi"].transform("sum")
+    )
+
+    df["gdhi_proportion"] = df["con_gdhi"] / df["non_outlier_total"]
+
+    return df
+
+
+def apportion_adjustment(
+    df: pd.DataFrame, imputed_df: pd.DataFrame
+) -> pd.DataFrame:
     """
     Apportion the adjustment values to all years for each LSOA.
 
     Args:
         df (pd.DataFrame): DataFrame containing data to adjust.
+        imputed_df (pd.DataFrame): DataFrame containing outlier imputed values.
 
     Returns:
-        pd.DataFrame: DataFrame with outlier values imputed and adjustment
+        pd.DataFrame: DataFrame with outlier values imputed and adjustment.
         values apportioned accross all years within LSOA.
     """
-    adjusted_df = df.copy()
+    adjusted_df = df.merge(
+        imputed_df[["lsoa_code", "year", "imputed_gdhi"]],
+        on=["lsoa_code", "year"],
+        how="left",
+    )
 
-    adjusted_df["lsoa_count"] = adjusted_df.groupby(["lad_code", "year"])[
-        "lsoa_code"
-    ].transform("count")
+    adjusted_df["adjusted_total"] = adjusted_df[
+        "lad_total"
+    ] - adjusted_df.groupby(["lad_code", "year"])["imputed_gdhi"].transform(
+        "sum"
+    )
 
     adjusted_df["adjusted_con_gdhi"] = np.where(
         adjusted_df["imputed_gdhi"].notna(),
         adjusted_df["imputed_gdhi"],
-        adjusted_df["con_gdhi"],
+        adjusted_df["gdhi_proportion"] * adjusted_df["adjusted_total"],
     )
 
-    adjusted_df["adjusted_con_gdhi"] += np.where(
-        adjusted_df["adjustment_val"].notna(),
-        adjusted_df["adjustment_val"] / adjusted_df["lsoa_count"],
-        0,
+    # Adjustment check: sums by (lad_code, year) should match pre- and post-
+    # adjustment
+    sum_match_check(
+        adjusted_df,
+        grouping_cols=["lad_code", "year"],
+        unadjusted_col="con_gdhi",
+        adjusted_col="adjusted_con_gdhi",
+        sum_tolerance=0.000001,
     )
 
-    return adjusted_df.sort_values(by=["lad_code", "year"]).reset_index(
-        drop=True
-    )
+    return adjusted_df
 
 
 def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
@@ -101,26 +143,13 @@ def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
 
     # Adjustment check: sums by (lad_code, year) should match pre- and post-
     # adjustment
-    adjusted_df_check["unadjusted_sum"] = adjusted_df.groupby(
-        ["lad_code", "year"]
-    )["con_gdhi"].transform("sum")
-
-    adjusted_df_check["adjusted_sum"] = adjusted_df_check.groupby(
-        ["lad_code", "year"]
-    )["adjusted_con_gdhi"].transform("sum")
-
-    adjusted_df_check["adjustment_check"] = abs(
-        adjusted_df_check["unadjusted_sum"] - adjusted_df_check["adjusted_sum"]
+    sum_match_check(
+        adjusted_df,
+        grouping_cols=["lad_code", "year"],
+        unadjusted_col="con_gdhi",
+        adjusted_col="adjusted_con_gdhi",
+        sum_tolerance=0.000001,
     )
-
-    adjusted_df_check = adjusted_df_check[
-        adjusted_df_check["adjustment_check"] > 0.000001
-    ]
-
-    if not adjusted_df_check.empty:
-        raise ValueError(
-            "Adjustment check failed: LAD sums do not match after adjustment."
-        )
 
     return adjusted_df.sort_values(by=["lad_code", "year"]).reset_index(
         drop=True

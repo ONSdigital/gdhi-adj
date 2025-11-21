@@ -7,16 +7,14 @@ import pandas as pd
 from gdhi_adj.adjustment.apportion_adjustment import (
     apportion_adjustment,
     apportion_negative_adjustment,
+    calc_non_outlier_proportions,
 )
 from gdhi_adj.adjustment.calc_adjustment import (
-    calc_imputed_adjustment,
-    calc_lad_totals,
     extrapolate_imputed_val,
     interpolate_imputed_val,
 )
-from gdhi_adj.adjustment.filter_adjustment import (
+from gdhi_adj.adjustment.filter_adjustment import (  # filter_component,
     filter_adjust,
-    filter_component,
     filter_year,
 )
 from gdhi_adj.adjustment.flag_adjustment import identify_safe_years
@@ -147,9 +145,12 @@ def run_adjustment(config: dict) -> None:
 
     logger.info("Filtering for data that requires adjustment")
     df_powerbi_output = filter_adjust(df_powerbi_output)
-    df_constrained = filter_component(
-        df_constrained, sas_code_filter, cord_code_filter, credit_debit_filter
-    )
+    # df_constrained = filter_component(
+    #     df_constrained,
+    #     sas_code_filter,
+    #     cord_code_filter,
+    #     credit_debit_filter
+    # )
 
     logger.info("Joining analyst output and constrained DAP output")
     df = join_analyst_constrained_data(df_constrained, df_powerbi_output)
@@ -160,15 +161,11 @@ def run_adjustment(config: dict) -> None:
     logger.info("Pivoting DataFrame long")
     df = pivot_adjustment_long(df)
 
-    logger.info("Calculate LAD total GDHI for each year")
-    lad_totals_df = calc_lad_totals(df)
-    lad_totals_df
-
     logger.info("Filtering data for specified years")
     df = filter_year(df, start_year, end_year)
 
     logger.info(
-        "Flagging rollback yearsfrom: "
+        "Flagging rollback years from: "
         f"{config["user_settings"]["rollback_year_start"]}:"
         f"{config["user_settings"]["rollback_year_end"]}"
     )
@@ -199,11 +196,12 @@ def run_adjustment(config: dict) -> None:
     imputed_df = interpolate_imputed_val(imputed_df)
     imputed_df = extrapolate_imputed_val(df, imputed_df)
 
-    logger.info("Calculating adjustment values based on imputed gdhi")
-    df = calc_imputed_adjustment(df, imputed_df)
+    logger.info("Calculating non-outlier proportions")
+    df = calc_non_outlier_proportions(df)
 
     logger.info("Apportioning adjustment values to all years")
-    df = apportion_adjustment(df)
+    df = apportion_adjustment(df, imputed_df)
+
     if config["user_settings"]["accept_negatives"] is False:
         df = apportion_negative_adjustment(df)
 

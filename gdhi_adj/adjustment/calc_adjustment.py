@@ -4,23 +4,6 @@ import numpy as np
 import pandas as pd
 
 
-def calc_lad_totals(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Calculate the total GDHI for each LAD and year.
-
-    Args:
-        df (pd.DataFrame): DataFrame containing data to calculate totals.
-
-    Returns:
-        pd.DataFrame: DataFrame with aggregated LAD total GDHI for each year.
-    """
-    lad_totals_df = (
-        df.groupby(["lad_code", "year"])["con_gdhi"].agg("sum").reset_index()
-    )
-
-    return lad_totals_df
-
-
 def interpolate_imputed_val(df: pd.DataFrame) -> pd.DataFrame:
     """
     Calculate the imputed value for a given LSOA code where the year that has
@@ -130,39 +113,3 @@ def extrapolate_imputed_val(
     return imputed_df.drop(
         columns=["additional_safe_year", "additional_con_gdhi"]
     )
-
-
-def calc_imputed_adjustment(
-    df: pd.DataFrame,
-    imputed_df: pd.DataFrame,
-) -> pd.DataFrame:
-    """
-    Calculate the adjustment required for imputing constrained values with
-    their respective imputed values.
-
-    Args:
-        df (pd.DataFrame): DataFrame containing all data.
-        imputed_df (pd.DataFrame): DataFrame containing outlier imputed values.
-
-    Returns:
-        adjustment_df (pd.DataFrame): DataFrame containing outlier adjustment
-        values.
-    """
-    adjustment_df = imputed_df[
-        ["lsoa_code", "year", "con_gdhi", "imputed_gdhi"]
-    ].copy()
-
-    adjustment_df["imputed_diff"] = (
-        adjustment_df["con_gdhi"] - adjustment_df["imputed_gdhi"]
-    )
-
-    adjustment_df = df.merge(
-        adjustment_df[["lsoa_code", "year", "imputed_gdhi", "imputed_diff"]],
-        on=["lsoa_code", "year"],
-        how="left",
-    )
-    adjustment_df["adjustment_val"] = adjustment_df.groupby(
-        ["lad_code", "year"]
-    )["imputed_diff"].transform("sum")
-
-    return adjustment_df

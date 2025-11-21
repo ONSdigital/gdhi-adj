@@ -93,3 +93,45 @@ def increment_until_not_in(
         while year in adjust_years_set and year > (limit_year - 1):
             year -= 1
         return year
+
+
+def sum_match_check(
+    df: pd.DataFrame,
+    grouping_cols: list,
+    unadjusted_col: str,
+    adjusted_col: str,
+    sum_tolerance: float = 0.000001,
+):
+    """
+    Check that the sums of adjusted column, matches that of the unadjusted
+    column for the same groupings.
+
+    If the difference exceeds a specified tolerance, raise an error.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing data for sums.
+        grouping_cols: (list): List of columns to group for sums.
+        unadjusted_col (str): Unadjusted column.
+        adjusted_col (str): Adjsuted column
+        sum_tolerance (float): Tolerance for the sums to match, default is
+        based on the floating point error: 0.000001.
+
+    Returns:
+        ValueError: if adjusted and unadjusted sums do not match.
+    """
+    df["unadjusted_sum"] = df.groupby(grouping_cols)[unadjusted_col].transform(
+        "sum"
+    )
+
+    df["adjusted_sum"] = df.groupby(grouping_cols)[adjusted_col].transform(
+        "sum"
+    )
+
+    df["adjustment_check"] = abs(df["unadjusted_sum"] - df["adjusted_sum"])
+
+    df = df[df["adjustment_check"] > sum_tolerance]
+
+    if not df.empty:
+        raise ValueError(
+            "Adjustment check failed: LAD sums do not match after adjustment."
+        )

@@ -4,7 +4,33 @@ import pytest
 from gdhi_adj.adjustment.apportion_adjustment import (
     apportion_adjustment,
     apportion_negative_adjustment,
+    calc_non_outlier_proportions,
 )
+
+
+def test_calc_non_outlier_proportions():
+    """Tests for the calc_non_outlier_proportions function."""
+    df = pd.DataFrame({
+        "lad_code": ["E01", "E01", "E01", "E01"],
+        "year": [2002, 2002, 2002, 2003],
+        "con_gdhi": [5.0, 8.0, 10.0, 15.0],
+        "year_to_adjust": [
+            [2001, 2002], [2001, 2002], [2001, 2002], [2001, 2002],
+        ],
+    })
+
+    result_df = calc_non_outlier_proportions(df)
+
+    expected_df = pd.DataFrame({
+        "lad_code": ["E01", "E01", "E01", "E01"],
+        "year": [2002, 2002, 2002, 2003],
+        "con_gdhi": [5.0, 8.0, 10.0, 15.0],
+        "year_to_adjust": [
+            [2001, 2002], [2001, 2002], [2001, 2002], [2001, 2002],
+        ],
+    })
+
+    pd.testing.assert_frame_equal(result_df, expected_df)
 
 
 class TestApportionAdjustment:
