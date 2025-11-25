@@ -229,12 +229,15 @@ def run_adjustment(config: dict) -> None:
     )
     logger.info("Data saved successfully")
 
+    if config["user_settings"]["accept_negatives"] is False:
+        df = df.drop(columns=["adjusted_con_gdhi"]).rename(
+            columns={"readjusted_con_gdhi": "adjusted_con_gdhi"}
+        )
+
     df = df.drop(
         columns=[
             "con_gdhi",
             "imputed_gdhi",
-            "adjustment_val",
-            "lsoa_count",
         ]
     ).rename(columns={"adjusted_con_gdhi": "con_gdhi"})
 

@@ -102,105 +102,97 @@ class TestApportionAdjustment:
 class TestApportionNegativeAdjustment:
     """Test suite for apportion_negative_adjustment function."""
     def test_apportion_negative_adjustment_negatives(self):
-        """Test apportion_negative_adjustment computes adjusted_con_gdhi
+        """Test apportion_negative_adjustment computes readjusted_con_gdhi
         correctly when adjusted_con_gdhi is negative for a given (lad_code,
         year) group.
         """
 
         df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2", "E3", "E4", "E5", "E6"],
-            "lad_code": ["E01", "E01", "E01", "E02", "E02", "E02"],
-            "year": [2002, 2002, 2002, 2002, 2002, 2002],
-            "con_gdhi": [1.0, 0.2, 4.0, 2.0, 0.0, 0.0],
-            # old column that needs to be overwritten
-            "lsoa_count": [2, 2, 2, 2, 2, 2],
-            "adjustment_val": [-0.6, -0.6, 1.2, 1.0, -0.5, -0.5],
-            "adjusted_con_gdhi": [0.4, -0.4, 5.2, 3.0, -0.5, -0.5],
+            "lsoa_code": ["E1", "E2", "E3", "E4", "E1", "E2", "E3", "E4"],
+            "lad_code": [
+                "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
+            ],
+            "year": [2000, 2000, 2000, 2000, 2001, 2001, 2001, 2001],
+            "con_gdhi": [1.0, 2.0, 3.0, 4.0, 2.0, 3.0, 4.0, 5.0],
+            "lad_total": [10.0, 10.0, 10.0, 10.0, 14.0, 14.0, 14.0, 14.0],
+            "adjusted_con_gdhi": [-0.5, 5.5, -1.0, 6.0, 3.0, 1.0, 4.0, 6.0],
         })
 
         result_df = apportion_negative_adjustment(df)
 
         expected_df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2", "E3", "E4", "E5", "E6"],
-            "lad_code": ["E01", "E01", "E01", "E02", "E02", "E02"],
-            "year": [2002, 2002, 2002, 2002, 2002, 2002],
-            "con_gdhi": [1.0, 0.2, 4.0, 2.0, 0.0, 0.0],
-            "lsoa_count": [2, None, 2, 1, None, None],
-            "adjustment_val": [0.4, 0.4, 0.4, 1.0, 1.0, 1.0],
-            "adjusted_con_gdhi": [0.2, 0.0, 5.0, 2.0, 0.0, 0.0],
-            "negative_diff": [0.0, 0.4, 0.0, 0.0, 0.5, 0.5],
+            "lsoa_code": ["E1", "E2", "E3", "E4", "E1", "E2", "E3", "E4"],
+            "lad_code": [
+                "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
+            ],
+            "year": [2000, 2000, 2000, 2000, 2001, 2001, 2001, 2001],
+            "con_gdhi": [1.0, 2.0, 3.0, 4.0, 2.0, 3.0, 4.0, 5.0],
+            "lad_total": [10.0, 10.0, 10.0, 10.0, 14.0, 14.0, 14.0, 14.0],
+            "adjusted_con_gdhi": [-0.5, 5.5, -1.0, 6.0, 3.0, 1.0, 4.0, 6.0],
+            "min_adjusted_gdhi": [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0],
+            "abs_adjustment_val": [1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0],
+            "over_adjusted_gdhi": [0.5, 6.5, 0.0, 7.0, 3.0, 1.0, 4.0, 6.0],
+            "readjusted_con_gdhi": [
+                0.357, 4.643, 0.0, 5.0, 3.0, 1.0, 4.0, 6.0
+            ],
         })
 
         pd.testing.assert_frame_equal(
-            result_df, expected_df, check_dtype=False
+            result_df, expected_df, check_dtype=False, rtol=0.001,
         )
 
     def test_apportion_negative_adjustment_no_negatives(self):
-        """Test apportion_negative_adjustment returns the same
-        adjusted_con_gdhi values.
+        """Test apportion_negative_adjustment returns the correct adjusted
+        values.
         """
 
         df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2", "E3"],
-            "lad_code": ["E01", "E01", "E01"],
-            "year": [2002, 2002, 2002],
-            "con_gdhi": [5.0, 8.0, 10.0],
-            "lsoa_count": [3, 3, 3],
-            "adjustment_val": [0.6, 0.6, 0.6],
-            "adjusted_con_gdhi": [5.2, 7.6, 10.2],
+            "lsoa_code": ["E1", "E2", "E3", "E4", "E1", "E2", "E3", "E4"],
+            "lad_code": [
+                "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
+            ],
+            "year": [2000, 2000, 2000, 2000, 2001, 2001, 2001, 2001],
+            "con_gdhi": [1.0, 2.0, 3.0, 4.0, 2.0, 3.0, 4.0, 5.0],
+            "lad_total": [10.0, 10.0, 10.0, 10.0, 14.0, 14.0, 14.0, 14.0],
+            "adjusted_con_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
         })
 
         result_df = apportion_negative_adjustment(df)
 
         expected_df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2", "E3"],
-            "lad_code": ["E01", "E01", "E01"],
-            "year": [2002, 2002, 2002],
-            "con_gdhi": [5.0, 8.0, 10.0],
-            "lsoa_count": [3, 3, 3],
-            "adjustment_val": [0.0, 0.0, 0.0],
-            "adjusted_con_gdhi": [5.2, 7.6, 10.2],
-            "negative_diff": [0.0, 0.0, 0.0],
+            "lsoa_code": ["E1", "E2", "E3", "E4", "E1", "E2", "E3", "E4"],
+            "lad_code": [
+                "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
+            ],
+            "year": [2000, 2000, 2000, 2000, 2001, 2001, 2001, 2001],
+            "con_gdhi": [1.0, 2.0, 3.0, 4.0, 2.0, 3.0, 4.0, 5.0],
+            "lad_total": [10.0, 10.0, 10.0, 10.0, 14.0, 14.0, 14.0, 14.0],
+            "adjusted_con_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
+            "min_adjusted_gdhi": [0.5, 0.5, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0],
+            "abs_adjustment_val": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            "over_adjusted_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
+            "readjusted_con_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
         })
 
         pd.testing.assert_frame_equal(
             result_df, expected_df, check_dtype=False
         )
-
-    # def test_apportion_negative_adjustment_zero_lsoa_count(self):
-    #     """Test apportion_negative_adjustment returns ValueError when the
-    #     lsoa_count is zero for a (lad_code, year) group.
-    #     """
-
-    #     df = pd.DataFrame({
-    #         "lsoa_code": ["E1", "E2"],
-    #         "lad_code": ["E01", "E01"],
-    #         "year": [2002, 2002],
-    #         "con_gdhi": [1.0, 0.0],
-    #         "lsoa_count": [0, 0],
-    #         "adjustment_val": [-1.5, -1.5],
-    #         "adjusted_con_gdhi": [-5.0, -1.0],
-    #     })
-
-    #     with pytest.raises(
-    #         ValueError,
-    #         match="Zero LSOA count check failed:"
-    #     ):
-    #         apportion_negative_adjustment(df)
 
     def test_apportion_negative_adjustment_remains_negative(self):
         """Test apportion_negative_adjustment returns ValueError when the
         adjusted_con_gdhi still contains a negative value after adjustment.
+
+        This is a viable scenario of negative lad_total, but this function
+        shouldn't run if negatives are to be accepted.
         """
 
         df = pd.DataFrame({
             "lsoa_code": ["E1", "E2"],
             "lad_code": ["E01", "E01"],
-            "year": [2002, 2002],
-            "con_gdhi": [10.0, 1.0],
-            "lsoa_count": [2, 2],
-            "adjustment_val": [-1.5, -1.5],
-            "adjusted_con_gdhi": [-5.0, 1.0],
+            "year": [2000, 2000],
+            "con_gdhi": [-1.0, -2.0],
+            "lad_total": [-3.0, -3.0],
+            "adjusted_con_gdhi": [-1.0, -2.0],
         })
 
         with pytest.raises(

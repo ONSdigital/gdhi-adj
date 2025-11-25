@@ -111,45 +111,32 @@ def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
     """
     adjusted_df = df.copy()
 
-    adjusted_df["negative_diff"] = np.where(
-        adjusted_df["adjusted_con_gdhi"] < 0,
-        0 - adjusted_df["adjusted_con_gdhi"],
+    adjusted_df["min_adjusted_gdhi"] = df.groupby(["lad_code", "year"])[
+        "adjusted_con_gdhi"
+    ].transform("min")
+
+    adjusted_df["abs_adjustment_val"] = np.where(
+        adjusted_df["min_adjusted_gdhi"] < 0,
+        abs(adjusted_df["min_adjusted_gdhi"]),
         0,
     )
 
-    adjusted_df["adjustment_val"] = adjusted_df.groupby(["lad_code", "year"])[
-        "negative_diff"
-    ].transform("sum")
-
-    adjusted_df["lsoa_count"] = (
-        adjusted_df[adjusted_df["adjusted_con_gdhi"] > 0]
-        .groupby(["lad_code", "year"])["lsoa_code"]
-        .transform("count")
+    adjusted_df["over_adjusted_gdhi"] = (
+        adjusted_df["adjusted_con_gdhi"] + adjusted_df["abs_adjustment_val"]
     )
 
-    zero_lsoa_check = adjusted_df[
-        (adjusted_df["adjusted_con_gdhi"] > 0)
-        & (~adjusted_df["lsoa_count"].map(lambda x: x >= 0))
-    ].empty
-
-    if zero_lsoa_check is False:
-        raise ValueError(
-            "Zero LSOA count check failed: no LSOAs have been found with a "
-            "positive adjusted_con_gdhi value, this will lead to div0 error."
-        )
-
-    adjusted_df["adjusted_con_gdhi"] = np.where(
-        adjusted_df["adjusted_con_gdhi"] > 0,
-        adjusted_df["adjusted_con_gdhi"]
-        - (adjusted_df["adjustment_val"] / adjusted_df["lsoa_count"]),
-        0,
+    adjusted_df["readjusted_con_gdhi"] = (
+        adjusted_df.groupby(["lad_code", "year"])[
+            "over_adjusted_gdhi"
+        ].transform(lambda x: x / x.sum())
+        * adjusted_df["lad_total"]
     )
 
     # Checks after adjustment
     # Check that there are no negative values in adjusted_con_gdhi
     adjusted_df_check = adjusted_df.copy()
     negative_value_check = adjusted_df_check[
-        adjusted_df_check["adjusted_con_gdhi"] < 0
+        adjusted_df_check["readjusted_con_gdhi"] < 0
     ].empty
 
     if negative_value_check is False:
@@ -165,7 +152,7 @@ def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
         adjusted_sum_check_df,
         grouping_cols=["lad_code", "year"],
         unadjusted_col="con_gdhi",
-        adjusted_col="adjusted_con_gdhi",
+        adjusted_col="readjusted_con_gdhi",
         sum_tolerance=0.000001,
     )
 
