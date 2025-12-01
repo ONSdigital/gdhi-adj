@@ -6,6 +6,7 @@ import pytest
 
 from gdhi_adj.cord_preparation.validation_cord_prep import (
     check_lsoa_consistency,
+    check_no_negative_values,
     check_no_nulls,
     check_year_column_completeness,
 )
@@ -146,6 +147,56 @@ class TestNoNullsCheck:
         with pytest.raises(ValueError) as excinfo:
             check_no_nulls(df)
         assert "Null Value Check Failed" in str(excinfo.value)
+
+
+class TestNoNegativeValues:
+    """Tests for check_no_negative_values function."""
+
+    def test_no_negatives_pass(self):
+        """
+        Test that a DataFrame with positive integers and floats passes.
+        """
+        df = pd.DataFrame({
+            'int_col': [1, 2, 0],
+            'float_col': [0.1, 5.5, 100.0]
+        })
+        result = check_no_negative_values(df)
+        pd.testing.assert_frame_equal(df, result)
+
+    def test_has_negative_int(self):
+        """
+        Test that negative integers trigger the ValueError.
+        """
+        df = pd.DataFrame({
+            'val': [10, -5, 20]
+        })
+        with pytest.raises(ValueError) as excinfo:
+            check_no_negative_values(df)
+        assert "Negative Value Check Failed" in str(excinfo.value)
+        assert "val" in str(excinfo.value)
+
+    def test_has_negative_float(self):
+        """
+        Test that negative floats trigger the ValueError.
+        """
+        df = pd.DataFrame({
+            'val': [1.0, 0.5, -0.01]
+        })
+        with pytest.raises(ValueError) as excinfo:
+            check_no_negative_values(df)
+        assert "Negative Value Check Failed" in str(excinfo.value)
+
+    def test_ignores_string_columns(self):
+        """
+        Test that non-numeric columns (strings) are ignored,
+        even if they contain dashes.
+        """
+        df = pd.DataFrame({
+            'numeric': [1, 2, 3],
+            'string_col': ['-5', 'positive', 'text']
+        })
+        result = check_no_negative_values(df)
+        pd.testing.assert_frame_equal(df, result)
 
 
 class TestYearCompleteness:

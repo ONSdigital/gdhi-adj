@@ -95,6 +95,47 @@ def check_no_nulls(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def check_no_negative_values(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Checks all numeric columns in the DataFrame to ensure
+    no values are less than 0.
+
+    This function isolates numeric columns (integers and floats)
+    and verifies that all values are non-negative. It ignores
+    non-numeric columns (e.g., strings).
+
+    Args:
+        df (pd.DataFrame): The input DataFrame to be validated.
+
+    Returns:
+        pd.DataFrame: The original DataFrame, unchanged, for method chaining.
+
+    Raises:
+        ValueError: If any negative values are found in numeric columns.
+    """
+    logger.info("Starting negative value check on numeric columns.")
+
+    # Select only numeric columns to avoid errors with strings/objects
+    numeric_df = df.select_dtypes(include=["number"])
+
+    if (numeric_df < 0).any().any():
+        # Find columns with negative values
+        neg_counts = (numeric_df < 0).sum()
+        columns_with_neg = neg_counts[neg_counts > 0].to_dict()
+
+        error_msg = (
+            f"Negative Value Check Failed: "
+            "Found negative numbers in numeric columns. "
+            f"Columns with negatives: {columns_with_neg}"
+        )
+        logger.error(error_msg)
+        raise ValueError(error_msg)
+
+    logger.info("Negative value check passed: No negative values found.")
+
+    return df
+
+
 def check_year_column_completeness(df: pd.DataFrame) -> pd.DataFrame:
     """
     Verifies that the DataFrame contains a complete set of
