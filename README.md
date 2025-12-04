@@ -272,7 +272,7 @@ stable, and meaningful as possible.
 
 3. **For users: Install Spyder 6**
 4. **Sync Subnational Statistics sharepoint to OneDrive:**
-    - Go to the Subnational Staistics sharepoint, and open the regional accounts folder, then go into the GDHI sub folder, and open '2025_manual_adjustments' folder, then in the menu row above the file path, click sync, and then open to allow it to open and sync to OneDrive.
+    - Go to the Subnational Staistics sharepoint, and open the regional accounts folder, then go into the GDHI sub folder, then in the menu row above the file path, click sync, and then open to allow it to open and sync to OneDrive.
 5. **Install the required packages:**
     - In the top level gdhi_adj folder where you can see the config folder, right click in blank space and clikc open in terminal
    ```sh
@@ -303,7 +303,7 @@ setup_gdhi_env.bat
 
 3. **For developers: install VS Code**
 4. **Sync Subnational Statistics sharepoint to OneDrive:**
-    - Go to the Subnational Staistics sharepoint, and open the regional accounts folder, then go into the GDHI sub folder, and open '2025_manual_adjustments' folder, then in the menu row above the file path, click sync, and then open to allow it to open and sync to OneDrive.
+    - Go to the Subnational Staistics sharepoint, and open the regional accounts folder, then go into the GDHI sub folder, then in the menu row above the file path, click sync, and then open to allow it to open and sync to OneDrive.
 5. **Activate the virtual environment:**
    ```sh
    conda init
