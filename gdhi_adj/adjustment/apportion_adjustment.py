@@ -14,8 +14,8 @@ def calc_non_outlier_proportions(df: pd.DataFrame) -> pd.DataFrame:
         df (pd.DataFrame): DataFrame containing all GDHI data.
 
     Returns:
-        pd.DataFrame: DataFrame with proportions for non-outlier LSOAs
-        calculated per year/LAD group.
+        pd.DataFrame: DataFrame with LAD totals and proportions for non-outlier
+            LSOAs calculated per year/LAD group.
     """
     # Filter into outlier and non-outlier LSOAs that need adjusting
     mask = df.apply(lambda r: (r["year"] in r["year_to_adjust"]), axis=1)
@@ -63,7 +63,7 @@ def apportion_adjustment(
 
     Returns:
         pd.DataFrame: DataFrame with outlier values imputed and adjustment.
-        values apportioned accross all years within LSOA.
+            values apportioned accross all years within LSOA.
     """
     adjusted_df = df.merge(
         imputed_df[["lsoa_code", "year", "imputed_gdhi"]],
@@ -107,7 +107,7 @@ def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
 
     Returns:
         pd.DataFrame: DataFrame with negative adjustment values apportioned
-        accross all years within LSOA.
+            accross all years within LSOA.
     """
     adjusted_df = df.copy()
 
@@ -162,12 +162,13 @@ def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def apportion_rollback_years(df: pd.DataFrame) -> pd.DataFrame:
-    """Continue to apportion the adjustments for years that are flagged as
+    """
+    Continue to apportion the adjustments for years that are flagged as
     rollback years.
 
     Args:
         df (pd.DataFrame): DataFrame containing all data including adjusted
-        and rollback years.
+            and rollback years.
 
     Returns:
         pd.DataFrame: DataFrame with reapportioned values for rollback years.

@@ -25,7 +25,10 @@ def identify_safe_years(
         start_year (int): The starting year for the data range.
         end_year (int): The ending year for the data range.
     Returns:
-        pd.DataFrame: DataFrame with additional columns for safe years.
+        df (pd.DataFrame): DataFrame with additional columns for safe years.
+        safe_years_df (pd.DataFrame): DataFrame containing only the rows
+            that need adjustment with non-outlier year values either side of
+            outlier years.
     """
     # ensure year_to_adjust is list-like and normalize missing
     df["year_to_adjust"] = df["year_to_adjust"].apply(ensure_list)
