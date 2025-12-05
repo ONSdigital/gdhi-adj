@@ -909,6 +909,66 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="mapping_main">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gdhi_adj.mapping.mapping_main.aggregate_lad" class="md-nav__link">
+    <span class="md-ellipsis">
+      aggregate_lad
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gdhi_adj.mapping.mapping_main.clean_validate_mapper" class="md-nav__link">
+    <span class="md-ellipsis">
+      clean_validate_mapper
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gdhi_adj.mapping.mapping_main.join_mapper" class="md-nav__link">
+    <span class="md-ellipsis">
+      join_mapper
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gdhi_adj.mapping.mapping_main.reformat" class="md-nav__link">
+    <span class="md-ellipsis">
+      reformat
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gdhi_adj.mapping.mapping_main.rename_s30_to_lau" class="md-nav__link">
+    <span class="md-ellipsis">
+      rename_s30_to_lau
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gdhi_adj.mapping.mapping_main.run_mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      run_mapping
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1110,7 +1170,7 @@ reference for the technical implementation of the <code>gdhi-adj</code> codebase
 
     <div class="doc doc-contents first">
 
-        <p>Title for pipeline.py module</p>
+        <p>Run each module of the pipeline based on config parameters.</p>
 
 
 
@@ -1143,9 +1203,38 @@ reference for the technical implementation of the <code>gdhi-adj</code> codebase
 
     <div class="doc doc-contents ">
 
-        <p>Run the GDHI adjustment pipeline.
-Args:
-    config_path (str): Path to the configuration file.</p>
+        <p>Run the GDHI adjustment pipeline.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>config_path</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to the configuration file.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -3765,7 +3854,7 @@ Returns:
 
     <div class="doc doc-contents first">
 
-        <p>Mapping functions for local authority units mapped to LADs.</p>
+        <p>Module for local authority units mapped to LADs.</p>
 
 
 
@@ -3786,6 +3875,450 @@ Returns:
 
 
 
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="gdhi_adj.mapping.mapping_main.aggregate_lad" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">aggregate_lad</span><span class="p">(</span><span class="n">df</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Aggregate values on LADs and other identifiers.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>df</code>
+            </td>
+            <td>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>DataFrame containing adjusted data with LAD codes
+joined.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pd.DataFrame: DataFrame containing value columns now aggregated by
+sum on identifier columns.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="gdhi_adj.mapping.mapping_main.clean_validate_mapper" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clean_validate_mapper</span><span class="p">(</span><span class="n">mapper_df</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Subset the mapper and get a unique DataFrame of values.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mapper_df</code>
+            </td>
+            <td>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>DataFrame containing data used to join</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pd.DataFrame: DataFrame with unique values for LADs and LAUs.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="gdhi_adj.mapping.mapping_main.join_mapper" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">join_mapper</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">mapper_df</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Join mapper containing a lookup of LAU and LAD values, to adjusted data.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>df</code>
+            </td>
+            <td>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>DataFrame containing adjusted data.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mapper_df</code>
+            </td>
+            <td>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>DataFrame containing LAU to LAD lookup.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pd.DataFrame: DataFrame with LADs joined on LAU codes.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="gdhi_adj.mapping.mapping_main.reformat" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">reformat</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">original_columns</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Rename LAD columns for end format.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>df</code>
+            </td>
+            <td>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>DataFrame containing adjusted data and LAD codes.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>original_columns</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>List of columns from original DataFrame.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pd.DataFrame: Renamed DataFrame with desired columns.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="gdhi_adj.mapping.mapping_main.rename_s30_to_lau" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">rename_s30_to_lau</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Rename column containing S30 area codes to lau_</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>config</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Configuration dictionary containing user settings and
+pipeline settings.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>df</code>
+            </td>
+            <td>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>DataFrame containing adjusted data.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td></td>            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pd.DataFrame: DataFrame with area code column renamed if S30 codes
+have been found, otherwise returns original DataFrame.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>need_mapping</code></td>            <td>
+                  <code><span title="Boolean">Boolean</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Returned boolean to show mapping is needed.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="gdhi_adj.mapping.mapping_main.run_mapping" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">run_mapping</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">())</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Run the mapping steps for the GDHI adjustment pipeline.</p>
+<p>This function performs the follwing steps:
+1. Load the input data.
+2. Rename column containing S30 values to LAU and verify mapping is
+    required.
+If mapping is required:
+3. Load in and clean mapper containing LAU to LAD lookup.
+4. Join LAU-LAD mapper to adjusted data.
+5. Aggregate to LAD if specified in config.
+6. Reformat and save output.</p>
+
+
+    </div>
+
+</div>
 
 
 
@@ -4739,7 +5272,7 @@ schema.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="December 4, 2025 15:15:13 UTC">December 4, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="December 5, 2025 09:12:16 UTC">December 5, 2025</span>
   </span>
 
     
