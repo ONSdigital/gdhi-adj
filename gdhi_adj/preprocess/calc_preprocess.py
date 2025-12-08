@@ -73,6 +73,10 @@ def calc_zscores(
     # Mask for when rollback_flag is false
     mask = ~df["rollback_flag"]
 
+    # Replace inf with NaN in all numeric columns
+    numeric_cols = df.select_dtypes(include=[np.number]).columns
+    df[numeric_cols] = df[numeric_cols].replace([np.inf, -np.inf], np.nan)
+
     # If the value column is 1, the data has been rolled back so should not be
     # flagged, else flag based on zscore
     # Calculate z-scores when rollback_flag is false
