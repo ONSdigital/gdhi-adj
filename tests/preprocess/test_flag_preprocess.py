@@ -2,6 +2,7 @@ import pandas as pd
 
 from gdhi_adj.preprocess.flag_preprocess import (
     create_master_flag,
+    extract_start_end_years,
     flag_rollback_years,
 )
 
@@ -81,3 +82,22 @@ class TestMasterFlag:
         })
 
         pd.testing.assert_frame_equal(result_df, expected_df)
+
+
+def test_extract_start_end_years():
+    """Test the extract_start_end_years function."""
+    df = pd.DataFrame({
+        "lsoa_code": ["E1", "E2"],
+        "2010": [1.0, 2.0],
+        "2011": [1.0, 2.0],
+        "2012": [1.0, 2.0],
+        "CONLSOA_2010": [1.0, 2.0],
+        "CONLSOA_2011": [1.0, 2.0],
+        "CONLSOA_2012": [1.0, 2.0],
+        "other_col": [1.0, 2.0],
+    })
+
+    start_year, end_year = extract_start_end_years(df)
+
+    assert start_year == 2010
+    assert end_year == 2012

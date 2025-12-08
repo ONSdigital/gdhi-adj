@@ -1,14 +1,12 @@
 [user_settings]
 # Module selection: Set to true to run module, not recommended to run multiple
 # modules at once.
-preprocessing = false
+preprocessing = true
 adjustment = false
 mapping = false
-cord_preparation = true
+cord_preparation = false
 # Common settings
 local_or_shared = "shared" # "local" or "shared"
-start_year = 2010
-end_year = 2023
 output_data = true
 output_data_prefix = "test"
 rollback_year_start = 2010
@@ -21,7 +19,7 @@ zscore_upper_threshold = 3.0 # zscore flagged if it is above this threshold
 iqr_lower_quantile = 0.25 # quantile for IQR lower bound
 iqr_upper_quantile = 0.75 # quantile for IQR upper bound
 iqr_multiplier = 1.0 # multiplier for calculating IQR bounds
-transaction_name = "Imputed Social Contributions Received"
+transaction_name = "Social Benefits Received – Social Assistance Benefits in Cash"
 # Adjustment settings
 sas_code_filter = "G866BTR"
 cord_code_filter = "D75"

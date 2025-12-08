@@ -274,7 +274,7 @@ stable, and meaningful as possible.
 4. **Sync Subnational Statistics sharepoint to OneDrive:**
     - Go to the Subnational Staistics sharepoint, and open the regional accounts folder, then go into the GDHI sub folder, then in the menu row above the file path, click sync, and then open to allow it to open and sync to OneDrive.
 5. **Install the required packages:**
-    - In the top level gdhi_adj folder where you can see the config folder, right click in blank space and clikc open in terminal
+    - In the top level gdhi_adj folder where you can see the config folder, right click in blank space and click open in terminal
    ```sh
    pip install -e .
    ```
@@ -284,7 +284,7 @@ stable, and meaningful as possible.
 ### 👨‍💻 Developer Installation:
 
 You can either follow the steps below manually **or** run the automated setup script:
-- If a condaHTTPS timeout error or similar occurs, and the pip.ini and/or the .condarc file already existed. Try deleting your original pip.ini and .condarc files, and running the .bat script again.
+- If a condaHTTPS timeout error or similar occurs, and the pip.ini and/or the .condarc file already exist. Try deleting your original pip.ini and .condarc files, and running the .bat script again.
 
 ```sh
 setup_gdhi_env.bat
@@ -346,11 +346,6 @@ setup_gdhi_env.bat
     - For preprocessing the Regional Accounts data, it needs to be filtered by transaction_name in the user_settings.
       ```
       transaction_name = "Compensation of employees"
-      ```
-    - Check the years for filtering data (this is used in both preprocessing and adjustment)
-      ```
-      start_year = 2010
-      end_year = 2023
       ```
     - Check the component filters for the constrained data, match the respective components of the unconstrained data.
       ```
