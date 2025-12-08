@@ -11,6 +11,8 @@ start_year = 2010
 end_year = 2023
 output_data = true
 output_data_prefix = "test"
+rollback_year_start = 2010
+rollback_year_end = 2014
 # Preprocessing settings
 zscore_calculation = true # Set to true if you want to run z-score calculation
 iqr_calculation = true # Set to true if you want to run IQR calculation
@@ -24,6 +26,8 @@ transaction_name = "Imputed Social Contributions Received"
 sas_code_filter = "G866BTR"
 cord_code_filter = "D75"
 credit_debit_filter = "D"
+accept_negatives = false
+# Set to true to keep negative values and not run apportion_negative_adjustment
 # Mapping settings
 # CORD preparation settings
 
@@ -35,12 +39,14 @@ output_preprocess_schema_path = "output_preprocess_schema.toml"
 input_adj_schema_name = "input_adj_schema.toml"
 input_constrained_schema_name = "input_constrained_schema.toml"
 input_unconstrained_schema_name = "input_unconstrained_schema.toml"
+input_mapping_lau_lad_schema_name = "input_lau_lad_schema.toml"
 output_adjustment_schema_path = "output_adjustment_schema.toml"
+output_mapping_schema_path = "output_mapping_schema.toml"
 output_cord_prep_schema_path = "output_cord_prep_schema.toml"
 
 [preprocessing_shared_settings]
 #To run from SharePoint, you need to to go the Subnational Statistics - Regional Accounts
-#sharepoint site, go into the subfolder 'GDHI' and open '2025_manual_adjustments'
+#sharepoint site, go into the subfolder 'GDHI'
 #and click the 'sync' button to sync to your local OneDrive.
 input_dir = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/"
 input_unconstrained_file_path = "DAP_exported_311025/GDHI_Disclosure_CIS_BIDS_Total_Benefits_Unconstrained.csv"
@@ -51,11 +57,11 @@ output_filename = "manual_adj_preprocessing_output.csv" #Change name of file her
 
 [adjustment_shared_settings]
 #To run from SharePoint, you need to to go the Subnational Statistics - Regional Accounts
-#sharepoint site, go into the subfolder 'GDHI' and open '2025_manual_adjustments'
+#sharepoint site, go into the subfolder 'GDHI'
 #and click the 'sync' button to sync to your local OneDrive.
 input_adj_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/PowerBI_Tool/gdhi_manual_adj_preprocessed_SBRSS_output_test_analyst_assessment_DUMMY.csv"
-input_constrained_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/DAP_Exported/GDHI_Preproc_HMRC_SBRSS_Constrained.csv"
-input_unconstrained_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/DAP_Exported/GDHI_Preproc_HMRC_SBRSS_Unconstrained.csv"
+input_constrained_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/DAP_Exported_311025/GDHI_Disclosure_HMRC_COE_ESC_Constrained_names_fixed.csv"
+input_unconstrained_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/DAP_Exported_311025/GDHI_Disclosure_HMRC_COE_ESC_Unconstrained_names_fixed.csv"
 output_dir = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/Adjustment/"
 interim_filename =  "manual_adj_adjustments_interim_QA.csv" #Change name of file here
 output_filename = "manual_adj_adjustments_output.csv" #Change name of file here
@@ -78,9 +84,7 @@ interim_filename = "manual_adj_preprocessing_interim_scores.csv" #Change name of
 output_filename = "manual_adj_preprocessed_output.csv" #Change name of file here
 
 [adjustment_local_settings]
-#To run from SharePoint, you need to to go the Subnational Statistics - Regional Accounts
-#sharepoint site, go into the subfolder 'GDHI' and open '2025_manual_adjustments'
-#and click the 'sync' button to sync to your local OneDrive.
+#Match below local settings to locations of files stored locally
 input_adj_file_path = "D:/gdhi/Testing_Data/gdhi_adj_dummy.csv"
 input_constrained_file_path = "D:/gdhi/Testing_Data/gdhi_adj_constrained_dummy.csv"
 input_unconstrained_file_path = "D:/gdhi/Testing_Data/gdhi_adj_unconstrained_dummy.csv"
@@ -88,27 +92,15 @@ output_dir = "D:/gdhi/Testing_Data/Output/"
 interim_filename =  "manual_adj_adjustments_interim_QA.csv" #Change name of file here
 output_filename = "gdhi_manual_adj_adjusted_output.csv" #Change name of file here
 
-[mapping]
-map_lau_lad = true
-aggregate_to_lad = true
-data_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/Adjustment/"
-mapper_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Mappers/"
-data_file = "test_manual_adj_adjustments_output.csv"
-lau_lad_mapper_file = "LAD_(April_2025)_to_LAU1_to_ITL3_to_ITL2_to_ITL1_(January_2025)_Lookup_in_the_UK.csv"
+[mapping_settings]
+input_adj_file_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/Adjustment/"
+input_adj_file_name = "test_manual_adj_adjustments_output.csv"
+input_lau_lad_mapper_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Mappers/"
+# Lookup found in ONS Open Geography Portal
+input_lau_lad_mapper_file = "LAD_(April_2025)_to_LAU1_to_ITL3_to_ITL2_to_ITL1_(January_2025)_Lookup_in_the_UK.csv"
 output_dir =  "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/Mapping/"
-output_file = "manual_adj_adjustments_output_lad.csv"
-lau_lad_schema_name = "input_lau_lad_schema.toml"
+output_filename = "manual_adj_adjustments_output_lad.csv"
+
 data_lad_code = "lad_code"
 data_lad_name = "lad_name"
-
-mapper_lau_code = "LAU121CD"
-mapper_lau_name = "LAU121NM"
-
-mapper_lad_code = "LAD20CD"
-mapper_lad_name = "LAD20NM"
-
-use_lad_names = true
-save_intermediate = true
-save_final = true
-validate_mapper = false
-validate_data = false
+aggregate_to_lad = false
