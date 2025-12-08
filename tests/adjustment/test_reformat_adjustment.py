@@ -10,13 +10,13 @@ from gdhi_adj.adjustment.reformat_adjustment import (
 def test_reformat_adjust_col():
     """Test the reformat_adjust_col function."""
     df = pd.DataFrame({
-        "adjust": ["TRUE", "FALSE", None, "TRUE", "FALSE"],
+        "adjust": ["TRUE", "FALSE", None, "True", " true ", " ", "TrUe"],
     })
 
     result_df = reformat_adjust_col(df)
 
     expected_df = pd.DataFrame({
-        "adjust": [True, False, False, True, False],
+        "adjust": [True, False, False, True, True, False, True],
     })
 
     pd.testing.assert_frame_equal(result_df, expected_df)
