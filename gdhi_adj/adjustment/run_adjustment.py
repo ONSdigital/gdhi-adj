@@ -170,8 +170,8 @@ def run_adjustment(config: dict) -> None:
 
     logger.info(
         "Flagging rollback years from: "
-        f"{config["user_settings"]["rollback_year_start"]}:"
-        f"{config["user_settings"]["rollback_year_end"]}"
+        f"{config['user_settings']['rollback_year_start']}:"
+        f"{config['user_settings']['rollback_year_end']}"
     )
     df = calc_rate_of_change(
         df,
