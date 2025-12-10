@@ -31,6 +31,12 @@ from gdhi_adj.adjustment.reformat_adjustment import (
     reformat_adjust_col,
     reformat_year_col,
 )
+from gdhi_adj.adjustment.validation_adjustment import (
+    check_adjust_lsoa_count,
+    check_adjust_year_not_empty,
+    check_lsoas_flagged,
+    check_years_flagged,
+)
 from gdhi_adj.preprocess.calc_preprocess import calc_rate_of_change
 from gdhi_adj.preprocess.flag_preprocess import flag_rollback_years
 from gdhi_adj.utils.helpers import read_with_schema, write_with_schema
@@ -161,6 +167,12 @@ def run_adjustment(config: dict) -> None:
 
     logger.info("Pivoting DataFrame long")
     df = pivot_adjustment_long(df)
+
+    logger.info("Validating adjustment data")
+    check_adjust_lsoa_count(df)
+    check_lsoas_flagged(df)
+    check_years_flagged(df)
+    check_adjust_year_not_empty(df)
 
     logger.info("Filtering data for specified years")
     df = filter_year(df, start_year, end_year)

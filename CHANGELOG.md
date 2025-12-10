@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - GDHIDAP-59: negative value apportionment after adjustment.
 - GDHIDAP-65: integrated mapper functions into main pipeline.
 - GDHIDAP-70: GitHub open repository security and guidance.
+- GDHIDAP-74: Add adjustment validation checks.
 
 ### Changed
 - Adjustment values now determined by interpolation/ extrapolation.
