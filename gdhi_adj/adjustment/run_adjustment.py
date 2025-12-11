@@ -32,7 +32,6 @@ from gdhi_adj.adjustment.reformat_adjustment import (
     reformat_year_col,
 )
 from gdhi_adj.adjustment.validation_adjustment import (
-    check_adjust_lsoa_count,
     check_adjust_year_not_empty,
     check_lsoas_flagged,
     check_years_flagged,
@@ -169,7 +168,6 @@ def run_adjustment(config: dict) -> None:
     df = pivot_adjustment_long(df)
 
     logger.info("Validating adjustment data")
-    check_adjust_lsoa_count(df)
     check_lsoas_flagged(df)
     check_years_flagged(df)
     check_adjust_year_not_empty(df)
