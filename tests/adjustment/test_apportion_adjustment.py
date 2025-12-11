@@ -103,7 +103,7 @@ class TestApportionAdjustment:
 class TestApportionNegativeAdjustment:
     """Test suite for apportion_negative_adjustment function."""
     def test_apportion_negative_adjustment_negatives(self):
-        """Test apportion_negative_adjustment computes readjusted_con_gdhi
+        """Test apportion_negative_adjustment computes adjusted_con_gdhi
         correctly when adjusted_con_gdhi is negative for a given (lad_code,
         year) group.
         """
@@ -129,11 +129,13 @@ class TestApportionNegativeAdjustment:
             "year": [2000, 2000, 2000, 2000, 2001, 2001, 2001, 2001],
             "con_gdhi": [1.0, 2.0, 3.0, 4.0, 2.0, 3.0, 4.0, 5.0],
             "lad_total": [10.0, 10.0, 10.0, 10.0, 14.0, 14.0, 14.0, 14.0],
-            "adjusted_con_gdhi": [-0.5, 5.5, -1.0, 6.0, 3.0, 1.0, 4.0, 6.0],
+            "previously_adjusted_con_gdhi": [
+                -0.5, 5.5, -1.0, 6.0, 3.0, 1.0, 4.0, 6.0
+            ],
             "min_adjusted_gdhi": [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0],
             "abs_adjustment_val": [1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0],
             "over_adjusted_gdhi": [0.5, 6.5, 0.0, 7.0, 3.0, 1.0, 4.0, 6.0],
-            "readjusted_con_gdhi": [
+            "adjusted_con_gdhi": [
                 0.357, 4.643, 0.0, 5.0, 3.0, 1.0, 4.0, 6.0
             ],
         })
@@ -168,11 +170,13 @@ class TestApportionNegativeAdjustment:
             "year": [2000, 2000, 2000, 2000, 2001, 2001, 2001, 2001],
             "con_gdhi": [1.0, 2.0, 3.0, 4.0, 2.0, 3.0, 4.0, 5.0],
             "lad_total": [10.0, 10.0, 10.0, 10.0, 14.0, 14.0, 14.0, 14.0],
-            "adjusted_con_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
+            "previously_adjusted_con_gdhi": [
+                0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0
+            ],
             "min_adjusted_gdhi": [0.5, 0.5, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0],
             "abs_adjustment_val": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             "over_adjusted_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
-            "readjusted_con_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
+            "adjusted_con_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
         })
 
         pd.testing.assert_frame_equal(
@@ -218,7 +222,7 @@ class TestApportionRollbackYears:
             "year": [2014, 2014, 2015, 2015, 2016, 2016, 2017, 2017],
             "con_gdhi": [5.0, 15.0, 15.0, 15.0, 16.0, 24.0, 15.0, 35.0],
             "lad_total": [20.0, 20.0, 30.0, 30.0, 40.0, 40.0, 50.0, 50.0],
-            "readjusted_con_gdhi": [
+            "adjusted_con_gdhi": [
                 6.0, 14.0, 14.0, 16.0, 17.0, 23.0, 16.0, 34.0
             ],
             "rollback_flag": [
@@ -236,7 +240,7 @@ class TestApportionRollbackYears:
             "year": [2014, 2014, 2015, 2015, 2016, 2016, 2017, 2017],
             "con_gdhi": [5.0, 15.0, 15.0, 15.0, 16.0, 24.0, 15.0, 35.0],
             "lad_total": [20.0, 20.0, 30.0, 30.0, 40.0, 40.0, 50.0, 50.0],
-            "readjusted_con_gdhi": [
+            "adjusted_con_gdhi": [
                 6.0, 14.0, 14.0, 16.0, 17.0, 23.0, 16.0, 34.0
             ],
             "rollback_flag": [
@@ -252,7 +256,7 @@ class TestApportionRollbackYears:
         )
 
     def test_apportion_rollback_years_no_rollback(self):
-        """Test apportion_rollback_years returns unchanged readjusted_con_gdhi
+        """Test apportion_rollback_years returns unchanged adjusted_con_gdhi
         when rollback_flag is False for all rows.
         """
         df = pd.DataFrame({
@@ -261,7 +265,7 @@ class TestApportionRollbackYears:
             "year": [2014, 2014, 2016, 2016],
             "con_gdhi": [5.0, 15.0, 6.0, 14.0],
             "lad_total": [20.0, 20.0, 20.0, 20.0],
-            "readjusted_con_gdhi": [5.0, 15.0, 6.0, 14.0],
+            "adjusted_con_gdhi": [5.0, 15.0, 6.0, 14.0],
             "rollback_flag": [False, False, False, False],
         })
 
@@ -273,7 +277,7 @@ class TestApportionRollbackYears:
             "year": [2014, 2014, 2016, 2016],
             "con_gdhi": [5.0, 15.0, 6.0, 14.0],
             "lad_total": [20.0, 20.0, 20.0, 20.0],
-            "readjusted_con_gdhi": [5.0, 15.0, 6.0, 14.0],
+            "adjusted_con_gdhi": [5.0, 15.0, 6.0, 14.0],
             "rollback_flag": [False, False, False, False],
             "rollback_con_gdhi": [5.0, 15.0, 6.0, 14.0],
         })

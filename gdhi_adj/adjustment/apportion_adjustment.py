@@ -109,11 +109,13 @@ def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: DataFrame with negative adjustment values apportioned
             accross all years within LSOA.
     """
-    adjusted_df = df.copy()
+    adjusted_df = df.rename(
+        columns={"adjusted_con_gdhi": "previously_adjusted_con_gdhi"}
+    )
 
-    adjusted_df["min_adjusted_gdhi"] = df.groupby(["lad_code", "year"])[
-        "adjusted_con_gdhi"
-    ].transform("min")
+    adjusted_df["min_adjusted_gdhi"] = adjusted_df.groupby(
+        ["lad_code", "year"]
+    )["previously_adjusted_con_gdhi"].transform("min")
 
     adjusted_df["abs_adjustment_val"] = np.where(
         adjusted_df["min_adjusted_gdhi"] < 0,
@@ -122,10 +124,11 @@ def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     adjusted_df["over_adjusted_gdhi"] = (
-        adjusted_df["adjusted_con_gdhi"] + adjusted_df["abs_adjustment_val"]
+        adjusted_df["previously_adjusted_con_gdhi"]
+        + adjusted_df["abs_adjustment_val"]
     )
 
-    adjusted_df["readjusted_con_gdhi"] = (
+    adjusted_df["adjusted_con_gdhi"] = (
         adjusted_df.groupby(["lad_code", "year"])[
             "over_adjusted_gdhi"
         ].transform(lambda x: x / x.sum())
@@ -136,7 +139,7 @@ def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
     # Check that there are no negative values in adjusted_con_gdhi
     adjusted_df_check = adjusted_df.copy()
     negative_value_check = adjusted_df_check[
-        adjusted_df_check["readjusted_con_gdhi"] < 0
+        adjusted_df_check["adjusted_con_gdhi"] < 0
     ].empty
 
     if negative_value_check is False:
@@ -152,7 +155,7 @@ def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
         adjusted_sum_check_df,
         grouping_cols=["lad_code", "year"],
         unadjusted_col="con_gdhi",
-        adjusted_col="readjusted_con_gdhi",
+        adjusted_col="adjusted_con_gdhi",
         sum_tolerance=0.000001,
     )
 
@@ -179,12 +182,12 @@ def apportion_rollback_years(df: pd.DataFrame) -> pd.DataFrame:
     # Get the last rollback year's gdhi per lsoa and sum per lad
     lsoa_max_rollback_gdhi = (
         adjusted_df[adjusted_df["year"] == max_rollback_year]
-        .groupby("lsoa_code")["readjusted_con_gdhi"]
+        .groupby("lsoa_code")["adjusted_con_gdhi"]
         .min()
     )
     lad_max_rollback_sums = (
         adjusted_df[adjusted_df["year"] == max_rollback_year]
-        .groupby("lad_code")["readjusted_con_gdhi"]
+        .groupby("lad_code")["adjusted_con_gdhi"]
         .sum()
     )
 
@@ -198,7 +201,7 @@ def apportion_rollback_years(df: pd.DataFrame) -> pd.DataFrame:
                 / adjusted_df["lad_code"].map(lad_max_rollback_sums)
             )
         ),
-        adjusted_df["readjusted_con_gdhi"],
+        adjusted_df["adjusted_con_gdhi"],
     )
 
     # Adjustment check: sums by (lad_code, year) should match pre- and post-
