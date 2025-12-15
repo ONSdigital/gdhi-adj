@@ -103,7 +103,7 @@ def check_years_flagged(df: pd.DataFrame) -> pd.DataFrame:
     flagged_full_years_lsoas = flagged_years["lsoa_code"].unique().tolist()
 
     if flagged_years.empty:
-        logger.warning("All LSOAs have at least some years as non outliers.")
+        logger.info("All LSOAs have at least some years as non-outliers.")
     else:
         error_msg = (
             "The following lsoa_codes have all years marked for adjustment: "
@@ -127,8 +127,8 @@ def check_adjust_year_not_empty(df: pd.DataFrame) -> pd.DataFrame:
             function to be used in method chaining (e.g., .pipe()).
 
     Raises:
-        ValueError: If every year within an 'lsoa_code' is marked for
-            adjustment.
+        ValueError: If an LSOA marked for adjustment does not have a year
+            specified to adjust.
     """
     adjust_df = df[["lsoa_code", "adjust", "year_to_adjust"]].copy()
 
