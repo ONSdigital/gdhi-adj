@@ -24,6 +24,7 @@ All notable changes to this project will be documented in this file.
 - Vectorised applying adjustment instead of for loop.
 - GDHIDAP-60: updated methodology for adjustments.
 - GDHIDAP-72: convert adjust str values to lower case before reformat.
+- GDHIDAP-75: update adjusted constrained value assignment in runner.
 
 ### Deprecated
 

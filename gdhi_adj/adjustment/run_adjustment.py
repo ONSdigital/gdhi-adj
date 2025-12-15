@@ -243,17 +243,13 @@ def run_adjustment(config: dict) -> None:
     )
     logger.info("Data saved successfully")
 
-    if config["user_settings"]["accept_negatives"] is False:
-        df = df.drop(columns=["adjusted_con_gdhi"]).rename(
-            columns={"readjusted_con_gdhi": "adjusted_con_gdhi"}
-        )
-
     df = df.drop(
         columns=[
             "con_gdhi",
             "imputed_gdhi",
+            "adjusted_con_gdhi",
         ]
-    ).rename(columns={"adjusted_con_gdhi": "con_gdhi"})
+    ).rename(columns={"rollback_con_gdhi": "con_gdhi"})
 
     logger.info("Pivoting final DataFrame wide for exporting")
     df = pivot_wide_final_dataframe(df)
