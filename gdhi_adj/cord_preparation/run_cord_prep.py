@@ -67,6 +67,11 @@ def run_cord_preparation(config: dict) -> None:
     logger.info("Reading in mapped data for CORD preparation")
     df = pd.read_csv(input_cord_file_path)
 
+    logger.info("Performing validation checks on input data")
+    check_lsoa_consistency(df)
+    check_no_negative_values(df)
+    check_year_column_completeness(df)
+
     logger.info("Applying CORD-specific transformations and filters")
     df = impute_suppression_x(
         df,
@@ -81,10 +86,7 @@ def run_cord_preparation(config: dict) -> None:
         lad_val=["95", "S"],
     )
 
-    check_lsoa_consistency(df)
     check_no_nulls(df)
-    check_no_negative_values(df)
-    check_year_column_completeness(df)
 
     # Save prepared CORD data file with new filename if specified
     if config["user_settings"]["output_data"]:
