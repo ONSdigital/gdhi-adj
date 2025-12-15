@@ -5,6 +5,12 @@ import os
 import pandas as pd
 
 from gdhi_adj.cord_preparation.impute_cord_prep import impute_suppression_x
+from gdhi_adj.cord_preparation.validation_cord_prep import (
+    check_lsoa_consistency,
+    check_no_negative_values,
+    check_no_nulls,
+    check_year_column_completeness,
+)
 from gdhi_adj.utils.helpers import write_with_schema
 from gdhi_adj.utils.logger import GDHI_adj_logger
 
@@ -61,6 +67,11 @@ def run_cord_preparation(config: dict) -> None:
     logger.info("Reading in mapped data for CORD preparation")
     df = pd.read_csv(input_cord_file_path)
 
+    logger.info("Performing validation checks on input data")
+    check_lsoa_consistency(df)
+    check_no_negative_values(df)
+    check_year_column_completeness(df)
+
     logger.info("Applying CORD-specific transformations and filters")
     df = impute_suppression_x(
         df,
@@ -74,6 +85,8 @@ def run_cord_preparation(config: dict) -> None:
         transaction_value="D623",
         lad_val=["95", "S"],
     )
+
+    check_no_nulls(df)
 
     # Save prepared CORD data file with new filename if specified
     if config["user_settings"]["output_data"]:
