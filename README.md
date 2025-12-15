@@ -274,7 +274,7 @@ stable, and meaningful as possible.
 4. **Sync Subnational Statistics sharepoint to OneDrive:**
     - Go to the Subnational Staistics sharepoint, and open the regional accounts folder, then go into the GDHI sub folder, then in the menu row above the file path, click sync, and then open to allow it to open and sync to OneDrive.
 5. **Install the required packages:**
-    - In the top level gdhi_adj folder where you can see the config folder, right click in blank space and clikc open in terminal
+    - In the top level gdhi_adj folder where you can see the config folder, right click in blank space and click open in terminal
    ```sh
    pip install -e .
    ```
