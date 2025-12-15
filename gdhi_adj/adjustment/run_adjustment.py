@@ -31,6 +31,11 @@ from gdhi_adj.adjustment.reformat_adjustment import (
     reformat_adjust_col,
     reformat_year_col,
 )
+from gdhi_adj.adjustment.validation_adjustment import (
+    check_adjust_year_not_empty,
+    check_lsoas_flagged,
+    check_years_flagged,
+)
 from gdhi_adj.preprocess.calc_preprocess import calc_rate_of_change
 from gdhi_adj.preprocess.flag_preprocess import (
     extract_start_end_years,
@@ -165,6 +170,11 @@ def run_adjustment(config: dict) -> None:
     logger.info("Pivoting DataFrame long")
     df = pivot_adjustment_long(df)
 
+    logger.info("Validating adjustment data")
+    check_lsoas_flagged(df)
+    check_years_flagged(df)
+    check_adjust_year_not_empty(df)
+
     logger.info("Filtering data for specified years")
     df = filter_year(df, start_year, end_year)
 
@@ -236,17 +246,13 @@ def run_adjustment(config: dict) -> None:
     )
     logger.info("Data saved successfully")
 
-    if config["user_settings"]["accept_negatives"] is False:
-        df = df.drop(columns=["adjusted_con_gdhi"]).rename(
-            columns={"readjusted_con_gdhi": "adjusted_con_gdhi"}
-        )
-
     df = df.drop(
         columns=[
             "con_gdhi",
             "imputed_gdhi",
+            "adjusted_con_gdhi",
         ]
-    ).rename(columns={"adjusted_con_gdhi": "con_gdhi"})
+    ).rename(columns={"rollback_con_gdhi": "con_gdhi"})
 
     logger.info("Pivoting final DataFrame wide for exporting")
     df = pivot_wide_final_dataframe(df)

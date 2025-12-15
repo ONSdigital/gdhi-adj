@@ -18,7 +18,8 @@ def reformat_adjust_col(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame with reformatted columns.
     """
-    conditions = [df["adjust"] == "TRUE"]
+    df["adjust"] = df["adjust"].str.lower().str.strip()
+    conditions = [df["adjust"] == "true"]
     descriptors = [True]
     df["adjust"] = np.select(conditions, descriptors, default=False)
 
