@@ -107,7 +107,7 @@ def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
 
     Returns:
         pd.DataFrame: DataFrame with negative adjustment values apportioned
-            accross all years within LSOA.
+            across all years within LSOA.
     """
     adjusted_df = df.rename(
         columns={"adjusted_con_gdhi": "previously_adjusted_con_gdhi"}
