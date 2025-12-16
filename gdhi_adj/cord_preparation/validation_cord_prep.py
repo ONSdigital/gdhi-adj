@@ -8,6 +8,59 @@ GDHI_adj_LOGGER = GDHI_adj_logger(__name__)
 logger = GDHI_adj_LOGGER.logger
 
 
+def check_subcomponent_lookup(
+    df: pd.DataFrame, lookup_df: pd.DataFrame
+) -> pd.DataFrame:
+    """
+    This function verifies that each unique value combination in the
+    'transaction' and 'account_entry' columns from the subcomponent lookup are
+    present in the DataFrame.
+
+    Args:
+        df (pd.DataFrame): The input pandas DataFrame containing subcomponent
+            data.
+        lookup_df (pd.DataFrame): The lookup DataFrame containing all
+            combinations of subcomponents that should be present.
+
+    Returns:
+        pd.DataFrame: The original DataFrame, unchanged. This allows the
+            function to be used in method chaining (e.g., .pipe()).
+
+    Raises:
+        ValueError: If all combinations of 'transaction' and 'account_entry'
+            values from the lookup are not present in the DataFrame.
+    """
+    logger.info("Starting subcomponent value check on DataFrame.")
+    breakpoint()
+    # Drop duplicates to get unique combinations
+    lookup_df = lookup_df[["transaction", "account_entry"]].drop_duplicates()
+
+    # Create sets of tuples for unique combinations
+    lookup_combinations = set(
+        zip(lookup_df["transaction"], lookup_df["account_entry"])
+    )
+    df_combinations = set(zip(df["transaction"], df["account_entry"]))
+
+    # Find missing combinations
+    missing = lookup_combinations - df_combinations
+
+    if missing:
+        error_msg = (
+            "Not all combinations of 'transaction' and 'account_entry' from "
+            "the lookup are present in the DataFrame."
+            f"\nSubcomponent combinations missing: {missing}"
+        )
+        logger.error(error_msg)
+        raise ValueError(error_msg)
+    else:
+        logger.info(
+            "All subcomponent combinations from the lookup are present in the "
+            "main DataFrame."
+        )
+
+    return df
+
+
 def check_lsoa_consistency(df: pd.DataFrame) -> pd.DataFrame:
     """
     Performs an internal consistency check on the DataFrame to ensure
@@ -36,21 +89,27 @@ def check_lsoa_consistency(df: pd.DataFrame) -> pd.DataFrame:
             "The column 'lsoa_code' was not found in the DataFrame."
         )
 
-    n_unique = df["lsoa_code"].nunique()
+    n_lsoas_unique = df["lsoa_code"].nunique()
+    n_unique_identifiers = (
+        df[["transaction", "account_entry"]].drop_duplicates().shape[0]
+    )
+    n_unqiue_total = n_lsoas_unique * n_unique_identifiers
     n_rows = len(df)
 
-    if n_unique != n_rows:
+    if n_unqiue_total != n_rows:
         error_msg = (
-            "Internal Consistency Check Failed: 'lsoa_code' "
-            "is not unique per row. "
-            f"Found {n_unique} unique codes across {n_rows} rows."
+            "Internal Consistency Check Failed: 'transaction' per 'lsoa_code' "
+            f"is not unique per row. Found {n_lsoas_unique} unique LSOA codes "
+            f"and {n_unique_identifiers} unique transaction codes and account"
+            f"entry codes across {n_rows} rows."
         )
         logger.error(error_msg)
         raise ValueError(error_msg)
 
     logger.info(
-        f"Consistency check passed: {n_rows} rows match "
-        f"{n_unique} unique lsoa_codes."
+        f"Consistency check passed: {n_rows} rows match {n_unique_identifiers}"
+        f" unique transaction and account entry codes per {n_lsoas_unique} "
+        "unique lsoa_codes."
     )
 
     return df

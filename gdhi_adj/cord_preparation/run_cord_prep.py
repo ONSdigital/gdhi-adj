@@ -4,11 +4,15 @@ import os
 
 import pandas as pd
 
-from gdhi_adj.cord_preparation.impute_cord_prep import impute_suppression_x
+from gdhi_adj.cord_preparation.transform_cord_prep import (
+    append_all_sub_components,
+    impute_suppression_x,
+)
 from gdhi_adj.cord_preparation.validation_cord_prep import (
     check_lsoa_consistency,
     check_no_negative_values,
     check_no_nulls,
+    check_subcomponent_lookup,
     check_year_column_completeness,
 )
 from gdhi_adj.utils.helpers import write_with_schema
@@ -38,38 +42,37 @@ def run_cord_preparation(config: dict) -> None:
     logger.info("CORD Preparation started")
 
     logger.info("Loading configuration settings")
-    local_or_shared = config["user_settings"]["local_or_shared"]
-    mapping_filepath_dict = config["mapping"]
-    filepath_dict = config[f"cord_prep_{local_or_shared}_settings"]
+    module_config = config["cord_prep_settings"]
     schema_path = config["pipeline_settings"]["schema_path"]
 
-    input_cord_file_path = os.path.join(
-        "C:/Users/",
-        os.getlogin(),
-        mapping_filepath_dict["output_dir"],
-        filepath_dict["input_filemame"],
-    )
-    # input_cord_prep_schema_path = os.path.join(
-    #     schema_path,
-    #     config["pipeline_settings"]["output_adjustment_schema_path"],
-    # )
-
     output_data_prefix = config["user_settings"]["output_data_prefix"] + "_"
-    output_dir = "C:/Users/" + os.getlogin() + filepath_dict["output_dir"]
-    output_schema_path = (
-        schema_path
-        + config["pipeline_settings"]["output_cord_prep_schema_path"]
+    output_dir = os.path.join(
+        "C:/Users", os.getlogin(), module_config["output_dir"]
     )
-    output_filename = output_data_prefix + filepath_dict.get(
+    output_schema_path = os.path.join(
+        schema_path,
+        config["pipeline_settings"]["output_cord_prep_schema_path"],
+    )
+    output_filename = output_data_prefix + module_config.get(
         "output_filename", None
     )
 
     logger.info("Reading in mapped data for CORD preparation")
-    df = pd.read_csv(input_cord_file_path)
+    df = append_all_sub_components(config)
+    subcomponent_lookup = pd.read_csv(
+        os.path.join(
+            "C:/Users",
+            os.getlogin(),
+            module_config["input_subcomponent_folder"],
+            module_config["subcomponent_lookup_file_path"],
+        )
+    )
 
     logger.info("Performing validation checks on input data")
+    check_subcomponent_lookup(df, subcomponent_lookup)
     check_lsoa_consistency(df)
-    check_no_negative_values(df)
+    if config["cord_prep_settings"]["accept_negatives"] is False:
+        check_no_negative_values(df)
     check_year_column_completeness(df)
 
     logger.info("Applying CORD-specific transformations and filters")

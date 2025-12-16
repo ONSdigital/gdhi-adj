@@ -1,11 +1,11 @@
 ["Transaction"]
-old_name = "transaction_name"
+old_name = "transaction"
 Deduced_Data_Type = "str"
 
 ["Regional_Small_Area_Geography"]
-old_name = "lad_code"
+old_name = "lsoa_code"
 Deduced_Data_Type = "str"
 
 ["Account_Entry"]
-old_name = "credit_debit"
+old_name = "account_entry"
 Deduced_Data_Type = "str"
