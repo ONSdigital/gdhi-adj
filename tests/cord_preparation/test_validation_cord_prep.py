@@ -8,8 +8,74 @@ from gdhi_adj.cord_preparation.validation_cord_prep import (
     check_lsoa_consistency,
     check_no_negative_values,
     check_no_nulls,
+    check_subcomponent_lookup,
     check_year_column_completeness,
 )
+
+
+class TestCheckSubcomponentLookup:
+    """Tests for check_subcomponent_lookup function."""
+    def test_check_subcomponent_lookup_pass(self):
+        """
+        Test that the function passes when all combinations are present.
+        """
+        df = pd.DataFrame({
+            "transaction": ["T1", "T2", "T3"],
+            "account_entry": ["C", "D", "C"],
+            "value": [100, 150, 200]
+        })
+
+        lookup_df = pd.DataFrame({
+            "transaction": ["T1", "T2", "T3"],
+            "account_entry": ["C", "D", "C"]
+        })
+
+        result = check_subcomponent_lookup(df, lookup_df)
+        pd.testing.assert_frame_equal(df, result)
+
+    def test_check_subcomponent_lookup_error_different(self):
+        """
+        Test that the function raises a ValueError when combinations are
+        different.
+        """
+        df = pd.DataFrame({
+            "transaction": ["T1", "T2", "T3"],
+            "account_entry": ["C", "D", "C"],
+            "value": [100, 150, 200]
+        })
+
+        lookup_df = pd.DataFrame({
+            "transaction": ["T1", "T2", "T3"],
+            # T3 has account_entry D instead of C
+            "account_entry": ["C", "D", "D"],
+        })
+
+        with pytest.raises(ValueError) as excinfo:
+            check_subcomponent_lookup(df, lookup_df)
+        assert "Not all combinations" in str(excinfo.value)
+        assert "{('T3', 'D')}" in str(excinfo.value)
+
+    def test_check_subcomponent_lookup_error_missing(self):
+        """
+        Test that the function raises a ValueError when combinations are
+        different.
+        """
+        df = pd.DataFrame({
+            "transaction": ["T1", "T2", "T3"],
+            "account_entry": ["C", "D", "C"],
+            "value": [100, 150, 200]
+        })
+
+        lookup_df = pd.DataFrame({
+            "transaction": ["T1", "T2", "T3", "T4"],
+            # T3 has account_entry D instead of C
+            "account_entry": ["C", "D", "C", "C"],
+        })
+
+        with pytest.raises(ValueError) as excinfo:
+            check_subcomponent_lookup(df, lookup_df)
+        assert "Not all combinations" in str(excinfo.value)
+        assert "{('T4', 'C')}" in str(excinfo.value)
 
 
 class TestLSOAConsistency:
@@ -20,28 +86,32 @@ class TestLSOAConsistency:
         Test that a valid DataFrame with unique lsoa_codes passes the check.
         """
         df = pd.DataFrame({
-            'lsoa_code': ['E01000001', 'E01000002', 'E01000003'],
-            'value': [10, 20, 30]
+            'lsoa_code': ['E01', 'E01', 'E02', 'E02'],
+            'transaction': ['T1', 'T2', 'T1', 'T2'],
+            'account_entry': ['C', 'C', 'C', 'C'],
+            'value': [10, 20, 30, 40]
         })
 
         result = check_lsoa_consistency(df)
         pd.testing.assert_frame_equal(df, result)
 
-    def test_duplicate_lsoa_codes(self):
+    def test_missing_combinations(self):
         """
-        Test that duplicate lsoa_codes raise a ValueError.
+        Test that missing combinations in an LSOA raise a ValueError.
         """
         df = pd.DataFrame({
-            'lsoa_code': ['E01000001', 'E01000001', 'E01000002'],
-            # Duplicate 'E01000001'
-            'value': [10, 20, 30]
+            # Missing T2 and C combination from E01
+            'lsoa_code': ['E01', 'E02', 'E02'],
+            'transaction': ['T1', 'T1', 'T2'],
+            'account_entry': ['C', 'C', 'C'],
+            'value': [10, 30, 40]
         })
 
         with pytest.raises(ValueError) as excinfo:
             check_lsoa_consistency(df)
 
         assert "Internal Consistency Check Failed" in str(excinfo.value)
-        assert "Found 2 unique codes across 3 rows" in str(excinfo.value)
+        assert "Found 2 unique LSOA codes" in str(excinfo.value)
 
     def test_missing_column(self):
         """
@@ -62,7 +132,9 @@ class TestLSOAConsistency:
         Test behavior with NaN values in lsoa_code column specifically.
         """
         df = pd.DataFrame({
-            'lsoa_code': ['E01000001', 'E01000002', np.nan],
+            'lsoa_code': ['E01', 'E02', np.nan],
+            'transaction': ['T1', 'T1', 'T1'],
+            'account_entry': ['C', 'C', 'C'],
             'value': [1, 2, 3]
         })
 
@@ -75,7 +147,11 @@ class TestLSOAConsistency:
         """
         Test that an empty DataFrame passes (0 rows == 0 unique values).
         """
-        df = pd.DataFrame({'lsoa_code': []})
+        df = pd.DataFrame({
+            'lsoa_code': [],
+            'transaction': [],
+            'account_entry': [],
+        })
         result = check_lsoa_consistency(df)
         pd.testing.assert_frame_equal(df, result)
 
@@ -85,6 +161,8 @@ class TestLSOAConsistency:
         """
         df = pd.DataFrame({
             'lsoa_code': ['A', 'B', 'C'],
+            'transaction': ['T1', 'T1', 'T1'],
+            'account_entry': ['C', 'C', 'C'],
             'val': [1, 1, 1]
         })
 

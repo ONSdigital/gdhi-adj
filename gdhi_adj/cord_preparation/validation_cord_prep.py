@@ -31,7 +31,6 @@ def check_subcomponent_lookup(
             values from the lookup are not present in the DataFrame.
     """
     logger.info("Starting subcomponent value check on DataFrame.")
-    breakpoint()
     # Drop duplicates to get unique combinations
     lookup_df = lookup_df[["transaction", "account_entry"]].drop_duplicates()
 
@@ -99,7 +98,7 @@ def check_lsoa_consistency(df: pd.DataFrame) -> pd.DataFrame:
     if n_unqiue_total != n_rows:
         error_msg = (
             "Internal Consistency Check Failed: 'transaction' per 'lsoa_code' "
-            f"is not unique per row. Found {n_lsoas_unique} unique LSOA codes "
+            f"is not in every LSOA. Found {n_lsoas_unique} unique LSOA codes "
             f"and {n_unique_identifiers} unique transaction codes and account"
             f"entry codes across {n_rows} rows."
         )
