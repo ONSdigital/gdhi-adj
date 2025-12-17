@@ -29,12 +29,14 @@ def run_cord_preparation(config: dict) -> None:
     This function performs the following steps:
     1. Load the configuration settings.
     2. Load the input data.
-    3. Apply CORD-specific transformations.
-    4. Save the prepared CORD data for further processing.
+    3. Perform validation checks on the input data.
+    4. Apply CORD-specific transformations.
+    5. Save the prepared CORD data for further processing.
 
     Args:
         config (dict): Configuration dictionary containing user settings and
         pipeline settings.
+
     Returns:
         None: The function does not return any value. It saves the processed
         DataFrame to a CSV file.
