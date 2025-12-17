@@ -51,7 +51,7 @@ def append_all_sub_components(config: dict) -> pd.DataFrame:
             dfs.append(df)
 
         except Exception as e:
-            print(f"Error reading {file_path}: {e}")
+            logger.info(f"Error reading {file_path}: {e}")
 
     # Concatenate all DataFrames
     if dfs:

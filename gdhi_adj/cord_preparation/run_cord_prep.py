@@ -71,9 +71,9 @@ def run_cord_preparation(config: dict) -> None:
     logger.info("Performing validation checks on input data")
     check_subcomponent_lookup(df, subcomponent_lookup)
     check_lsoa_consistency(df)
+    check_year_column_completeness(df)
     if config["cord_prep_settings"]["accept_negatives"] is False:
         check_no_negative_values(df)
-    check_year_column_completeness(df)
 
     logger.info("Applying CORD-specific transformations and filters")
     df = impute_suppression_x(
