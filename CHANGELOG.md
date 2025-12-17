@@ -10,14 +10,21 @@ All notable changes to this project will be documented in this file.
 - Formatting of input data for adjustment.
 - Test coverage report.
 - Apportion over adjusted negative values.
+- Added .bat environment setup file.
+- Added GitHub pages functionality.
+- Added open repository files as per guidance.
 - GDHIDAP-58: aggregation from LAU to LAD level.
 - GDHIDAP-59: negative value apportionment after adjustment.
+- GDHIDAP-65: integrated mapper functions into main pipeline.
 - GDHIDAP-70: GitHub open repository security and guidance.
+- GDHIDAP-74: Add adjustment validation checks.
 
 ### Changed
 - Adjustment values now determined by interpolation/ extrapolation.
 - Vectorised applying adjustment instead of for loop.
 - GDHIDAP-60: updated methodology for adjustments.
+- GDHIDAP-72: convert adjust str values to lower case before reformat.
+- GDHIDAP-75: update adjusted constrained value assignment in runner.
 
 ### Deprecated
 
