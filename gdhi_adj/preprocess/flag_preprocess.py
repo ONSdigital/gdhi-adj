@@ -92,11 +92,12 @@ def extract_start_end_years(df: pd.DataFrame) -> pd.DataFrame:
     Args:
         df (pd.DataFrame): The input DataFrame with years as headers.
     Returns:
-        start_year (int): The start year.
-        end_year (int): The end year.
+        Tuple[int, int]: A tuple containing the start and end years.
     """
     year_cols = [col for col in df.columns if col.isdigit()]
-    start_year = min(int(year) for year in year_cols)
-    end_year = max(int(year) for year in year_cols)
+    years_int = [int(year) for year in year_cols]
+
+    start_year = min(years_int)
+    end_year = max(years_int)
 
     return start_year, end_year
