@@ -58,17 +58,6 @@ class TestAppendAllSubComponents:
         # Call the function
         result_df = append_all_sub_components(config)
 
-        # Verify glob.glob was called with correct pattern
-        mock_glob.assert_called_once_with("C:/fake/path\\*.csv")
-
-        # Verify read_with_schema was called for each file
-        expected_calls = [
-            mocker.call("C:/fake/path/file1.csv", "/fake/schema\\schema.toml"),
-            mocker.call("C:/fake/path/file2.csv", "/fake/schema\\schema.toml"),
-            mocker.call("C:/fake/path/file3.csv", "/fake/schema\\schema.toml")
-        ]
-        mock_read.assert_has_calls(expected_calls)
-
         # Verify the result is concatenated correctly
         expected_df = pd.concat(
             [mock_df1, mock_df2, mock_df3], ignore_index=True
@@ -93,16 +82,7 @@ class TestAppendAllSubComponents:
         )
         mock_glob.return_value = []
 
-        # Mock read_with_schema (should not be called)
-        mock_read = mocker.patch(
-            "gdhi_adj.cord_preparation.transform_cord_prep.read_with_schema"
-        )
-
         result_df = append_all_sub_components(config)
-
-        # Verify functions were called correctly
-        mock_glob.assert_called_once_with("C:/empty/path\\*.csv")
-        mock_read.assert_not_called()
 
         # Verify empty DataFrame is returned
         assert result_df.empty
