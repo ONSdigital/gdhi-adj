@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from gdhi_adj.preprocess.calc_preprocess import (
@@ -193,6 +194,39 @@ class TestCalcZscores:
         })
 
         pd.testing.assert_frame_equal(result_df, expected_df)
+
+    def test_calc_zscores_inf_pct_change(self):
+        """Test the calc_zscores function for np.inf pct_change input."""
+        df = pd.DataFrame({
+            "lad_code": ["E1", "E2", "E1", "E2", "E1", "E2"],
+            "year": [2002, 2002, 2003, 2003, 2004, 2004],
+            "backward_pct_change": [np.inf, 1.5, 1.3, 1.6, 0.8, 2.0],
+            "rollback_flag": [False, False, False, False, False, False]
+        })
+
+        zscore_upper_threshold = 3.0
+        zscore_lower_threshold = -3.0
+
+        result_df = calc_zscores(
+            df,
+            score_prefix="bkwd",
+            group_col="lad_code",
+            val_col="backward_pct_change",
+            zscore_upper_threshold=zscore_upper_threshold,
+            zscore_lower_threshold=zscore_lower_threshold,
+        )
+
+        expected_df = pd.DataFrame({
+            "lad_code": ["E1", "E2", "E1", "E2", "E1", "E2"],
+            "year": [2002, 2002, 2003, 2003, 2004, 2004],
+            "backward_pct_change": [np.nan, 1.5, 1.3, 1.6, 0.8, 2.0],
+            "rollback_flag": [False, False, False, False, False, False],
+            "bkwd_zscore": [np.nan, -0.756, 0.707, -0.378, -0.707, 1.134],
+            "bkwd_zscore_threshold": [None, None, None, None, None, None],
+            "z_bkwd_flag": [False, False, False, False, False, False],
+        })
+
+        pd.testing.assert_frame_equal(result_df, expected_df, rtol=0.001)
 
 
 def test_calc_iqr():

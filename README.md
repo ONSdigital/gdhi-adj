@@ -284,7 +284,7 @@ stable, and meaningful as possible.
 ### 👨‍💻 Developer Installation:
 
 You can either follow the steps below manually **or** run the automated setup script:
-- If a condaHTTPS timeout error or similar occurs, and the pip.ini and/or the .condarc file already existed. Try deleting your original pip.ini and .condarc files, and running the .bat script again.
+- If a condaHTTPS timeout error or similar occurs, and the pip.ini and/or the .condarc file already exist. Try deleting your original pip.ini and .condarc files, and running the .bat script again.
 
 ```sh
 setup_gdhi_env.bat
@@ -346,11 +346,6 @@ setup_gdhi_env.bat
     - For preprocessing the Regional Accounts data, it needs to be filtered by transaction_name in the user_settings.
       ```
       transaction_name = "Compensation of employees"
-      ```
-    - Check the years for filtering data (this is used in both preprocessing and adjustment)
-      ```
-      start_year = 2010
-      end_year = 2023
       ```
     - Check the component filters for the constrained data, match the respective components of the unconstrained data.
       ```

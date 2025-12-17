@@ -13,6 +13,7 @@ from gdhi_adj.preprocess.calc_preprocess import (
 )
 from gdhi_adj.preprocess.flag_preprocess import (
     create_master_flag,
+    extract_start_end_years,
     flag_rollback_years,
 )
 from gdhi_adj.preprocess.join_preprocess import (
@@ -90,9 +91,6 @@ def run_preprocessing(config: dict) -> None:
         schema_path + config["pipeline_settings"]["input_ra_lad_schema_name"]
     )
 
-    start_year = config["user_settings"]["start_year"]
-    end_year = config["user_settings"]["end_year"]
-
     zscore_calculation = config["user_settings"]["zscore_calculation"]
     iqr_calculation = config["user_settings"]["iqr_calculation"]
 
@@ -121,6 +119,9 @@ def run_preprocessing(config: dict) -> None:
         input_unconstrained_file_path, input_gdhi_schema_path
     )
     ra_lad = read_with_schema(input_ra_lad_file_path, input_ra_lad_schema_path)
+
+    logger.info("Extracting start and end years from data")
+    start_year, end_year = extract_start_end_years(df)
 
     logger.info("Pivoting data to long format")
     df = pivot_years_long_dataframe(

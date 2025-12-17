@@ -84,3 +84,20 @@ def create_master_flag(
     df["master_flag"] = df[flag_cols].all(axis=1)
 
     return df
+
+
+def extract_start_end_years(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Extracts the start and end years from the column headings.
+    Args:
+        df (pd.DataFrame): The input DataFrame with years as headers.
+    Returns:
+        Tuple[int, int]: A tuple containing the start and end years.
+    """
+    year_cols = [col for col in df.columns if col.isdigit()]
+    years_int = [int(year) for year in year_cols]
+
+    start_year = min(years_int)
+    end_year = max(years_int)
+
+    return start_year, end_year

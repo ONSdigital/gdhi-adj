@@ -37,7 +37,10 @@ from gdhi_adj.adjustment.validation_adjustment import (
     check_years_flagged,
 )
 from gdhi_adj.preprocess.calc_preprocess import calc_rate_of_change
-from gdhi_adj.preprocess.flag_preprocess import flag_rollback_years
+from gdhi_adj.preprocess.flag_preprocess import (
+    extract_start_end_years,
+    flag_rollback_years,
+)
 from gdhi_adj.utils.helpers import read_with_schema, write_with_schema
 from gdhi_adj.utils.logger import GDHI_adj_logger
 
@@ -114,9 +117,6 @@ def run_adjustment(config: dict) -> None:
         + config["pipeline_settings"]["input_unconstrained_schema_name"]
     )
 
-    start_year = config["user_settings"]["start_year"]
-    end_year = config["user_settings"]["end_year"]
-
     sas_code_filter = config["user_settings"]["sas_code_filter"]
     cord_code_filter = config["user_settings"]["cord_code_filter"]
     credit_debit_filter = config["user_settings"]["credit_debit_filter"]
@@ -141,6 +141,9 @@ def run_adjustment(config: dict) -> None:
     df_unconstrained = read_with_schema(
         input_unconstrained_file_path, input_unconstrained_schema_path
     )
+
+    logger.info("Extracting start and end years from data")
+    start_year, end_year = extract_start_end_years(df_powerbi_output)
 
     logger.info("Reformatting adjust and year columns")
     df_powerbi_output = reformat_adjust_col(df_powerbi_output)
@@ -177,8 +180,8 @@ def run_adjustment(config: dict) -> None:
 
     logger.info(
         "Flagging rollback years from: "
-        f"{config["user_settings"]["rollback_year_start"]}:"
-        f"{config["user_settings"]["rollback_year_end"]}"
+        f"{config['user_settings']['rollback_year_start']}:"
+        f"{config['user_settings']['rollback_year_end']}"
     )
     df = calc_rate_of_change(
         df,

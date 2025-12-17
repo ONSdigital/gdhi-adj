@@ -1,8 +1,6 @@
 [user_settings]
 # Common settings
 local_or_shared = "shared" # "local" or "shared"
-start_year = 2010
-end_year = 2023
 output_data = true
 output_data_prefix = "ncc_test"
 rollback_year_start = 2010
@@ -54,7 +52,7 @@ output_filename = "manual_adj_preprocessing_output.csv" #Change name of file her
 #To run from SharePoint, you need to to go the Subnational Statistics - Regional Accounts
 #sharepoint site, go into the subfolder 'GDHI'
 #and click the 'sync' button to sync to your local OneDrive.
-input_adj_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/PowerBI_Tool/2025_Files/Manual_Classification_Files/Prepped for Pipeline/HMRC_COE_ESC_manual_adj_classifications.csv"
+input_adj_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/PowerBI_Tool/2025_Files/Manual_Classification_Files/Prepped for Pipeline/TESTING/HMRC_COE_ESC_manual_adj_classifications.csv"
 input_constrained_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/DAP_Exported_311025/GDHI_Disclosure_HMRC_COE_ESC_Constrained_names_fixed.csv"
 input_unconstrained_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/DAP_Exported_311025/GDHI_Disclosure_HMRC_COE_ESC_Unconstrained_names_fixed.csv"
 output_dir = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/Adjustment/"
