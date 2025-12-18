@@ -63,14 +63,12 @@ def run_preprocessing(config: dict) -> None:
     schema_path = config["pipeline_settings"]["schema_path"]
 
     input_unconstrained_file_path = (
-        "C:/Users/"
-        + os.getlogin()
+        os.path.expanduser("~")
         + filepath_dict["input_dir"]
         + filepath_dict["input_unconstrained_file_path"]
     )
     input_ra_lad_file_path = (
-        "C:/Users/"
-        + os.getlogin()
+        os.path.expanduser("~")
         + filepath_dict["input_dir"]
         + filepath_dict["input_ra_lad_file_path"]
     )
@@ -102,7 +100,7 @@ def run_preprocessing(config: dict) -> None:
 
     transaction_name = config["user_settings"]["transaction_name"]
 
-    output_dir = "C:/Users/" + os.getlogin() + filepath_dict["output_dir"]
+    output_dir = os.path.expanduser("~") + filepath_dict["output_dir"]
     output_schema_path = (
         schema_path
         + config["pipeline_settings"]["output_preprocess_schema_path"]

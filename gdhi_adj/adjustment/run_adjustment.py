@@ -83,16 +83,13 @@ def run_adjustment(config: dict) -> None:
     schema_path = config["pipeline_settings"]["schema_path"]
 
     input_adj_file_path = (
-        "C:/Users/" + os.getlogin() + filepath_dict["input_adj_file_path"]
+        os.path.expanduser("~") + filepath_dict["input_adj_file_path"]
     )
     input_constrained_file_path = (
-        "C:/Users/"
-        + os.getlogin()
-        + filepath_dict["input_constrained_file_path"]
+        os.path.expanduser("~") + filepath_dict["input_constrained_file_path"]
     )
     input_unconstrained_file_path = (
-        "C:/Users/"
-        + os.getlogin()
+        os.path.expanduser("~")
         + filepath_dict["input_unconstrained_file_path"]
     )
 
@@ -120,7 +117,7 @@ def run_adjustment(config: dict) -> None:
     cord_code_filter = config["user_settings"]["cord_code_filter"]
     credit_debit_filter = config["user_settings"]["credit_debit_filter"]
 
-    output_dir = "C:/Users/" + os.getlogin() + filepath_dict["output_dir"]
+    output_dir = os.path.expanduser("~") + filepath_dict["output_dir"]
     output_schema_path = (
         schema_path
         + config["pipeline_settings"]["output_adjustment_schema_path"]
