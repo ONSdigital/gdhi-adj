@@ -86,12 +86,22 @@ def run_cord_preparation(config: dict) -> None:
             "2012",
         ],
         transaction_col="transaction",
-        lad_col="lad_code",
+        lsoa_col="lsoa_code",
         transaction_value="D623",
-        lad_val=["95", "S"],
+        lsoa_val=["95", "S"],
     )
 
     check_no_nulls(df)
+
+    df = df.drop(columns=["lsoa_name", "lad_code", "lad_name"])
+
+    logger.info("Final formatting and saving prepped CORD data")
+    year_cols = [col for col in df.columns if col.isdigit()]
+    id_cols = ["transaction", "lsoa_code", "account_entry"]
+    df = df.reindex(columns=id_cols + year_cols)
+    df = df.sort_values(
+        by=["lsoa_code", "transaction", "account_entry"]
+    ).reset_index(drop=True)
 
     # Save prepared CORD data file with new filename if specified
     if config["user_settings"]["output_data"]:

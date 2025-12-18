@@ -58,6 +58,17 @@ class TestAppendAllSubComponents:
         # Call the function
         result_df = append_all_sub_components(config)
 
+        # Verify glob.glob was called with correct pattern
+        mock_glob.assert_called_once_with("C:/fake/path\\*.csv")
+
+        # Verify read_with_schema was called for each file
+        expected_calls = [
+            mocker.call("C:/fake/path/file1.csv", "/fake/schema\\schema.toml"),
+            mocker.call("C:/fake/path/file2.csv", "/fake/schema\\schema.toml"),
+            mocker.call("C:/fake/path/file3.csv", "/fake/schema\\schema.toml")
+        ]
+        mock_read.assert_has_calls(expected_calls)
+
         # Verify the result is concatenated correctly
         expected_df = pd.concat(
             [mock_df1, mock_df2, mock_df3], ignore_index=True
@@ -82,7 +93,16 @@ class TestAppendAllSubComponents:
         )
         mock_glob.return_value = []
 
+        # Mock read_with_schema (should not be called)
+        mock_read = mocker.patch(
+            "gdhi_adj.cord_preparation.transform_cord_prep.read_with_schema"
+        )
+
         result_df = append_all_sub_components(config)
+
+        # Verify functions were called correctly
+        mock_glob.assert_called_once_with("C:/empty/path\\*.csv")
+        mock_read.assert_not_called()
 
         # Verify empty DataFrame is returned
         assert result_df.empty
@@ -134,7 +154,7 @@ def test_impute_suppression_x():
     """Test the impute_suppression_x function returns the expected midpoint row
     """
     df = pd.DataFrame({
-        "lad_code": ["E1", "E1", "S2", "S2", "95A", "95A",],
+        "lsoa_code": ["E1", "E1", "S2", "S2", "95A", "95A",],
         "transaction": ["D33", "D623", "D33", "D623", "D33", "D623",],
         "2010": [10.0, 11.0, 12.0, 13.0, 14.0, 15.0,],
         "2011": [20.0, 21.0, 22.0, 23.0, 24.0, 25.0,],
@@ -142,19 +162,17 @@ def test_impute_suppression_x():
         "2013": [40.0, 41.0, 42.0, 43.0, 44.0, 45.0,],
     })
 
-    target_cols = ["2010", "2011", "2012",]
-    transaction_col = "transaction"
-    lad_col = "lad_code"
-    transaction_value = "D623"
-    lad_val = ["95", "S"]
-
     result_df = impute_suppression_x(
-        df, target_cols=target_cols, transaction_col=transaction_col,
-        lad_col=lad_col, transaction_value=transaction_value, lad_val=lad_val
+        df,
+        target_cols=["2010", "2011", "2012",],
+        transaction_col="transaction",
+        lsoa_col="lsoa_code",
+        transaction_value="D623",
+        lsoa_val=["95", "S"]
     )
 
     expected_df = pd.DataFrame({
-        "lad_code": ["E1", "E1", "S2", "S2", "95A", "95A",],
+        "lsoa_code": ["E1", "E1", "S2", "S2", "95A", "95A",],
         "transaction": ["D33", "D623", "D33", "D623", "D33", "D623",],
         "2010": ["10.0", "11.0", "12.0", "X", "14.0", "X",],
         "2011": ["20.0", "21.0", "22.0", "X", "24.0", "X",],

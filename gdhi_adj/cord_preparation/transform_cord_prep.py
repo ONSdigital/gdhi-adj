@@ -31,7 +31,7 @@ def append_all_sub_components(config: dict) -> pd.DataFrame:
     ]
     # Get all CSV files in the folder (adjust pattern as needed)
     file_pattern = os.path.join(
-        "C:/Users", os.getlogin(), subcomponent_folder, "*.csv"
+        os.path.expanduser("~"), subcomponent_folder, "*.csv"
     )
     file_paths = glob.glob(file_pattern)
 
@@ -66,22 +66,22 @@ def impute_suppression_x(
     df: pd.DataFrame,
     target_cols: List[str],
     transaction_col: str = "transaction",
-    lad_col: str = "lad_code",
+    lsoa_col: str = "lsoa_code",
     transaction_value: str = "D623",
-    lad_val: List[str] = ["95", "S"],
+    lsoa_val: List[str] = ["95", "S"],
 ) -> pd.DataFrame:
     """
     Set cells in target_cols to "X" where both conditions are met:
       - The value in transaction_col equals transaction_value.
-      - The value in lad_col starts with any values in lad_val list.
+      - The value in lsoa_col starts with any values in lsoa_val list.
 
     Args:
       df (pd.DataFrame): input DataFrame
       target_cols (List[str]): list of column names to modify.
       transaction_col (str): name of the transaction column.
-      lad_col (str): name of the LAD column.
+      lsoa_col (str): name of the LSOA column.
       transaction_value (str): transaction value to match.
-      lad_val (List[str]): list of starting strings for LAD codes to match (
+      lsoa_val (List[str]): list of starting strings for LSOA codes to match (
         case sensitive).
 
     Returns:
@@ -98,7 +98,7 @@ def impute_suppression_x(
 
     # Create mask for rows matching both conditions
     mask = (df[transaction_col] == transaction_value) & (
-        df[lad_col].str.startswith(tuple(lad_val))
+        df[lsoa_col].str.startswith(tuple(lsoa_val))
     )
 
     # Apply 'X' to all target columns for rows matching mask
