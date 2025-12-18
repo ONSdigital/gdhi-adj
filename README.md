@@ -359,6 +359,9 @@ setup_gdhi_env.bat
       ```
     - File schema paths are stored under pipeling_settings no need to change these unless any new files or schemas are added.
     - File paths are stored in preprocessing_shared_settings and adjustment_shared_settings, these either need to change to match the inputs desired, or file names need to match these
+    - CORD preparation module:
+      - Move all files that will contain one trancaction per LSOA, to the input
+      - Check subcomponent lookup is up to date with expected code values
 2. **Run pipeline from `main.py`**
 
 ## 📬 Contact

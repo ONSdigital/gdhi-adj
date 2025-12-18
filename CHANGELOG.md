@@ -15,8 +15,10 @@ All notable changes to this project will be documented in this file.
 - Added open repository files as per guidance.
 - GDHIDAP-58: aggregation from LAU to LAD level.
 - GDHIDAP-59: negative value apportionment after adjustment.
+- GDHIDAP-61: Set up module for preparation of data for CORD.
 - GDHIDAP-65: integrated mapper functions into main pipeline.
 - GDHIDAP-70: GitHub open repository security and guidance.
+- GDHIDAP-73: Create function to extract range from headings.
 - GDHIDAP-74: Add adjustment validation checks.
 
 ### Changed
