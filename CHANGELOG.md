@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - GDHIDAP-65: integrated mapper functions into main pipeline.
 - GDHIDAP-70: GitHub open repository security and guidance.
 - GDHIDAP-74: Add adjustment validation checks.
+- GDHIDAP-77: Added pipeline comparison to worked example.
 
 ### Changed
 - Adjustment values now determined by interpolation/ extrapolation.

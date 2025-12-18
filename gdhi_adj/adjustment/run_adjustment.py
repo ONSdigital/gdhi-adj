@@ -71,10 +71,9 @@ def run_adjustment(config: dict) -> None:
 
     Args:
         config (dict): Configuration dictionary containing user settings and
-        pipeline settings.
+            pipeline settings.
     Returns:
-        None: The function does not return any value. It saves the processed
-        DataFrame to a CSV file.
+        pd.DataFrame: Pandas DataFrame containing adjusted data.
     """
     logger.info("Adjustment started")
 
@@ -239,12 +238,13 @@ def run_adjustment(config: dict) -> None:
         header=False,
     )
 
-    logger.info(f"{output_dir + interim_filename}")
-    df.to_csv(
-        output_dir + interim_filename,
-        index=False,
-    )
-    logger.info("Data saved successfully")
+    if config["user_settings"]["export_interim_file"]:
+        logger.info(f"{output_dir + interim_filename}")
+        df.to_csv(
+            output_dir + interim_filename,
+            index=False,
+        )
+        logger.info("Data saved successfully")
 
     df = df.drop(
         columns=[
@@ -261,3 +261,5 @@ def run_adjustment(config: dict) -> None:
     if config["user_settings"]["output_data"]:
         # Write DataFrame to CSV
         write_with_schema(df, output_schema_path, output_dir, new_filename)
+
+    return df

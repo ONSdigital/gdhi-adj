@@ -360,6 +360,15 @@ setup_gdhi_env.bat
     - File schema paths are stored under pipeling_settings no need to change these unless any new files or schemas are added.
     - File paths are stored in preprocessing_shared_settings and adjustment_shared_settings, these either need to change to match the inputs desired, or file names need to match these
 2. **Run pipeline from `main.py`**
+3. **Optional: Compare pipeline output to worked exmaple, run `pipeline_test.py`**
+    - To check whether the output of the pipeline preprocessing or adjustment module matches the expected output from the worked example.
+    - This can only be performed for one subcomponent at a time.
+    - Collate relevant files:
+      - Input: PowerBI analysis, uncsontrained and constrained data.
+      - Expected output data from worked example.
+      - Actual output data from the pipeline.
+    - Update file locations and pipeline settings in `config_pipeline_test.toml`.
+    - Run the comparison using: `pipeline_test.py`.
 
 ## 📬 Contact
 

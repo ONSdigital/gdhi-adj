@@ -26,18 +26,6 @@ accept_negatives = false
 # Mapping settings
 mapping = false # Set to true if you want to run mapping from LAU to LAD
 
-[pipeline_settings]
-schema_path = "config/schemas/"
-input_gdhi_schema_name = "input_gdhi_schema.toml"
-input_ra_lad_schema_name = "input_ra_lad_schema.toml"
-input_adj_schema_name = "input_adj_schema.toml"
-input_constrained_schema_name = "input_constrained_schema.toml"
-input_unconstrained_schema_name = "input_unconstrained_schema.toml"
-input_mapping_lau_lad_schema_name = "input_lau_lad_schema.toml"
-output_preprocess_schema_path = "output_preprocess_schema.toml"
-output_adjustment_schema_path = "output_adjustment_schema.toml"
-output_mapping_schema_path = "output_mapping_schema.toml"
-
 [preprocessing_shared_settings]
 #To run from SharePoint, you need to to go the Subnational Statistics - Regional Accounts
 #sharepoint site, go into the subfolder 'GDHI'
@@ -53,30 +41,13 @@ output_filename = "manual_adj_preprocessing_output.csv" #Change name of file her
 #To run from SharePoint, you need to to go the Subnational Statistics - Regional Accounts
 #sharepoint site, go into the subfolder 'GDHI'
 #and click the 'sync' button to sync to your local OneDrive.
-input_adj_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/PowerBI_Tool/2025_Files/Manual_Classification_Files/Prepped for Pipeline/TESTING/HMRC_COE_ESC_manual_adj_classifications.csv"
-input_constrained_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/DAP_Exported_311025/GDHI_Disclosure_HMRC_COE_ESC_Constrained_names_fixed.csv"
-input_unconstrained_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/DAP_Exported_311025/GDHI_Disclosure_HMRC_COE_ESC_Unconstrained_names_fixed.csv"
-output_dir = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/Adjustment/"
+input_adj_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Pipeline_functional_testing/Adjustment/Input/HMRC_COE_ESC_manual_adj_classifications.csv"
+input_constrained_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Pipeline_functional_testing/Adjustment/Input/GDHI_Disclosure_HMRC_COE_ESC_Constrained_names_fixed.csv"
+input_unconstrained_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Pipeline_functional_testing/Adjustment/Input/GDHI_Disclosure_HMRC_COE_ESC_Unconstrained_names_fixed.csv"
+output_dir = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Pipeline_functional_testing/Adjustment/Output_result/"
 interim_filename =  "manual_adj_adjustments_interim_QA.csv" #Change name of file here
 output_filename = "manual_adj_adjustments_output.csv" #Change name of file here
-
-[preprocessing_local_settings]
-#Match below local settings to locations of files stored locally
-input_dir = "D:/gdhi/Testing_Data/"
-input_unconstrained_file_path = "gdhi_adj_dummy.csv"
-input_ra_lad_file_path = "gdhi_adj_ra_lad_dummy.csv"
-output_dir = "D:/gdhi/Testing_Data/Output/"
-interim_filename = "manual_adj_preprocessing_interim_scores.csv" #Change name of file here
-output_filename = "manual_adj_preprocessed_output.csv" #Change name of file here
-
-[adjustment_local_settings]
-#Match below local settings to locations of files stored locally
-input_adj_file_path = "D:/gdhi/Testing_Data/gdhi_adj_dummy.csv"
-input_constrained_file_path = "D:/gdhi/Testing_Data/gdhi_adj_constrained_dummy.csv"
-input_unconstrained_file_path = "D:/gdhi/Testing_Data/gdhi_adj_unconstrained_dummy.csv"
-output_dir = "D:/gdhi/Testing_Data/Output/"
-interim_filename =  "manual_adj_adjustments_interim_QA.csv" #Change name of file here
-output_filename = "gdhi_manual_adj_adjusted_output.csv" #Change name of file here
+expected_output_filepath = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Pipeline_functional_testing/Adjustment/Output_expected/pipeline_test_manual_adj_adjustments_output.csv"
 
 [mapping_settings]
 input_adj_file_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/Adjustment/"
@@ -90,3 +61,15 @@ output_filename = "manual_adj_adjustments_output_lad.csv"
 data_lad_code = "lad_code"
 data_lad_name = "lad_name"
 aggregate_to_lad = false
+
+[pipeline_settings]
+schema_path = "config/schemas/"
+input_gdhi_schema_name = "input_gdhi_schema.toml"
+input_ra_lad_schema_name = "input_ra_lad_schema.toml"
+input_adj_schema_name = "input_adj_schema.toml"
+input_constrained_schema_name = "input_constrained_schema.toml"
+input_unconstrained_schema_name = "input_unconstrained_schema.toml"
+input_mapping_lau_lad_schema_name = "input_lau_lad_schema.toml"
+output_preprocess_schema_path = "output_preprocess_schema.toml"
+output_adjustment_schema_path = "output_adjustment_schema.toml"
+output_mapping_schema_path = "output_mapping_schema.toml"
