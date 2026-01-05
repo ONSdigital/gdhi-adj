@@ -14,8 +14,9 @@ from gdhi_adj.adjustment.calc_adjustment import (
     extrapolate_imputed_val,
     interpolate_imputed_val,
 )
-from gdhi_adj.adjustment.filter_adjustment import (  # filter_component,
+from gdhi_adj.adjustment.filter_adjustment import (
     filter_adjust,
+    filter_component,
     filter_year,
 )
 from gdhi_adj.adjustment.flag_adjustment import identify_safe_years
@@ -79,22 +80,17 @@ def run_adjustment(config: dict) -> None:
     logger.info("Adjustment started")
 
     logger.info("Loading configuration settings")
-    local_or_shared = config["user_settings"]["local_or_shared"]
-    filepath_dict = config[f"adjustment_{local_or_shared}_settings"]
-    schema_path = config["pipeline_settings"]["schema_path"]
+    module_config = config["adjustment_settings"]
+    schema_dir = config["schema_paths"]["schema_dir"]
 
-    input_adj_file_path = (
-        "C:/Users/" + os.getlogin() + filepath_dict["input_adj_file_path"]
+    input_adj_file_path = os.path.join(
+        os.path.expanduser("~"), module_config["input_adj_file_path"]
     )
-    input_constrained_file_path = (
-        "C:/Users/"
-        + os.getlogin()
-        + filepath_dict["input_constrained_file_path"]
+    input_constrained_file_path = os.path.join(
+        os.path.expanduser("~"), module_config["input_constrained_file_path"]
     )
-    input_unconstrained_file_path = (
-        "C:/Users/"
-        + os.getlogin()
-        + filepath_dict["input_unconstrained_file_path"]
+    input_unconstrained_file_path = os.path.join(
+        os.path.expanduser("~"), module_config["input_unconstrained_file_path"]
     )
 
     # match = re.search(
@@ -105,31 +101,30 @@ def run_adjustment(config: dict) -> None:
     #     gdhi_suffix = match.group(1) + "_"
     gdhi_suffix = config["user_settings"]["output_data_prefix"] + "_"
 
-    input_adj_schema_path = (
-        schema_path + config["pipeline_settings"]["input_adj_schema_name"]
+    input_adj_schema_path = os.path.join(
+        schema_dir, config["schema_paths"]["input_adj_schema_name"]
     )
-    input_constrained_schema_path = (
-        schema_path
-        + config["pipeline_settings"]["input_constrained_schema_name"]
+    input_constrained_schema_path = os.path.join(
+        schema_dir, config["schema_paths"]["input_constrained_schema_name"]
     )
-    input_unconstrained_schema_path = (
-        schema_path
-        + config["pipeline_settings"]["input_unconstrained_schema_name"]
+    input_unconstrained_schema_path = os.path.join(
+        schema_dir, config["schema_paths"]["input_unconstrained_schema_name"]
     )
 
     sas_code_filter = config["user_settings"]["sas_code_filter"]
     cord_code_filter = config["user_settings"]["cord_code_filter"]
     credit_debit_filter = config["user_settings"]["credit_debit_filter"]
 
-    output_dir = "C:/Users/" + os.getlogin() + filepath_dict["output_dir"]
-    output_schema_path = (
-        schema_path
-        + config["pipeline_settings"]["output_adjustment_schema_path"]
+    output_dir = os.path.join(
+        os.path.expanduser("~"), module_config["output_dir"]
     )
-    interim_filename = gdhi_suffix + filepath_dict.get(
+    output_schema_path = os.path.join(
+        schema_dir, config["schema_paths"]["output_adjustment_schema_path"]
+    )
+    interim_filename = gdhi_suffix + module_config.get(
         "interim_filename", None
     )
-    new_filename = gdhi_suffix + filepath_dict.get("output_filename", None)
+    new_filename = gdhi_suffix + module_config.get("output_filename", None)
 
     logger.info("Reading in data with schemas")
     df_powerbi_output = read_with_schema(
@@ -154,12 +149,13 @@ def run_adjustment(config: dict) -> None:
 
     logger.info("Filtering for data that requires adjustment")
     df_powerbi_output = filter_adjust(df_powerbi_output)
-    # df_constrained = filter_component(
-    #     df_constrained,
-    #     sas_code_filter,
-    #     cord_code_filter,
-    #     credit_debit_filter
-    # )
+    if config["user_settings"]["filter_sub_component"]:
+        df_constrained = filter_component(
+            df_constrained,
+            sas_code_filter,
+            cord_code_filter,
+            credit_debit_filter,
+        )
 
     logger.info("Joining analyst output and constrained DAP output")
     df = join_analyst_constrained_data(df_constrained, df_powerbi_output)
@@ -234,17 +230,21 @@ def run_adjustment(config: dict) -> None:
         }
     )
     qa_df.to_csv(
-        output_dir + gdhi_suffix + "manual_adj_adjustments_config.txt",
+        os.path.join(
+            output_dir, gdhi_suffix + "manual_adj_adjustments_config.txt"
+        ),
         index=False,
         header=False,
     )
 
-    logger.info(f"{output_dir + interim_filename}")
-    df.to_csv(
-        output_dir + interim_filename,
-        index=False,
-    )
-    logger.info("Data saved successfully")
+    if config["user_settings"]["export_qa_files"]:
+        logger.info("Exporting QA file")
+        logger.info(f"{os.path.join(output_dir, interim_filename)}")
+        df.to_csv(
+            os.path.join(output_dir, interim_filename),
+            index=False,
+        )
+        logger.info("Data saved successfully")
 
     df = df.drop(
         columns=[

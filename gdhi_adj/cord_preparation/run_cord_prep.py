@@ -45,15 +45,15 @@ def run_cord_preparation(config: dict) -> None:
 
     logger.info("Loading configuration settings")
     module_config = config["cord_prep_settings"]
-    schema_path = config["pipeline_settings"]["schema_path"]
+    schema_dir = config["schema_paths"]["schema_dir"]
 
     output_data_prefix = config["user_settings"]["output_data_prefix"] + "_"
     output_dir = os.path.join(
-        "C:/Users", os.getlogin(), module_config["output_dir"]
+        os.path.expanduser("~"), module_config["output_dir"]
     )
     output_schema_path = os.path.join(
-        schema_path,
-        config["pipeline_settings"]["output_cord_prep_schema_path"],
+        schema_dir,
+        config["schema_paths"]["output_cord_prep_schema_path"],
     )
     output_filename = output_data_prefix + module_config.get(
         "output_filename", None
@@ -63,8 +63,7 @@ def run_cord_preparation(config: dict) -> None:
     df = append_all_sub_components(config)
     subcomponent_lookup = pd.read_csv(
         os.path.join(
-            "C:/Users",
-            os.getlogin(),
+            os.path.expanduser("~"),
             module_config["input_subcomponent_folder"],
             module_config["subcomponent_lookup_file_path"],
         )
@@ -74,7 +73,7 @@ def run_cord_preparation(config: dict) -> None:
     check_subcomponent_lookup(df, subcomponent_lookup)
     check_lsoa_consistency(df)
     check_year_column_completeness(df)
-    if config["cord_prep_settings"]["accept_negatives"] is False:
+    if config["user_settings"]["accept_negatives_cord"] is False:
         check_no_negative_values(df)
 
     logger.info("Applying CORD-specific transformations and filters")

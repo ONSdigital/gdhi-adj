@@ -16,8 +16,8 @@ class TestAppendAllSubComponents:
             "cord_prep_settings": {
                 "input_subcomponent_folder": "/fake/path"
             },
-            "pipeline_settings": {
-                "schema_path": "/fake/schema",
+            "schema_paths": {
+                "schema_dir": "/fake/schema",
                 "output_mapping_schema_path": "schema.toml"
             }
         }
@@ -70,8 +70,8 @@ class TestAppendAllSubComponents:
             "cord_prep_settings": {
                 "input_subcomponent_folder": "/empty/path"
             },
-            "pipeline_settings": {
-                "schema_path": "/fake/schema",
+            "schema_paths": {
+                "schema_dir": "/fake/schema",
                 "output_mapping_schema_path": "schema.toml"
             }
         }
@@ -94,8 +94,8 @@ class TestAppendAllSubComponents:
             "cord_prep_settings": {
                 "input_subcomponent_folder": "/fake/path"
             },
-            "pipeline_settings": {
-                "schema_path": "/fake/schema",
+            "schema_paths": {
+                "schema_dir": "/fake/schema",
                 "output_mapping_schema_path": "schema.toml"
             }
         }

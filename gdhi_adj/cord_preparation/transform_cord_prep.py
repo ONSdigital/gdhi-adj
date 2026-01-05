@@ -36,8 +36,8 @@ def append_all_sub_components(config: dict) -> pd.DataFrame:
     file_paths = glob.glob(file_pattern)
 
     input_cord_prep_schema_path = os.path.join(
-        config["pipeline_settings"]["schema_path"],
-        config["pipeline_settings"]["output_mapping_schema_path"],
+        config["schema_paths"]["schema_dir"],
+        config["schema_paths"]["output_mapping_schema_path"],
     )
 
     # Initialize empty list to store DataFrames
