@@ -13,8 +13,11 @@ class TestAppendAllSubComponents:
         """
         # Mock config dictionary
         config = {
+            "user_settings": {
+                "shared_root_dir": "fake"
+            },
             "cord_prep_settings": {
-                "input_subcomponent_folder": "/fake/path"
+                "input_subcomponent_folder": "path"
             },
             "schema_paths": {
                 "schema_dir": "/fake/schema",
@@ -67,8 +70,11 @@ class TestAppendAllSubComponents:
     def test_append_all_sub_components_no_files(self, mocker):
         """Test behavior when no files are found in the folder."""
         config = {
+            "user_settings": {
+                "shared_root_dir": "empty"
+            },
             "cord_prep_settings": {
-                "input_subcomponent_folder": "/empty/path"
+                "input_subcomponent_folder": "path"
             },
             "schema_paths": {
                 "schema_dir": "/fake/schema",
@@ -91,8 +97,11 @@ class TestAppendAllSubComponents:
     def test_append_all_sub_components_read_error(self, mocker):
         """Test behavior when one file fails to read."""
         config = {
+            "user_settings": {
+                "shared_root_dir": "fake"
+            },
             "cord_prep_settings": {
-                "input_subcomponent_folder": "/fake/path"
+                "input_subcomponent_folder": "path"
             },
             "schema_paths": {
                 "schema_dir": "/fake/schema",

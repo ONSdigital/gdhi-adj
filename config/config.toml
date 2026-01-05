@@ -2,10 +2,11 @@
 # Module selection: Set to true to run module, not recommended to run multiple
 # modules at once.
 preprocessing = false
-adjustment = true
+adjustment = false
 mapping = false
-cord_preparation = false
+cord_preparation = true
 # Common settings
+shared_root_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments"
 export_qa_files = false # Set to true to export interim QA files for preprocessing/adjustment modules
 output_data = true
 output_data_prefix = "ncc_test"
@@ -37,34 +38,33 @@ accept_negatives_cord = true
 #Regional Accounts sharepoint site, go into the subfolder 'GDHI' and click
 #the 'sync' button to sync to your local OneDrive.
 [preprocessing_settings]
-input_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/"
-input_unconstrained_file_path = "DAP_exported_311025/GDHI_Disclosure_CIS_BIDS_Total_Benefits_Unconstrained.csv"
-input_ra_lad_file_path = "Reg_Accounts/GDHI_1997_2023_LAD_Wide_Form.csv"
-output_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/Preprocessing/"
+input_unconstrained_file_path = "Testing_Data/DAP_exported_311025/GDHI_Disclosure_CIS_BIDS_Total_Benefits_Unconstrained.csv"
+input_ra_lad_file_path = "Testing_Data/Reg_Accounts/GDHI_1997_2023_LAD_Wide_Form.csv"
+output_dir = "Testing_Data/Output/Preprocessing/"
 interim_filename = "manual_adj_preprocessing_interim_scores.csv" #Change name of file here
 output_filename = "manual_adj_preprocessing_output.csv" #Change name of file here
 
 [adjustment_settings]
-input_adj_file_path = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/PowerBI_Tool/2025_Files/Manual_Classification_Files/Prepped for Pipeline/TESTING/HMRC_COE_ESC_manual_adj_classifications.csv"
-input_constrained_file_path = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/DAP_Exported_311025/GDHI_Disclosure_HMRC_COE_ESC_Constrained_names_fixed.csv"
-input_unconstrained_file_path = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/DAP_Exported_311025/GDHI_Disclosure_HMRC_COE_ESC_Unconstrained_names_fixed.csv"
-output_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/Adjustment/"
+input_adj_file_path = "PowerBI_Tool/2025_Files/Manual_Classification_Files/Prepped for Pipeline/TESTING/HMRC_COE_ESC_manual_adj_classifications.csv"
+input_constrained_file_path = "Testing_Data/DAP_Exported_311025/GDHI_Disclosure_HMRC_COE_ESC_Constrained_names_fixed.csv"
+input_unconstrained_file_path = "Testing_Data/DAP_Exported_311025/GDHI_Disclosure_HMRC_COE_ESC_Unconstrained_names_fixed.csv"
+output_dir = "Testing_Data/Output/Adjustment/"
 interim_filename =  "manual_adj_adjustments_interim_QA.csv" #Change name of file here
 output_filename = "manual_adj_adjustments_output.csv" #Change name of file here
 
 [mapping_settings]
-input_adj_file_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/Adjustment/"
+input_adj_file_dir = "Testing_Data/Output/Adjustment/"
 input_adj_file_name = "ncc_test_manual_adj_adjustments_output.csv"
-input_lau_lad_mapper_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Mappers/"
+input_lau_lad_mapper_dir = "Testing_Data/Mappers/"
 # Lookup obtained from ONS Open Geography Portal
 input_lau_lad_mapper_file = "LAD_(April_2025)_to_LAU1_to_ITL3_to_ITL2_to_ITL1_(January_2025)_Lookup_in_the_UK.csv"
-output_dir =  "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/Mapping/"
+output_dir =  "Testing_Data/Output/Mapping/"
 output_filename = "manual_adj_adjustments_output_lad.csv"
 
 [cord_prep_settings]
-input_subcomponent_folder = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/CORD conversion"
+input_subcomponent_folder = "Testing_Data/CORD conversion"
 subcomponent_lookup_file_path = "sub_component_lookup/subcomponent_transaction_credit_code_lookup.csv"
-output_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/CORD_formatted/"
+output_dir = "Testing_Data/Output/CORD_formatted/"
 output_filename = "CP_data.csv"
 
 [schema_paths]

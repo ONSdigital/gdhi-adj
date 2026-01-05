@@ -176,10 +176,12 @@ def run_mapping(config: dict, df=pd.DataFrame()):
 
     """
     logger.info("Started mapping LAUs to LADs")
+    root_dir = config["user_settings"]["shared_root_dir"]
 
     df = read_with_schema(
         input_file_path=os.path.join(
             os.path.expanduser("~"),
+            root_dir,
             config["mapping_settings"]["input_adj_file_dir"],
             config["mapping_settings"]["input_adj_file_name"],
         ),
@@ -197,6 +199,7 @@ def run_mapping(config: dict, df=pd.DataFrame()):
         mapper_df = read_with_schema(
             input_file_path=os.path.join(
                 os.path.expanduser("~"),
+                root_dir,
                 config["mapping_settings"]["input_lau_lad_mapper_dir"],
                 config["mapping_settings"]["input_lau_lad_mapper_file"],
             ),
@@ -215,7 +218,7 @@ def run_mapping(config: dict, df=pd.DataFrame()):
             + "_"
             + config["mapping_settings"]["output_filename"]
         )
-        if config["mapping_settings"]["aggregate_to_lad"]:
+        if config["user_settings"]["aggregate_to_lad"]:
             logger.info("Starting aggregating data to LAD level as requested.")
             result_df = aggregate_lad(result_df)
             output_name = output_name.replace(".csv", "_aggregated.csv")
@@ -232,6 +235,7 @@ def run_mapping(config: dict, df=pd.DataFrame()):
             ),
             output_dir=os.path.join(
                 os.path.expanduser("~"),
+                root_dir,
                 config["mapping_settings"]["output_dir"],
             ),
             new_filename=output_name,

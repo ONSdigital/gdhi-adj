@@ -60,16 +60,17 @@ def run_preprocessing(config: dict) -> None:
 
     logger.info("Loading configuration settings")
     module_config = config["preprocessing_settings"]
-    schema_path = config["schema_paths"]["schema_dir"]
+    schema_dir = config["schema_paths"]["schema_dir"]
+    root_dir = config["user_settings"]["shared_root_dir"]
 
     input_unconstrained_file_path = os.path.join(
         os.path.expanduser("~"),
-        module_config["input_dir"],
+        root_dir,
         module_config["input_unconstrained_file_path"],
     )
     input_ra_lad_file_path = os.path.join(
         os.path.expanduser("~"),
-        module_config["input_dir"],
+        root_dir,
         module_config["input_ra_lad_file_path"],
     )
 
@@ -82,10 +83,10 @@ def run_preprocessing(config: dict) -> None:
     gdhi_suffix = config["user_settings"]["output_data_prefix"] + "_"
 
     input_gdhi_schema_path = os.path.join(
-        schema_path, config["schema_paths"]["input_gdhi_schema_name"]
+        schema_dir, config["schema_paths"]["input_gdhi_schema_name"]
     )
     input_ra_lad_schema_path = os.path.join(
-        schema_path, config["schema_paths"]["input_ra_lad_schema_name"]
+        schema_dir, config["schema_paths"]["input_ra_lad_schema_name"]
     )
 
     zscore_calculation = config["user_settings"]["zscore_calculation"]
@@ -101,10 +102,10 @@ def run_preprocessing(config: dict) -> None:
     transaction_name = config["user_settings"]["transaction_name"]
 
     output_dir = os.path.join(
-        os.path.expanduser("~"), module_config["output_dir"]
+        os.path.expanduser("~"), root_dir, module_config["output_dir"]
     )
     output_schema_path = os.path.join(
-        schema_path, config["schema_paths"]["output_preprocess_schema_path"]
+        schema_dir, config["schema_paths"]["output_preprocess_schema_path"]
     )
     interim_filename = gdhi_suffix + module_config.get(
         "interim_filename", None

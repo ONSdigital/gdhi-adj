@@ -46,10 +46,11 @@ def run_cord_preparation(config: dict) -> None:
     logger.info("Loading configuration settings")
     module_config = config["cord_prep_settings"]
     schema_dir = config["schema_paths"]["schema_dir"]
+    root_dir = config["user_settings"]["shared_root_dir"]
 
     output_data_prefix = config["user_settings"]["output_data_prefix"] + "_"
     output_dir = os.path.join(
-        os.path.expanduser("~"), module_config["output_dir"]
+        os.path.expanduser("~"), root_dir, module_config["output_dir"]
     )
     output_schema_path = os.path.join(
         schema_dir,
@@ -64,6 +65,7 @@ def run_cord_preparation(config: dict) -> None:
     subcomponent_lookup = pd.read_csv(
         os.path.join(
             os.path.expanduser("~"),
+            root_dir,
             module_config["input_subcomponent_folder"],
             module_config["subcomponent_lookup_file_path"],
         )

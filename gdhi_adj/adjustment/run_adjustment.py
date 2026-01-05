@@ -82,15 +82,20 @@ def run_adjustment(config: dict) -> None:
     logger.info("Loading configuration settings")
     module_config = config["adjustment_settings"]
     schema_dir = config["schema_paths"]["schema_dir"]
+    root_dir = config["user_settings"]["shared_root_dir"]
 
     input_adj_file_path = os.path.join(
-        os.path.expanduser("~"), module_config["input_adj_file_path"]
+        os.path.expanduser("~"), root_dir, module_config["input_adj_file_path"]
     )
     input_constrained_file_path = os.path.join(
-        os.path.expanduser("~"), module_config["input_constrained_file_path"]
+        os.path.expanduser("~"),
+        root_dir,
+        module_config["input_constrained_file_path"],
     )
     input_unconstrained_file_path = os.path.join(
-        os.path.expanduser("~"), module_config["input_unconstrained_file_path"]
+        os.path.expanduser("~"),
+        root_dir,
+        module_config["input_unconstrained_file_path"],
     )
 
     # match = re.search(
@@ -116,7 +121,7 @@ def run_adjustment(config: dict) -> None:
     credit_debit_filter = config["user_settings"]["credit_debit_filter"]
 
     output_dir = os.path.join(
-        os.path.expanduser("~"), module_config["output_dir"]
+        os.path.expanduser("~"), root_dir, module_config["output_dir"]
     )
     output_schema_path = os.path.join(
         schema_dir, config["schema_paths"]["output_adjustment_schema_path"]
