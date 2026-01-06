@@ -6,6 +6,7 @@ from gdhi_adj.adjustment.apportion_adjustment import (
     apportion_negative_adjustment,
     apportion_rollback_years,
     calc_non_outlier_proportions,
+    check_no_negative_values,
 )
 
 
@@ -132,11 +133,15 @@ class TestApportionNegativeAdjustment:
             "previously_adjusted_con_gdhi": [
                 -0.5, 5.5, -1.0, 6.0, 3.0, 1.0, 4.0, 6.0
             ],
-            "min_adjusted_gdhi": [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0],
-            "abs_adjustment_val": [1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0],
-            "over_adjusted_gdhi": [0.5, 6.5, 0.0, 7.0, 3.0, 1.0, 4.0, 6.0],
+            "no_neg_adjusted_gdhi": [0.0, 5.5, 0.0, 6.0, 3.0, 1.0, 4.0, 6.0],
+            "sum_neg_adjusted_gdhi": [
+                -1.5, -1.5, -1.5, -1.5, 0.0, 0.0, 0.0, 0.0
+            ],
+            "adjusted_gdhi_proportion": [
+                0.0, 0.4783, 0.0, 0.5217, 0.2143, 0.0714, 0.2857, 0.4286
+            ],
             "adjusted_con_gdhi": [
-                0.357, 4.643, 0.0, 5.0, 3.0, 1.0, 4.0, 6.0
+                0.0, 4.7826, 0.0, 5.2174, 3.0, 1.0, 4.0, 6.0
             ],
         })
 
@@ -173,38 +178,34 @@ class TestApportionNegativeAdjustment:
             "previously_adjusted_con_gdhi": [
                 0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0
             ],
-            "min_adjusted_gdhi": [0.5, 0.5, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0],
-            "abs_adjustment_val": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-            "over_adjusted_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
+            "no_neg_adjusted_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
+            "sum_neg_adjusted_gdhi": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            "adjusted_gdhi_proportion": [
+                0.05, 0.35, 0.1, 0.5, 0.2143, 0.0714, 0.2857, 0.4286
+            ],
             "adjusted_con_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
         })
 
         pd.testing.assert_frame_equal(
-            result_df, expected_df, check_dtype=False
+            result_df, expected_df, check_dtype=False, rtol=0.001,
         )
 
-    def test_apportion_negative_adjustment_remains_negative(self):
-        """Test apportion_negative_adjustment returns ValueError when the
-        adjusted_con_gdhi still contains a negative value after adjustment.
 
-        This is a viable scenario of negative lad_total, but this function
-        shouldn't run if negatives are to be accepted.
-        """
+class TestCheckNoNegativeValues:
+    """Test suite for check_no_negative_values function."""
+    def test_check_no_negative_adjusted_gdhi_raises(self):
+        """Test that check_no_negative_values raises ValueError for
+        negatives."""
+        df = pd.DataFrame({"adjusted_con_gdhi": [1.0, -1.0]})
 
-        df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2"],
-            "lad_code": ["E01", "E01"],
-            "year": [2000, 2000],
-            "con_gdhi": [-1.0, -2.0],
-            "lad_total": [-3.0, -3.0],
-            "adjusted_con_gdhi": [-1.0, -2.0],
-        })
+        with pytest.raises(ValueError, match="Negative value check failed"):
+            check_no_negative_values(df, "adjusted_con_gdhi")
 
-        with pytest.raises(
-            ValueError,
-            match="Negative value check failed:"
-        ):
-            apportion_negative_adjustment(df)
+    def test_check_no_negative_adjusted_gdhi_passes(self):
+        """Test that check_no_negative_values passes for no negatives."""
+        df = pd.DataFrame({"adjusted_con_gdhi": [1.0, 2.0]})
+
+        check_no_negative_values(df, "adjusted_con_gdhi")
 
 
 class TestApportionRollbackYears:
