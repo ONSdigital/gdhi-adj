@@ -143,15 +143,10 @@ def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
     adjusted_df["adjusted_gdhi_proportion"] = adjusted_df[
         "no_neg_adjusted_gdhi"
     ] / (adjusted_df["lad_total"] - adjusted_df["sum_neg_adjusted_gdhi"])
-    # print(adjusted_df[adjusted_df["lad_code"] == "E06000047"])
-    # print(adjusted_df[adjusted_df["lsoa_code"] == "E01020600"][[
-    # "lsoa_code", "year", "con_gdhi", "previously_adjusted_con_gdhi",
-    # "adjusted_con_gdhi"]])
-    # breakpoint()
+
     adjusted_df["adjusted_con_gdhi"] = (
         adjusted_df["adjusted_gdhi_proportion"] * adjusted_df["lad_total"]
     )
-    # breakpoint()
 
     # Checks after adjustment
     # Check that there are no negative values in adjusted_con_gdhi

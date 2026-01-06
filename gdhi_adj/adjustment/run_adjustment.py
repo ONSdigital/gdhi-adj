@@ -213,33 +213,16 @@ def run_adjustment(config: dict) -> None:
 
     logger.info("Calculating non-outlier proportions")
     df = calc_non_outlier_proportions(df)
-    # print(df[df["lsoa_code"] == "E01020600"])
-    # breakpoint()
 
     logger.info("Apportioning adjustment values to all LSOAs")
     df = apportion_adjustment(df, imputed_df)
-    # print(df[df["lsoa_code"] == "E01020600"])
-    # print(df[df["lsoa_code"] == "E01020600"][[
-    # "lsoa_code", "year", "con_gdhi", "adjusted_con_gdhi"]])
-    # breakpoint()
 
     if config["user_settings"]["accept_negatives"] is False:
         logger.info("Apportioning negative adjusted values")
         df = apportion_negative_adjustment(df)
-        # print(df[df["lsoa_code"] == "E01020600"])
-        # print(df[df["lsoa_code"] == "E01020600"][[
-        # "lsoa_code", "year", "con_gdhi", "previously_adjusted_con_gdhi",
-        # "adjusted_con_gdhi"]])
-        # breakpoint()
-        # df[df["lad_code"] == "E06000047"] # County Durham
 
     logger.info("Apportion rollback years.")
     df = apportion_rollback_years(df)
-    # print(df[df["lsoa_code"] == "E01020600"])
-    # print(df[df["lsoa_code"] == "E01020600"][[
-    # "lsoa_code", "year", "con_gdhi", "previously_adjusted_con_gdhi",
-    # "adjusted_con_gdhi", "rollback_flag", "rollback_con_gdhi"]])
-    # breakpoint()
 
     logger.info("Saving interim data")
     qa_df = pd.DataFrame(
