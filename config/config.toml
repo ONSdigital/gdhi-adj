@@ -6,7 +6,8 @@ adjustment = false
 mapping = false
 cord_preparation = true
 # Common settings
-local_or_shared = "shared" # "local" or "shared"
+shared_root_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments"
+export_qa_files = false # Set to true to export interim QA files for preprocessing/adjustment modules
 output_data = true
 output_data_prefix = "ncc_test"
 rollback_year_start = 2010
@@ -21,78 +22,53 @@ iqr_upper_quantile = 0.75 # quantile for IQR upper bound
 iqr_multiplier = 1.0 # multiplier for calculating IQR bounds
 transaction_name = "Social Benefits Received – Social Assistance Benefits in Cash"
 # Adjustment settings
+filter_sub_component = false # Set to true to filter constrained data for sub-components
 sas_code_filter = "G866BTR"
 cord_code_filter = "D75"
 credit_debit_filter = "D"
-accept_negatives = false
-# Set to true to keep negative values and not run apportion_negative_adjustment
+accept_negatives = false # Set to true to keep negative values and not run apportion_negative_adjustment
 # Mapping settings
-
-[preprocessing_shared_settings]
-#To run from SharePoint, you need to to go the Subnational Statistics - Regional Accounts
-#sharepoint site, go into the subfolder 'GDHI'
-#and click the 'sync' button to sync to your local OneDrive.
-input_dir = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/"
-input_unconstrained_file_path = "DAP_exported_311025/GDHI_Disclosure_CIS_BIDS_Total_Benefits_Unconstrained.csv"
-input_ra_lad_file_path = "Reg_Accounts/GDHI_1997_2023_LAD_Wide_Form.csv"
-output_dir = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/Preprocessing/"
-interim_filename = "manual_adj_preprocessing_interim_scores.csv" #Change name of file here
-output_filename = "manual_adj_preprocessing_output.csv" #Change name of file here
-
-[adjustment_shared_settings]
-#To run from SharePoint, you need to to go the Subnational Statistics - Regional Accounts
-#sharepoint site, go into the subfolder 'GDHI'
-#and click the 'sync' button to sync to your local OneDrive.
-input_adj_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/PowerBI_Tool/2025_Files/Manual_Classification_Files/Prepped for Pipeline/TESTING/HMRC_COE_ESC_manual_adj_classifications.csv"
-input_constrained_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/DAP_Exported_311025/GDHI_Disclosure_HMRC_COE_ESC_Constrained_names_fixed.csv"
-input_unconstrained_file_path = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/DAP_Exported_311025/GDHI_Disclosure_HMRC_COE_ESC_Unconstrained_names_fixed.csv"
-output_dir = "/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/Adjustment/"
-interim_filename =  "manual_adj_adjustments_interim_QA.csv" #Change name of file here
-output_filename = "manual_adj_adjustments_output.csv" #Change name of file here
-
-[cord_prep_settings]
-#To run from SharePoint, you need to to go the Subnational Statistics - Regional Accounts
-#sharepoint site, go into the subfolder 'GDHI' and open '2025_manual_adjustments'
-#and click the 'sync' button to sync to your local OneDrive.
-accept_negatives = true
-input_subcomponent_folder = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/CORD conversion"
-subcomponent_lookup_file_path = "sub_component_lookup/subcomponent_transaction_credit_code_lookup.csv"
-output_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/CORD_formatted/"
-output_filename = "CP_data.csv"
-
-[preprocessing_local_settings]
-#Match below local settings to locations of files stored locally
-input_dir = "D:/gdhi/Testing_Data/"
-input_unconstrained_file_path = "gdhi_adj_dummy.csv"
-input_ra_lad_file_path = "gdhi_adj_ra_lad_dummy.csv"
-output_dir = "D:/gdhi/Testing_Data/Output/"
-interim_filename = "manual_adj_preprocessing_interim_scores.csv" #Change name of file here
-output_filename = "manual_adj_preprocessed_output.csv" #Change name of file here
-
-[adjustment_local_settings]
-#Match below local settings to locations of files stored locally
-input_adj_file_path = "D:/gdhi/Testing_Data/gdhi_adj_dummy.csv"
-input_constrained_file_path = "D:/gdhi/Testing_Data/gdhi_adj_constrained_dummy.csv"
-input_unconstrained_file_path = "D:/gdhi/Testing_Data/gdhi_adj_unconstrained_dummy.csv"
-output_dir = "D:/gdhi/Testing_Data/Output/"
-interim_filename =  "manual_adj_adjustments_interim_QA.csv" #Change name of file here
-output_filename = "gdhi_manual_adj_adjusted_output.csv" #Change name of file here
-
-[mapping_settings]
-input_adj_file_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/Adjustment/"
-input_adj_file_name = "test_manual_adj_adjustments_output.csv"
-input_lau_lad_mapper_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Mappers/"
-# Lookup found in ONS Open Geography Portal
-input_lau_lad_mapper_file = "LAD_(April_2025)_to_LAU1_to_ITL3_to_ITL2_to_ITL1_(January_2025)_Lookup_in_the_UK.csv"
-output_dir =  "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments/Testing_Data/Output/Mapping/"
-output_filename = "manual_adj_adjustments_output_lad.csv"
-
 data_lad_code = "lad_code"
 data_lad_name = "lad_name"
 aggregate_to_lad = false
+# CORD preparation settings
+accept_negatives_cord = true
 
-[pipeline_settings]
-schema_path = "config/schemas/"
+#To run from SharePoint, you need to to go the Subnational Statistics -
+#Regional Accounts sharepoint site, go into the subfolder 'GDHI' and click
+#the 'sync' button to sync to your local OneDrive.
+[preprocessing_settings]
+input_unconstrained_file_path = "Testing_Data/DAP_exported_311025/GDHI_Disclosure_CIS_BIDS_Total_Benefits_Unconstrained.csv"
+input_ra_lad_file_path = "Testing_Data/Reg_Accounts/GDHI_1997_2023_LAD_Wide_Form.csv"
+output_dir = "Testing_Data/Output/Preprocessing/"
+interim_filename = "manual_adj_preprocessing_interim_scores.csv" #Change name of file here
+output_filename = "manual_adj_preprocessing_output.csv" #Change name of file here
+
+[adjustment_settings]
+input_adj_file_path = "PowerBI_Tool/2025_Files/Manual_Classification_Files/Prepped for Pipeline/TESTING/HMRC_COE_ESC_manual_adj_classifications.csv"
+input_constrained_file_path = "Testing_Data/DAP_Exported_311025/GDHI_Disclosure_HMRC_COE_ESC_Constrained_names_fixed.csv"
+input_unconstrained_file_path = "Testing_Data/DAP_Exported_311025/GDHI_Disclosure_HMRC_COE_ESC_Unconstrained_names_fixed.csv"
+output_dir = "Testing_Data/Output/Adjustment/"
+interim_filename =  "manual_adj_adjustments_interim_QA.csv" #Change name of file here
+output_filename = "manual_adj_adjustments_output.csv" #Change name of file here
+
+[mapping_settings]
+input_adj_file_dir = "Testing_Data/Output/Adjustment/"
+input_adj_file_name = "ncc_test_manual_adj_adjustments_output.csv"
+input_lau_lad_mapper_dir = "Testing_Data/Mappers/"
+# Lookup obtained from ONS Open Geography Portal
+input_lau_lad_mapper_file = "LAD_(April_2025)_to_LAU1_to_ITL3_to_ITL2_to_ITL1_(January_2025)_Lookup_in_the_UK.csv"
+output_dir =  "Testing_Data/Output/Mapping/"
+output_filename = "manual_adj_adjustments_output_lad.csv"
+
+[cord_prep_settings]
+input_subcomponent_folder = "Testing_Data/CORD conversion"
+subcomponent_lookup_file_path = "sub_component_lookup/subcomponent_transaction_credit_code_lookup.csv"
+output_dir = "Testing_Data/Output/CORD_formatted/"
+output_filename = "CP_data.csv"
+
+[schema_paths]
+schema_dir = "config/schemas/"
 input_gdhi_schema_name = "input_gdhi_schema.toml"
 input_ra_lad_schema_name = "input_ra_lad_schema.toml"
 output_preprocess_schema_path = "output_preprocess_schema.toml"

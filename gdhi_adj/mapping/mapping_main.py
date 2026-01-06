@@ -30,8 +30,8 @@ def rename_s30_to_lau(config, df):
     """
     # If S30 column exists, rename LAD columns to to LAU, because for England
     # it's the same, but for Scotland they are actually LAU codes
-    lad_code_col = config["mapping_settings"]["data_lad_code"]
-    lad_name_col = config["mapping_settings"]["data_lad_name"]
+    lad_code_col = config["user_settings"]["data_lad_code"]
+    lad_name_col = config["user_settings"]["data_lad_name"]
 
     # By default, assume no mapping is needed
     need_mapping = False
@@ -176,17 +176,18 @@ def run_mapping(config: dict, df=pd.DataFrame()):
 
     """
     logger.info("Started mapping LAUs to LADs")
+    root_dir = config["user_settings"]["shared_root_dir"]
 
     df = read_with_schema(
         input_file_path=os.path.join(
-            "C:/Users",
-            os.getlogin(),
+            os.path.expanduser("~"),
+            root_dir,
             config["mapping_settings"]["input_adj_file_dir"],
             config["mapping_settings"]["input_adj_file_name"],
         ),
         input_schema_path=os.path.join(
-            config["pipeline_settings"]["schema_path"],
-            config["pipeline_settings"]["output_adjustment_schema_path"],
+            config["schema_paths"]["schema_dir"],
+            config["schema_paths"]["output_adjustment_schema_path"],
         ),
     )
 
@@ -197,16 +198,14 @@ def run_mapping(config: dict, df=pd.DataFrame()):
     if need_mapping:
         mapper_df = read_with_schema(
             input_file_path=os.path.join(
-                "C:/Users/",
-                os.getlogin(),
+                os.path.expanduser("~"),
+                root_dir,
                 config["mapping_settings"]["input_lau_lad_mapper_dir"],
                 config["mapping_settings"]["input_lau_lad_mapper_file"],
             ),
             input_schema_path=os.path.join(
-                config["pipeline_settings"]["schema_path"],
-                config["pipeline_settings"][
-                    "input_mapping_lau_lad_schema_name"
-                ],
+                config["schema_paths"]["schema_dir"],
+                config["schema_paths"]["input_mapping_lau_lad_schema_name"],
             ),
         )
 
@@ -219,7 +218,7 @@ def run_mapping(config: dict, df=pd.DataFrame()):
             + "_"
             + config["mapping_settings"]["output_filename"]
         )
-        if config["mapping_settings"]["aggregate_to_lad"]:
+        if config["user_settings"]["aggregate_to_lad"]:
             logger.info("Starting aggregating data to LAD level as requested.")
             result_df = aggregate_lad(result_df)
             output_name = output_name.replace(".csv", "_aggregated.csv")
@@ -231,12 +230,12 @@ def run_mapping(config: dict, df=pd.DataFrame()):
         write_with_schema(
             result_df,
             output_schema_path=os.path.join(
-                config["pipeline_settings"]["schema_path"],
-                config["pipeline_settings"]["output_mapping_schema_path"],
+                config["schema_paths"]["schema_dir"],
+                config["schema_paths"]["output_mapping_schema_path"],
             ),
             output_dir=os.path.join(
-                "C:/Users/",
-                os.getlogin(),
+                os.path.expanduser("~"),
+                root_dir,
                 config["mapping_settings"]["output_dir"],
             ),
             new_filename=output_name,

@@ -27,6 +27,7 @@ All notable changes to this project will be documented in this file.
 - GDHIDAP-60: updated methodology for adjustments.
 - GDHIDAP-72: convert adjust str values to lower case before reformat.
 - GDHIDAP-75: update adjusted constrained value assignment in runner.
+- GDHIDAP-76: Reorganise main config file.
 
 ### Deprecated
 

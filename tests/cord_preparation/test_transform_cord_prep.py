@@ -13,11 +13,14 @@ class TestAppendAllSubComponents:
         """
         # Mock config dictionary
         config = {
-            "cord_prep_settings": {
-                "input_subcomponent_folder": "/fake/path"
+            "user_settings": {
+                "shared_root_dir": "fake"
             },
-            "pipeline_settings": {
-                "schema_path": "/fake/schema",
+            "cord_prep_settings": {
+                "input_subcomponent_folder": "path"
+            },
+            "schema_paths": {
+                "schema_dir": "/fake/schema",
                 "output_mapping_schema_path": "schema.toml"
             }
         }
@@ -67,11 +70,14 @@ class TestAppendAllSubComponents:
     def test_append_all_sub_components_no_files(self, mocker):
         """Test behavior when no files are found in the folder."""
         config = {
-            "cord_prep_settings": {
-                "input_subcomponent_folder": "/empty/path"
+            "user_settings": {
+                "shared_root_dir": "empty"
             },
-            "pipeline_settings": {
-                "schema_path": "/fake/schema",
+            "cord_prep_settings": {
+                "input_subcomponent_folder": "path"
+            },
+            "schema_paths": {
+                "schema_dir": "/fake/schema",
                 "output_mapping_schema_path": "schema.toml"
             }
         }
@@ -91,11 +97,14 @@ class TestAppendAllSubComponents:
     def test_append_all_sub_components_read_error(self, mocker):
         """Test behavior when one file fails to read."""
         config = {
-            "cord_prep_settings": {
-                "input_subcomponent_folder": "/fake/path"
+            "user_settings": {
+                "shared_root_dir": "fake"
             },
-            "pipeline_settings": {
-                "schema_path": "/fake/schema",
+            "cord_prep_settings": {
+                "input_subcomponent_folder": "path"
+            },
+            "schema_paths": {
+                "schema_dir": "/fake/schema",
                 "output_mapping_schema_path": "schema.toml"
             }
         }
