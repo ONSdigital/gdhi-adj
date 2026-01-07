@@ -28,6 +28,7 @@ All notable changes to this project will be documented in this file.
 - GDHIDAP-72: convert adjust str values to lower case before reformat.
 - GDHIDAP-75: update adjusted constrained value assignment in runner.
 - GDHIDAP-76: Reorganise main config file.
+- GDHIDAP-80: Update conditions for calculating rollback_con_gdhi within apportion_rollback_years.
 
 ### Deprecated
 
