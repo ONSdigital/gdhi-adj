@@ -6,7 +6,7 @@ from gdhi_adj.adjustment.apportion_adjustment import (
     apportion_negative_adjustment,
     apportion_rollback_years,
     calc_non_outlier_proportions,
-    check_no_negative_values,
+    check_no_negative_values_col,
 )
 
 
@@ -191,21 +191,21 @@ class TestApportionNegativeAdjustment:
         )
 
 
-class TestCheckNoNegativeValues:
-    """Test suite for check_no_negative_values function."""
+class TestCheckNoNegativeValuesCol:
+    """Test suite for check_no_negative_values_col function."""
     def test_check_no_negative_adjusted_gdhi_raises(self):
-        """Test that check_no_negative_values raises ValueError for
+        """Test that check_no_negative_values_col raises ValueError for
         negatives."""
         df = pd.DataFrame({"adjusted_con_gdhi": [1.0, -1.0]})
 
         with pytest.raises(ValueError, match="Negative value check failed"):
-            check_no_negative_values(df, "adjusted_con_gdhi")
+            check_no_negative_values_col(df, "adjusted_con_gdhi")
 
     def test_check_no_negative_adjusted_gdhi_passes(self):
-        """Test that check_no_negative_values passes for no negatives."""
+        """Test that check_no_negative_values_col passes for no negatives."""
         df = pd.DataFrame({"adjusted_con_gdhi": [1.0, 2.0]})
 
-        check_no_negative_values(df, "adjusted_con_gdhi")
+        check_no_negative_values_col(df, "adjusted_con_gdhi")
 
 
 class TestApportionRollbackYears:

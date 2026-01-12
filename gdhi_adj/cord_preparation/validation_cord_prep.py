@@ -153,7 +153,7 @@ def check_no_nulls(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def check_no_negative_values(df: pd.DataFrame) -> pd.DataFrame:
+def check_no_negative_values_df(df: pd.DataFrame) -> pd.DataFrame:
     """
     Checks all numeric columns in the DataFrame to ensure
     no values are less than 0.

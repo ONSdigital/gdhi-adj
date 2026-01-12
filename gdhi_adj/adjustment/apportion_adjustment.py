@@ -97,7 +97,7 @@ def apportion_adjustment(
     return adjusted_df
 
 
-def check_no_negative_values(df: pd.DataFrame, col: str) -> None:
+def check_no_negative_values_col(df: pd.DataFrame, col: str) -> None:
     """
     Check that adjusted_con_gdhi has no negative values.
 
@@ -150,7 +150,7 @@ def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
 
     # Checks after adjustment
     # Check that there are no negative values in adjusted_con_gdhi
-    check_no_negative_values(adjusted_df, "adjusted_con_gdhi")
+    check_no_negative_values_col(adjusted_df, "adjusted_con_gdhi")
 
     # Adjustment check: sums by (lad_code, year) should match pre- and post-
     # adjustment

@@ -6,7 +6,7 @@ import pytest
 
 from gdhi_adj.cord_preparation.validation_cord_prep import (
     check_lsoa_consistency,
-    check_no_negative_values,
+    check_no_negative_values_df,
     check_no_nulls,
     check_subcomponent_lookup,
     check_year_column_completeness,
@@ -227,8 +227,8 @@ class TestNoNullsCheck:
         assert "Null Value Check Failed" in str(excinfo.value)
 
 
-class TestNoNegativeValues:
-    """Tests for check_no_negative_values function."""
+class TestNoNegativeValuesDf:
+    """Tests for check_no_negative_values_df function."""
 
     def test_no_negatives_pass(self):
         """
@@ -238,7 +238,7 @@ class TestNoNegativeValues:
             'int_col': [1, 2, 0],
             'float_col': [0.1, 5.5, 100.0]
         })
-        result = check_no_negative_values(df)
+        result = check_no_negative_values_df(df)
         pd.testing.assert_frame_equal(df, result)
 
     def test_has_negative_int(self):
@@ -249,7 +249,7 @@ class TestNoNegativeValues:
             'val': [10, -5, 20]
         })
         with pytest.raises(ValueError) as excinfo:
-            check_no_negative_values(df)
+            check_no_negative_values_df(df)
         assert "Negative Value Check Failed" in str(excinfo.value)
         assert "val" in str(excinfo.value)
 
@@ -261,7 +261,7 @@ class TestNoNegativeValues:
             'val': [1.0, 0.5, -0.01]
         })
         with pytest.raises(ValueError) as excinfo:
-            check_no_negative_values(df)
+            check_no_negative_values_df(df)
         assert "Negative Value Check Failed" in str(excinfo.value)
 
     def test_ignores_string_columns(self):
@@ -273,7 +273,7 @@ class TestNoNegativeValues:
             'numeric': [1, 2, 3],
             'string_col': ['-5', 'positive', 'text']
         })
-        result = check_no_negative_values(df)
+        result = check_no_negative_values_df(df)
         pd.testing.assert_frame_equal(df, result)
 
 
