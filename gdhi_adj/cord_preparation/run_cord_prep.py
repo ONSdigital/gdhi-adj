@@ -10,7 +10,7 @@ from gdhi_adj.cord_preparation.transform_cord_prep import (
 )
 from gdhi_adj.cord_preparation.validation_cord_prep import (
     check_lsoa_consistency,
-    check_no_negative_values,
+    check_no_negative_values_df,
     check_no_nulls,
     check_subcomponent_lookup,
     check_year_column_completeness,
@@ -76,7 +76,7 @@ def run_cord_preparation(config: dict) -> None:
     check_lsoa_consistency(df)
     check_year_column_completeness(df)
     if config["user_settings"]["accept_negatives_cord"] is False:
-        check_no_negative_values(df)
+        check_no_negative_values_df(df)
 
     logger.info("Applying CORD-specific transformations and filters")
     df = impute_suppression_x(
