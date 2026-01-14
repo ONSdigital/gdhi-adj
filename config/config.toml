@@ -9,7 +9,7 @@ cord_preparation = false
 shared_root_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments"
 export_qa_files = false # Set to true to export interim QA files for preprocessing/adjustment modules
 output_data = true
-output_data_prefix = "ncc_CTIT_test"
+output_data_prefix = "ncc_SBRSS_bug_test"
 rollback_year_start = 2010
 rollback_year_end = 2014
 # Preprocessing settings
@@ -45,9 +45,9 @@ interim_filename = "manual_adj_preprocessing_interim_scores.csv" #Change name of
 output_filename = "manual_adj_preprocessing_output.csv" #Change name of file here
 
 [adjustment_settings]
-input_adj_file_path = "PowerBI_Tool/2025_Files/Manual_Classification_Files/Prepped for Pipeline/CTIT__manual_adj_classifications_Run1.csv"
-input_constrained_file_path = "Testing_Data/051125/GDHI_LSOA_Apportioned_CORD_ctit_names_fixed.csv"
-input_unconstrained_file_path = "Testing_Data/051125/GDHI_Disclosure_HMRC_CTIT_Unconstrained_names_fixed.csv"
+input_adj_file_path = "PowerBI_Tool/2025_Files/Manual_Classification_Files/Prepped for Pipeline/SBRSS__manual_adj_classifications_Run1_NI.csv"
+input_constrained_file_path = "Testing_Data/201125/251118_GDHI_LSOA_Apportioned_CORD_sbrss_only_names_fixed.csv"
+input_unconstrained_file_path = "Testing_Data/201125/251118_GDHI_Disclosure_HMRC_SBRSS_Unconstrained_names_fixed.csv"
 output_dir = "Testing_Data/Output/Adjustment/"
 interim_filename =  "manual_adj_adjustments_interim_QA.csv" #Change name of file here
 output_filename = "manual_adj_adjustments_output.csv" #Change name of file here

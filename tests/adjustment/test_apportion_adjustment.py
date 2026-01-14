@@ -220,14 +220,21 @@ class TestApportionRollbackYears:
             "lad_code": [
                 "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
             ],
-            "year": [2014, 2014, 2015, 2015, 2016, 2016, 2017, 2017],
+            "adjust": [
+                True, True, True, True, True, True, False, False
+            ],
+            "year_to_adjust": [
+                [2013, 2014], [2013, 2014], [2013, 2014], [2013, 2014],
+                [2013, 2014], [2013, 2014], [2013, 2014], [2013, 2014],
+            ],
+            "year": [2013, 2013, 2014, 2014, 2015, 2015, 2016, 2016],
             "con_gdhi": [5.0, 15.0, 15.0, 15.0, 16.0, 24.0, 15.0, 35.0],
             "lad_total": [20.0, 20.0, 30.0, 30.0, 40.0, 40.0, 50.0, 50.0],
             "adjusted_con_gdhi": [
                 6.0, 14.0, 14.0, 16.0, 17.0, 23.0, 16.0, 34.0
             ],
             "rollback_flag": [
-                True, True, True, True, True, True, False, False
+                True, True, True, True, False, False, False, False
             ],
         })
 
@@ -238,17 +245,24 @@ class TestApportionRollbackYears:
             "lad_code": [
                 "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
             ],
-            "year": [2014, 2014, 2015, 2015, 2016, 2016, 2017, 2017],
+            "adjust": [
+                True, True, True, True, True, True, False, False
+            ],
+            "year_to_adjust": [
+                [2013, 2014], [2013, 2014], [2013, 2014], [2013, 2014],
+                [2013, 2014], [2013, 2014], [2013, 2014], [2013, 2014],
+            ],
+            "year": [2013, 2013, 2014, 2014, 2015, 2015, 2016, 2016],
             "con_gdhi": [5.0, 15.0, 15.0, 15.0, 16.0, 24.0, 15.0, 35.0],
             "lad_total": [20.0, 20.0, 30.0, 30.0, 40.0, 40.0, 50.0, 50.0],
             "adjusted_con_gdhi": [
                 6.0, 14.0, 14.0, 16.0, 17.0, 23.0, 16.0, 34.0
             ],
             "rollback_flag": [
-                True, True, True, True, True, True, False, False
+                True, True, True, True, False, False, False, False
             ],
             "rollback_con_gdhi": [
-                8.5, 11.5, 12.75, 17.25, 17.0, 23.0, 16.0, 34.0
+                9.333, 10.667, 14.0, 16.0, 17.0, 23.0, 16.0, 34.0
             ],
         })
 
@@ -263,11 +277,15 @@ class TestApportionRollbackYears:
         df = pd.DataFrame({
             "lsoa_code": ["E1", "E2", "E1", "E2"],
             "lad_code": ["E01", "E01", "E01", "E01"],
+            "adjust": [True, False, False, False],
+            "year_to_adjust": [
+                [2013, 2014], [2013, 2014], [2013, 2014], [2013, 2014],
+            ],
             "year": [2014, 2014, 2016, 2016],
             "con_gdhi": [5.0, 15.0, 6.0, 14.0],
             "lad_total": [20.0, 20.0, 20.0, 20.0],
             "adjusted_con_gdhi": [5.0, 15.0, 6.0, 14.0],
-            "rollback_flag": [False, False, False, False],
+            "rollback_flag": [False, True, False, False],
         })
 
         result_df = apportion_rollback_years(df)
@@ -275,11 +293,15 @@ class TestApportionRollbackYears:
         expected_df = pd.DataFrame({
             "lsoa_code": ["E1", "E2", "E1", "E2"],
             "lad_code": ["E01", "E01", "E01", "E01"],
+            "adjust": [True, False, False, False],
+            "year_to_adjust": [
+                [2013, 2014], [2013, 2014], [2013, 2014], [2013, 2014],
+            ],
             "year": [2014, 2014, 2016, 2016],
             "con_gdhi": [5.0, 15.0, 6.0, 14.0],
             "lad_total": [20.0, 20.0, 20.0, 20.0],
             "adjusted_con_gdhi": [5.0, 15.0, 6.0, 14.0],
-            "rollback_flag": [False, False, False, False],
+            "rollback_flag": [False, True, False, False],
             "rollback_con_gdhi": [5.0, 15.0, 6.0, 14.0],
         })
 
