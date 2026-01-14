@@ -51,6 +51,7 @@ interim_filename =  "manual_adj_adjustments_interim_QA.csv" #Change name of file
 output_filename = "manual_adj_adjustments_output.csv" #Change name of file here
 
 [cord_prep_settings]
+# All files will need to be placed in the CORD_conversion folder and contain the transaction and credit debit code columns
 input_subcomponent_folder = "Testing_Data/CORD conversion"
 subcomponent_lookup_file_path = "sub_component_lookup/subcomponent_transaction_credit_code_lookup.csv"
 input_lau_lad_mapper_dir = "Testing_Data/Mappers/"
