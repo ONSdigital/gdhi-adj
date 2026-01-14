@@ -4,6 +4,7 @@ import os
 
 import pandas as pd
 
+from gdhi_adj.cord_preparation.mapping_cord_prep import map_S30_to_S12
 from gdhi_adj.cord_preparation.transform_cord_prep import (
     append_all_sub_components,
     impute_suppression_x,
@@ -70,6 +71,9 @@ def run_cord_preparation(config: dict) -> None:
             module_config["subcomponent_lookup_file_path"],
         )
     )
+
+    logger.info("Started mapping LAUs to LADs")
+    df = map_S30_to_S12(config, df)
 
     logger.info("Performing validation checks on input data")
     check_subcomponent_lookup(df, subcomponent_lookup)

@@ -328,15 +328,13 @@ setup_gdhi_env.bat
         ```
         preprocessing = true
         adjustment = false
-        mapping = false
         cord_preparation = false
         ```
     - Check the 'common settings' within user_settings, if you want to export an interim QA file, export final data, or assign or change the output file prefix.
     - For the module you want to run, check that modules section within user_settings. These will either decide whether some operations are carried out, or input values are required.
         - Preprocessing: decide if you want to calculate the z-score and/or the IQR, and the respective thresholds for these. Also assign the correct transaction name used in the data, so that Local Authority data from Regional Accounts can be joined.
         - Adjustments: Assign filters for subcomponents and whether to filter by them, and whether negative values will be accepted or need adjusting.
-        - Mapping: Assign column names used in previous modules for LADs, and whether to aggregate to one LAD per row if required.
-        - CORD preparation: Decide whether to accept negatives, or run a validation check to warn if there are any present.
+        - CORD preparation: Assign column names used in previous modules for LADs, and whether to aggregate to one LAD per row after mapping if required. Decide whether to accept negatives, or run a validation check to warn if there are any present.
     - Check the individual module settings sections to ensure the input and output filepaths are correct for each module.
     - CORD preparation module:
         - Move all files that will contain one trancaction per LSOA, to the input
