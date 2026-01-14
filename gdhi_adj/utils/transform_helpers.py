@@ -132,6 +132,15 @@ def sum_match_check(
     df = df[df["adjustment_check"] > sum_tolerance]
 
     if not df.empty:
+        con_gdhi_cols = df.columns[df.columns.str.contains("con_gdhi")]
+        selected_cols = [
+            "lsoa_code",
+            "year",
+            "unadjusted_sum",
+            "adjusted_sum",
+            "adjustment_check",
+        ] + list(con_gdhi_cols)
+        print(df[selected_cols])
         raise ValueError(
             "Adjustment check failed: LAD sums do not match after adjustment."
         )

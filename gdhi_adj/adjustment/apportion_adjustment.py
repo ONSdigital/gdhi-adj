@@ -195,9 +195,16 @@ def apportion_rollback_years(df: pd.DataFrame) -> pd.DataFrame:
         .sum()
     )
 
+    condition = (
+        adjusted_df["adjust"]
+        & adjusted_df["rollback_flag"]
+        & adjusted_df.apply(
+            lambda r: max_rollback_year in r["year_to_adjust"], axis=1
+        )
+    )
     # Map back to dataframe and calculate
     adjusted_df["rollback_con_gdhi"] = np.where(
-        adjusted_df["rollback_flag"],
+        condition,
         (
             adjusted_df["lad_total"]
             * (
