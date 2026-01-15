@@ -256,5 +256,5 @@ def write_with_schema(
     )
     # Convert DataFrame to CSV
     logger.info(f"Saving data to {new_output_path}")
-    df.to_csv(new_output_path, index=False)
+    df.to_csv(new_output_path, index=False, float_format="%.10f")
     logger.info("Data saved successfully")
