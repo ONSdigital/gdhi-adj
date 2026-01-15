@@ -2,14 +2,14 @@
 # Module selection: Set to true to run module, not recommended to run multiple
 # modules at once.
 preprocessing = false
-adjustment = true
+adjustment = false
 mapping = false
-cord_preparation = false
+cord_preparation = true
 # Common settings
 shared_root_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments"
 export_qa_files = false # Set to true to export interim QA files for preprocessing/adjustment modules
 output_data = true
-output_data_prefix = "ncc_SBRSS_bug_test"
+output_data_prefix = "ncc_test"
 rollback_year_start = 2010
 rollback_year_end = 2014
 # Preprocessing settings

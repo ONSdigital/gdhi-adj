@@ -1,6 +1,7 @@
 """Module for pre-processing data in the gdhi_adj project."""
 
 import os
+from pathlib import Path
 
 import pandas as pd
 
@@ -10,12 +11,13 @@ from gdhi_adj.cord_preparation.transform_cord_prep import (
 )
 from gdhi_adj.cord_preparation.validation_cord_prep import (
     check_lsoa_consistency,
+    check_lsoa_count,
     check_no_negative_values_df,
     check_no_nulls,
     check_subcomponent_lookup,
     check_year_column_completeness,
 )
-from gdhi_adj.utils.helpers import write_with_schema
+from gdhi_adj.utils.helpers import read_with_schema, write_with_schema
 from gdhi_adj.utils.logger import GDHI_adj_logger
 
 GDHI_adj_LOGGER = GDHI_adj_logger(__name__)
@@ -52,9 +54,8 @@ def run_cord_preparation(config: dict) -> None:
     output_dir = os.path.join(
         os.path.expanduser("~"), root_dir, module_config["output_dir"]
     )
-    output_schema_path = os.path.join(
-        schema_dir,
-        config["schema_paths"]["output_cord_prep_schema_path"],
+    output_schema_path = Path(
+        schema_dir, config["schema_paths"]["output_cord_prep_schema_path"]
     )
     output_filename = output_data_prefix + module_config.get(
         "output_filename", None
@@ -63,16 +64,25 @@ def run_cord_preparation(config: dict) -> None:
     logger.info("Reading in mapped data for CORD preparation")
     df = append_all_sub_components(config)
     subcomponent_lookup = pd.read_csv(
-        os.path.join(
-            os.path.expanduser("~"),
-            root_dir,
-            module_config["input_subcomponent_folder"],
-            module_config["subcomponent_lookup_file_path"],
-        )
+        Path.home()
+        / root_dir
+        / module_config["input_subcomponent_folder"]
+        / module_config["subcomponent_lookup_file_path"]
+    )
+
+    df_unconstrained = read_with_schema(
+        Path.home()
+        / root_dir
+        / config["adjustment_settings"]["input_unconstrained_file_path"],
+        Path(
+            schema_dir,
+            config["schema_paths"]["input_unconstrained_schema_name"],
+        ),
     )
 
     logger.info("Performing validation checks on input data")
     check_subcomponent_lookup(df, subcomponent_lookup)
+    check_lsoa_count(df, df_unconstrained)
     check_lsoa_consistency(df)
     check_year_column_completeness(df)
     if config["user_settings"]["accept_negatives_cord"] is False:
