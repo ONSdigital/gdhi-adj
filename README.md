@@ -90,10 +90,10 @@ flowchart TD
 
     subgraph B["gdhi-adj Adjustments Pipeline"]
         B_info["(Open-Source pandas/NumPy RAP)"]:::note
-        B1[Outlier Detection] --> B2[Rules-Based Adjustment] --> B3[Preserve LA Totals Exactly]
+        B1[Outlier Detection] --> B2[Rules-Based Adjustment] --> B3[Preserve LA Totals Exactly] --> B4[Formatting for CORD]
     end
 
-    B3 --> C["Final Published GDHI (LSOA-Level Statistics)"]
+    B4 --> C["Final Published GDHI (LSOA-Level Statistics)"]
 ```
 
 ## ❓ Why Are Adjustments Needed?
@@ -116,7 +116,7 @@ or unstable LSOA-level estimates.
 
 These challenges are *well recognised within official statistics*: for example, the
 ONS notes that “administrative data are generally not collected for the sole purpose of
-producing statistics… [which] can lead to challenges when using them” in its report on [Exploring the quality of administrative data using qualitative methods](https://www.ons.gov.uk/methodology/methodologicalpublications/generalmethodology/onsworkingpaperseries/exploringthequalityofadministrativedatausingqualitativemethods),
+producing statistics… which can lead to challenges when using them” in its report on [Exploring the quality of administrative data using qualitative methods](https://www.ons.gov.uk/methodology/methodologicalpublications/generalmethodology/onsworkingpaperseries/exploringthequalityofadministrativedatausingqualitativemethods),
 and further documents a range of inherent error sources -- such as representation and
 measurement errors -- in its guidance on [Cataloguing errors in administrative and alternative data sources](https://www.ons.gov.uk/methodology/methodologicalpublications/generalmethodology/onsworkingpaperseries/cataloguingerrorsinadministrativeandalternativedatasourceswhatwhenandhow).
 These distortions are therefore inherent to using administrative data as proxies
