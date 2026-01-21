@@ -30,9 +30,10 @@ def run_cord_preparation(config: dict) -> None:
     This function performs the following steps:
     1. Load the configuration settings.
     2. Load the input data and append all subcomponents together.
-    3. Perform validation checks on the input data.
-    4. Apply CORD-specific transformations.
-    5. Save the prepared CORD data for further processing.
+    3. Map LAU S30 codes to LAD S12 codes.
+    4. Perform validation checks on the input data.
+    5. Apply CORD-specific transformations.
+    6. Save the prepared CORD data for further processing.
 
     Args:
         config (dict): Configuration dictionary containing user settings and
