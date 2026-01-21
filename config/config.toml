@@ -25,7 +25,7 @@ filter_sub_component = false # Set to true to filter constrained data for sub-co
 sas_code_filter = "G866BTR"
 cord_code_filter = "D75"
 credit_debit_filter = "D"
-accept_negatives = false # Set to true to keep negative values and not run apportion_negative_adjustment
+accept_negatives_adjustment = false # Set to true to keep negative values and not run apportion_negative_adjustment
 # CORD preparation settings
 data_lad_code = "lad_code"
 data_lad_name = "lad_name"

@@ -29,7 +29,7 @@ def run_cord_preparation(config: dict) -> None:
 
     This function performs the following steps:
     1. Load the configuration settings.
-    2. Load the input data.
+    2. Load the input data and append all subcomponents together.
     3. Perform validation checks on the input data.
     4. Apply CORD-specific transformations.
     5. Save the prepared CORD data for further processing.

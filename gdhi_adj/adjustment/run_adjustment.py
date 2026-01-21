@@ -217,7 +217,7 @@ def run_adjustment(config: dict) -> None:
     logger.info("Apportioning adjustment values to all LSOAs")
     df = apportion_adjustment(df, imputed_df)
 
-    if config["user_settings"]["accept_negatives"] is False:
+    if config["user_settings"]["accept_negatives_adjustment"] is False:
         logger.info("Apportioning negative adjusted values")
         df = apportion_negative_adjustment(df)
 
