@@ -5,7 +5,7 @@ import re
 
 import pandas as pd
 
-from gdhi_adj.utils.helpers import read_with_schema, write_with_schema
+from gdhi_adj.utils.helpers import read_with_schema
 from gdhi_adj.utils.logger import GDHI_adj_logger
 
 # Initialize logger
@@ -160,48 +160,34 @@ def reformat(df, original_columns):
     return df[original_columns]
 
 
-def run_mapping(config: dict, df=pd.DataFrame()):
+def map_S30_to_S12(config: dict, df: pd.DataFrame) -> pd.DataFrame:
     """
     Run the mapping steps for the GDHI adjustment pipeline.
 
     This function performs the follwing steps:
-    1. Load the input data.
-    2. Rename column containing S30 values to LAU and verify mapping is
+    1. Rename column containing S30 values to LAU and verify mapping is
         required.
     If mapping is required:
-    3. Load in and clean mapper containing LAU to LAD lookup.
-    4. Join LAU-LAD mapper to adjusted data.
-    5. Aggregate to LAD if specified in config.
-    6. Reformat and save output.
+    2. Load in and clean mapper containing LAU to LAD lookup.
+    3. Join LAU-LAD mapper to adjusted data.
+    4. Aggregate to LAD if specified in config.
+    5. Reformat output.
 
     """
     logger.info("Started mapping LAUs to LADs")
     root_dir = config["user_settings"]["shared_root_dir"]
 
-    df = read_with_schema(
-        input_file_path=os.path.join(
-            os.path.expanduser("~"),
-            root_dir,
-            config["mapping_settings"]["input_adj_file_dir"],
-            config["mapping_settings"]["input_adj_file_name"],
-        ),
-        input_schema_path=os.path.join(
-            config["schema_paths"]["schema_dir"],
-            config["schema_paths"]["output_adjustment_schema_path"],
-        ),
-    )
-
     original_columns = df.columns.tolist()
     df, need_mapping = rename_s30_to_lau(config, df)
 
-    print(f"Mapping needed: {need_mapping}")
+    logger.info(f"Mapping needed: {need_mapping}")
     if need_mapping:
         mapper_df = read_with_schema(
             input_file_path=os.path.join(
                 os.path.expanduser("~"),
                 root_dir,
-                config["mapping_settings"]["input_lau_lad_mapper_dir"],
-                config["mapping_settings"]["input_lau_lad_mapper_file"],
+                config["cord_prep_settings"]["input_lau_lad_mapper_dir"],
+                config["cord_prep_settings"]["input_lau_lad_mapper_file"],
             ),
             input_schema_path=os.path.join(
                 config["schema_paths"]["schema_dir"],
@@ -213,33 +199,16 @@ def run_mapping(config: dict, df=pd.DataFrame()):
 
         result_df = join_mapper(df, mapper_df)
 
-        output_name = (
-            config["user_settings"]["output_data_prefix"]
-            + "_"
-            + config["mapping_settings"]["output_filename"]
-        )
         if config["user_settings"]["aggregate_to_lad"]:
             logger.info("Starting aggregating data to LAD level as requested.")
             result_df = aggregate_lad(result_df)
-            output_name = output_name.replace(".csv", "_aggregated.csv")
         else:
             logger.info("Aggregation to LAD not requested.")
-            output_name = output_name.replace(".csv", "_not_aggregated.csv")
         result_df = reformat(result_df, original_columns)
 
-        write_with_schema(
-            result_df,
-            output_schema_path=os.path.join(
-                config["schema_paths"]["schema_dir"],
-                config["schema_paths"]["output_mapping_schema_path"],
-            ),
-            output_dir=os.path.join(
-                os.path.expanduser("~"),
-                root_dir,
-                config["mapping_settings"]["output_dir"],
-            ),
-            new_filename=output_name,
-        )
         logger.info("Completed mapping LAUs to LADs")
+
+        return result_df
     else:
         logger.info("Mapping LAUs to LADs not needed. No S30 codes detected.")
+        return df

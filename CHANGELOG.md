@@ -31,6 +31,7 @@ All notable changes to this project will be documented in this file.
 - GDHIDAP-76: Reorganise main config file.
 - GDHIDAP-79: Change negative value apportionment to adjust on updated proportions.
 - GDHIDAP-80: Update conditions for calculating rollback_con_gdhi within apportion_rollback_years.
+- GDHIDAP-81: Integrate mapper module into CORD prep module.
 
 ### Deprecated
 

@@ -1,9 +1,9 @@
-"""Unit tests for mapping.py functions using pytest."""
+"""Unit tests for mapping_cord_prep.py functions using pytest."""
 
 import pandas as pd
 import pytest
 
-from gdhi_adj.mapping.mapping_main import (
+from gdhi_adj.cord_preparation.mapping_cord_prep import (
     aggregate_lad,
     clean_validate_mapper,
     join_mapper,

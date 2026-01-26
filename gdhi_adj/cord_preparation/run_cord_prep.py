@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from gdhi_adj.cord_preparation.mapping_cord_prep import map_S30_to_S12
 from gdhi_adj.cord_preparation.transform_cord_prep import (
     append_all_sub_components,
     impute_suppression_x,
@@ -30,10 +31,11 @@ def run_cord_preparation(config: dict) -> None:
 
     This function performs the following steps:
     1. Load the configuration settings.
-    2. Load the input data.
-    3. Perform validation checks on the input data.
-    4. Apply CORD-specific transformations.
-    5. Save the prepared CORD data for further processing.
+    2. Load the input data and append all subcomponents together.
+    3. Map LAU S30 codes to LAD S12 codes.
+    4. Perform validation checks on the input data.
+    5. Apply CORD-specific transformations.
+    6. Save the prepared CORD data for further processing.
 
     Args:
         config (dict): Configuration dictionary containing user settings and
@@ -79,6 +81,9 @@ def run_cord_preparation(config: dict) -> None:
             config["schema_paths"]["input_unconstrained_schema_name"],
         ),
     )
+
+    logger.info("Started mapping LAUs to LADs")
+    df = map_S30_to_S12(config, df)
 
     logger.info("Performing validation checks on input data")
     check_subcomponent_lookup(df, subcomponent_lookup)

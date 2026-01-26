@@ -21,7 +21,7 @@ class TestAppendAllSubComponents:
             },
             "schema_paths": {
                 "schema_dir": "/fake/schema",
-                "output_mapping_schema_path": "schema.toml"
+                "input_cord_prep_schema_path": "schema.toml"
             }
         }
 
@@ -78,7 +78,7 @@ class TestAppendAllSubComponents:
             },
             "schema_paths": {
                 "schema_dir": "/fake/schema",
-                "output_mapping_schema_path": "schema.toml"
+                "input_cord_prep_schema_path": "schema.toml"
             }
         }
 
@@ -105,7 +105,7 @@ class TestAppendAllSubComponents:
             },
             "schema_paths": {
                 "schema_dir": "/fake/schema",
-                "output_mapping_schema_path": "schema.toml"
+                "input_cord_prep_schema_path": "schema.toml"
             }
         }
 
