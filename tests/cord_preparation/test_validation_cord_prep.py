@@ -6,6 +6,7 @@ import pytest
 
 from gdhi_adj.cord_preparation.validation_cord_prep import (
     check_lsoa_consistency,
+    check_lsoa_count,
     check_no_negative_values_df,
     check_no_nulls,
     check_subcomponent_lookup,
@@ -76,6 +77,52 @@ class TestCheckSubcomponentLookup:
             check_subcomponent_lookup(df, lookup_df)
         assert "Not all combinations" in str(excinfo.value)
         assert "{('T4', 'C')}" in str(excinfo.value)
+
+
+class TestCheckLSOACount:
+    """Tests for check_lsoa_count function."""
+
+    def test_check_lsoa_count_pass(self):
+        """
+        Test that the function passes when LSOA codes match in both DataFrames.
+        """
+        df = pd.DataFrame({
+            'lsoa_code': ['E01', 'E02', 'E03', 'E04'],
+            'con_gdhi': [1, 2, 3, 4]
+        })
+
+        df_unconstrained = pd.DataFrame({
+            'lsoa_code': ['E01', 'E02', 'E03', 'E04'],
+            'uncon_gdhi': [10, 20, 30, 40]
+        })
+
+        result = check_lsoa_count(df, df_unconstrained)
+        pd.testing.assert_frame_equal(df, result)
+
+    def test_check_lsoa_count_fail(self):
+        """
+        Test that the function raises ValueError when LSOA count
+        does not match expected.
+        """
+        df = pd.DataFrame({
+            'lsoa_code': ['E01', 'E02', 'E03'],
+            'transaction': ['T1', 'T1', 'T1'],
+            'account_entry': ['C', 'C', 'C'],
+            'value': [10, 20, 30]
+        })
+
+        df_unconstrained = pd.DataFrame({
+            'lsoa_code': ['E00', 'E02', 'E03', 'E04'],
+            'uncon_gdhi': [10, 20, 30, 40]
+        })
+
+        with pytest.raises(ValueError) as excinfo:
+            check_lsoa_count(df, df_unconstrained)
+
+        assert "LSOA match validation check failed" in str(excinfo.value)
+        assert "Unique LSOA codes missing:" in str(excinfo.value)
+        assert "E00" in str(excinfo.value)
+        assert "E04" in str(excinfo.value)
 
 
 class TestLSOAConsistency:
