@@ -60,6 +60,64 @@ def check_subcomponent_lookup(
     return df
 
 
+def check_lsoa_count(
+    df: pd.DataFrame, df_unconstrained: pd.DataFrame
+) -> pd.DataFrame:
+    """
+    Perform a validation check to ensure that the unique lsoa_codes in the
+    constrained DataFrame matches that in the unconstrained DataFrame.
+
+    Args:
+        df (pd.DataFrame): The input pandas DataFrame containing an
+            'lsoa_code' column.
+        df_unconstrained (pd.DataFrame): The unconstrained DataFrame to
+            compare against.
+
+    Returns:
+        pd.DataFrame: The original DataFrame, unchanged. This allows the
+            function to be used in method chaining (e.g., .pipe()).
+
+    Raises:
+        ValueError: If the number of unique 'lsoa_code' values in the
+            constrained DataFrame does not match the number of unique
+            'lsoa_code' values in the unconstrained DataFrame.
+        KeyError: If the 'lsoa_code' column is missing from the DataFrame.
+    """
+    logger.info("Starting LSOA count check on DataFrame.")
+
+    if "lsoa_code" not in df.columns:
+        raise KeyError(
+            "The column 'lsoa_code' was not found in the DataFrame."
+        )
+
+    # Create sets of unique lsoa_codes
+    unique_lsoas_constrained = set(zip(df["lsoa_code"].drop_duplicates()))
+
+    unique_lsoas_unconstrained = set(
+        zip(df_unconstrained["lsoa_code"].drop_duplicates())
+    )
+
+    # Find missing combinations
+    missing = unique_lsoas_unconstrained - unique_lsoas_constrained
+
+    if missing:
+        error_msg = (
+            "LSOA match validation check failed: The unique LSOA codes in the "
+            "constrained DataFrame does not match the unique LSOA codes in "
+            "the unconstrained DataFrame."
+            f"\nUnique LSOA codes missing: {missing}"
+        )
+        logger.error(error_msg)
+        raise ValueError(error_msg)
+
+    logger.info(
+        "LSOA count check passed: Number of unique LSOA codes matches number"
+        " of LSOAs at start of pipeline."
+    )
+
+    return df
+
+
 def check_lsoa_consistency(df: pd.DataFrame) -> pd.DataFrame:
     """
     Performs an internal consistency check on the DataFrame to ensure

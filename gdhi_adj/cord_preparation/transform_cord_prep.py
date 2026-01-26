@@ -2,6 +2,7 @@
 
 import glob
 import os
+from pathlib import Path
 from typing import List
 
 import pandas as pd
@@ -36,7 +37,7 @@ def append_all_sub_components(config: dict) -> pd.DataFrame:
     )
     file_paths = glob.glob(file_pattern)
 
-    input_cord_prep_schema_path = os.path.join(
+    input_cord_prep_schema_path = Path(
         config["schema_paths"]["schema_dir"],
         config["schema_paths"]["input_cord_prep_schema_path"],
     )

@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 - GDHIDAP-70: GitHub open repository security and guidance.
 - GDHIDAP-73: Create function to extract range from headings.
 - GDHIDAP-74: Add adjustment validation checks.
+- GDHIDAP-78: Add validation check for CORD prep LSOAs present.
 
 ### Changed
 - Adjustment values now determined by interpolation/ extrapolation.
