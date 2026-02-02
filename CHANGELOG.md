@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.2] - Unreleased
+## [1.0.0] - 2026-02-02
 
 ### Added
 - Additional config parameters.
