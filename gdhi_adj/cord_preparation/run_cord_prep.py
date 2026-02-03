@@ -52,7 +52,6 @@ def run_cord_preparation(config: dict) -> None:
     root_dir = config["user_settings"]["shared_root_dir"]
 
     output_data_prefix = config["user_settings"]["output_data_prefix"] + "_"
-    breakpoint()
     output_dir = pathlib.Path(
         pathlib.Path.expanduser(
             pathlib.Path(root_dir) / module_config["output_dir"]
@@ -68,16 +67,18 @@ def run_cord_preparation(config: dict) -> None:
     logger.info("Reading in mapped data for CORD preparation")
     df = append_all_sub_components(config)
     subcomponent_lookup = pd.read_csv(
-        pathlib.Path.home()
-        / root_dir
-        / module_config["input_subcomponent_folder"]
-        / module_config["subcomponent_lookup_file_path"]
+        pathlib.Path.expanduser(
+            pathlib.Path(root_dir)
+            / module_config["input_subcomponent_folder"]
+            / module_config["subcomponent_lookup_file_path"]
+        )
     )
 
     df_unconstrained = read_with_schema(
-        pathlib.Path.home()
-        / root_dir
-        / config["adjustment_settings"]["input_unconstrained_file_path"],
+        pathlib.Path.expanduser(
+            pathlib.Path(root_dir)
+            / config["adjustment_settings"]["input_unconstrained_file_path"]
+        ),
         pathlib.Path(
             schema_dir,
             config["schema_paths"]["input_unconstrained_schema_name"],
