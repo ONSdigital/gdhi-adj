@@ -5,7 +5,7 @@ preprocessing = false
 adjustment = false
 cord_preparation = true
 # Common settings
-shared_root_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments"
+shared_root_dir = "~/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments"
 export_qa_files = false # Set to true to export interim QA files for preprocessing/adjustment modules
 output_data = true
 output_data_prefix = "ncc_test"

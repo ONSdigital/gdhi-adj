@@ -1,5 +1,6 @@
 """Run each module of the pipeline based on config parameters."""
 
+import pathlib
 import time
 
 from gdhi_adj.adjustment.run_adjustment import run_adjustment
@@ -22,6 +23,9 @@ def run_pipeline(config_path):
     """
     logger.info("Pipeline started")
     start_time = time.time()
+
+    # Convert config_path to pathlib.path
+    config_path = pathlib.Path(config_path)
 
     # Load config
     config = load_toml_config(config_path)
