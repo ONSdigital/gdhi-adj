@@ -184,9 +184,12 @@ def apportion_rollback_years(df: pd.DataFrame) -> pd.DataFrame:
     max_rollback_year = adjusted_df[adjusted_df["rollback_flag"]]["year"].max()
     min_rollback_year = adjusted_df[adjusted_df["rollback_flag"]]["year"].min()
     # Not to include max year as that year itself has been adjusted
-    rollback_years_to_adjust = list(
-        range(min_rollback_year, max_rollback_year)
-    )
+    if max_rollback_year > 0:
+        rollback_years_to_adjust = list(
+            range(min_rollback_year, max_rollback_year)
+        )
+    else:
+        rollback_years_to_adjust = []
 
     # Get the last rollback year's gdhi per lsoa and sum per lad
     lsoa_max_rollback_gdhi = (
