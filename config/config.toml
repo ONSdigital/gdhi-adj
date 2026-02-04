@@ -5,6 +5,7 @@ preprocessing = false
 adjustment = false
 cord_preparation = true
 # Common settings
+# The shared root directory string must start with an ~/ to allow pathlib to expand the user local directory
 shared_root_dir = "~/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments"
 export_qa_files = false # Set to true to export interim QA files for preprocessing/adjustment modules
 output_data = true
