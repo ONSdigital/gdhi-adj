@@ -84,11 +84,10 @@ def run_adjustment(config: dict) -> None:
     schema_dir = config["schema_paths"]["schema_dir"]
     root_dir = config["user_settings"]["shared_root_dir"]
 
-    input_adj_file_path = pathlib.Path(
-        pathlib.Path.expanduser(
-            pathlib.Path(root_dir) / module_config["input_adj_file_path"]
-        )
+    input_adj_file_path = pathlib.Path.expanduser(
+        pathlib.Path(root_dir) / module_config["input_adj_file_path"]
     )
+
     input_constrained_file_path = pathlib.Path(
         pathlib.Path.expanduser(
             pathlib.Path(root_dir)
