@@ -90,10 +90,10 @@ flowchart TD
 
     subgraph B["gdhi-adj Adjustments Pipeline"]
         B_info["(Open-Source pandas/NumPy RAP)"]:::note
-        B1[Outlier Detection] --> B2[Rules-Based Adjustment] --> B3[Preserve LA Totals Exactly]
+        B1[Outlier Detection] --> B2[Rules-Based Adjustment] --> B3[Preserve LA Totals Exactly] --> B4[Formatting for CORD]
     end
 
-    B3 --> C["Final Published GDHI (LSOA-Level Statistics)"]
+    B4 --> C["Final Published GDHI (LSOA-Level Statistics)"]
 ```
 
 ## ❓ Why Are Adjustments Needed?
@@ -116,7 +116,7 @@ or unstable LSOA-level estimates.
 
 These challenges are *well recognised within official statistics*: for example, the
 ONS notes that “administrative data are generally not collected for the sole purpose of
-producing statistics… [which] can lead to challenges when using them” in its report on [Exploring the quality of administrative data using qualitative methods](https://www.ons.gov.uk/methodology/methodologicalpublications/generalmethodology/onsworkingpaperseries/exploringthequalityofadministrativedatausingqualitativemethods),
+producing statistics… which can lead to challenges when using them” in its report on [Exploring the quality of administrative data using qualitative methods](https://www.ons.gov.uk/methodology/methodologicalpublications/generalmethodology/onsworkingpaperseries/exploringthequalityofadministrativedatausingqualitativemethods),
 and further documents a range of inherent error sources -- such as representation and
 measurement errors -- in its guidance on [Cataloguing errors in administrative and alternative data sources](https://www.ons.gov.uk/methodology/methodologicalpublications/generalmethodology/onsworkingpaperseries/cataloguingerrorsinadministrativeandalternativedatasourceswhatwhenandhow).
 These distortions are therefore inherent to using administrative data as proxies
@@ -255,26 +255,26 @@ stable, and meaningful as possible.
 1. **Clone the repository:**
     - Create a folder locally where you want to store the code.
     - Go into the folder, right click the blank space and select Git Bash Here.
-      - NOTE: you may need to select "Show more options" to see Git Bash.
+        - NOTE: you may need to select "Show more options" to see Git Bash.
     - In the terminal that pops up, paste in the following:
    ```sh
    git clone https://github.com/ONSdigital/gdhi_adj.git
    ```
 2. **Setup python locally:**
     - Go to the following link and read through the wiki on how to install and get python setup in your local area:
-      https://gitlab-app-l-01/ASAP/coding-getting-started-guide/-/wikis/python
+    https://gitlab-app-l-01/ASAP/coding-getting-started-guide/-/wikis/python
     - This includes setting up the pip.ini file
     - Setting environment variables for pip and python
     - Ensure that the paths of the folders for conda and python are stored in your account environmental variables with conda first and python second.
     - They should be something like:
-      - Conda: C:\ONSapps\My_Miniconda3\Scripts
-      - Python: C:\ONSapps\My_Miniconda3
+        - Conda: C:\ONSapps\My_Miniconda3\Scripts
+        - Python: C:\ONSapps\My_Miniconda3
 
 3. **For users: Install Spyder 6**
 4. **Sync Subnational Statistics sharepoint to OneDrive:**
     - Go to the Subnational Staistics sharepoint, and open the regional accounts folder, then go into the GDHI sub folder, then in the menu row above the file path, click sync, and then open to allow it to open and sync to OneDrive.
 5. **Install the required packages:**
-    - In the top level gdhi_adj folder where you can see the config folder, right click in blank space and click open in terminal
+  - In the top level gdhi_adj folder where you can see the config folder, right click in blank space and click open in terminal
    ```sh
    pip install -e .
    ```
@@ -291,9 +291,9 @@ setup_gdhi_env.bat
 ```
 
 1. **Clone the repository:**
-   ```sh
-   git clone https://github.com/ONSdigital/gdhi_adj.git
-   ```
+    ```sh
+    git clone https://github.com/ONSdigital/gdhi_adj.git
+    ```
 2. **Install Python v. 3.12:**
     - Either use the script "Python Current Test" from Windows Software Center
     - or Install Miniconda via the Software centre and create a new Conda environment, by opening the anaconda prompt and inputting:
@@ -305,60 +305,42 @@ setup_gdhi_env.bat
 4. **Sync Subnational Statistics sharepoint to OneDrive:**
     - Go to the Subnational Staistics sharepoint, and open the regional accounts folder, then go into the GDHI sub folder, then in the menu row above the file path, click sync, and then open to allow it to open and sync to OneDrive.
 5. **Activate the virtual environment:**
-   ```sh
-   conda init
+    ```sh
+    conda init
 
-   conda activate gdhi_adj_312
-   ```
+    conda activate gdhi_adj_312
+    ```
 6. **Install the package and its dependencies in "editable" mode (so changes to the code are reflected immediately without reinstalling):**
-   ```sh
-   pip install -e .
-   ```
+    ```sh
+    pip install -e .
+    ```
 7. **Install and run all pre-commits:**
-   ```sh
-   pre-commit install
-   pre-commit run -a
-   ```
+    ```sh
+    pre-commit install
+    pre-commit run -a
+    ```
 
 ## 🚀 Running
 
 1. **Config settings `config/config.toml`:**
     - Check settings in config/config.toml to ensure pipeline runs as intended.
-    - Provided you have been able to sync Subnational Staistics sharepoint to your OneDrive, set local_or_shared to "shared", if using local: local filepaths will have to be input manually.
-    - Only need run either preprocessing or adjustment at any one time, as the output from preprocessing requires manual analysis before the input is created for the adjustment module. The true/false switches for these can be found in user_settings.
-      ```
-      preprocessing = true
-      adjustment = false
-      ```
-    - Choose if you want to run both or either of the z-score and inter-quartile range (IQR) calculations.
-      ```
-      zscore_calculation = true
-      iqr_calculation = true
-      ```
-    - Check that the z-score threshold and IQR quantiles and multiplier values under user_settings are the desired values.
-      ```
-      zscore_lower_threshold = -3.0
-      zscore_upper_threshold = 3.0
-      iqr_lower_quantile = 0.25
-      iqr_upper_quantile = 0.75
-      iqr_multiplier = 3.0
-      ```
-    - For preprocessing the Regional Accounts data, it needs to be filtered by transaction_name in the user_settings.
-      ```
-      transaction_name = "Compensation of employees"
-      ```
-    - Check the component filters for the constrained data, match the respective components of the unconstrained data.
-      ```
-      sas_code_filter = "G866BTR"
-      cord_code_filter = "D75"
-      credit_debit_filter = "D"
-      ```
-    - If you want to export the final output from the module you are running, set output_data in user_settings to true.
-      ```
-      output_data = true
-      ```
-    - File schema paths are stored under pipeling_settings no need to change these unless any new files or schemas are added.
-    - File paths are stored in preprocessing_shared_settings and adjustment_shared_settings, these either need to change to match the inputs desired, or file names need to match these
+      - Only run one module at any one time, as the output from one module might need manual input or reviewing. The true/false switches for these can be found in user_settings.
+        ```
+        preprocessing = true
+        adjustment = false
+        cord_preparation = false
+        ```
+    - Check the 'common settings' within user_settings, if you want to export an interim QA file, export final data, or assign or change the output file prefix.
+    - For the module you want to run, check that modules section within user_settings. These will either decide whether some operations are carried out, or input values are required.
+        - Preprocessing: decide if you want to calculate the z-score and/or the IQR, and the respective thresholds for these. Also assign the correct transaction name used in the data, so that Local Authority data from Regional Accounts can be joined.
+        - Adjustments: Assign filters for subcomponents and whether to filter by them, and whether negative values will be accepted or need adjusting.
+        - CORD preparation: Assign column names used in previous modules for LADs, and whether to aggregate to one LAD per row after mapping if required. Decide whether to accept negatives, or run a validation check to warn if there are any present.
+    - Check the individual module settings sections to ensure the input and output filepaths are correct for each module.
+    - CORD preparation module:
+        - Move all files that will contain one trancaction per LSOA, to the input
+        - Check subcomponent lookup is up to date with expected code values
+    - File schema paths are stored under schema_paths only change these if there are any new files or updated files with new column names.
+
 2. **Run pipeline from `main.py`**
 3. **Optional: Compare pipeline output to worked exmaple, run `pipeline_test.py`**
     - To check whether the output of the pipeline preprocessing or adjustment module matches the expected output from the worked example.

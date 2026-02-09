@@ -6,6 +6,7 @@ from gdhi_adj.adjustment.apportion_adjustment import (
     apportion_negative_adjustment,
     apportion_rollback_years,
     calc_non_outlier_proportions,
+    check_no_negative_values_col,
 )
 
 
@@ -132,11 +133,15 @@ class TestApportionNegativeAdjustment:
             "previously_adjusted_con_gdhi": [
                 -0.5, 5.5, -1.0, 6.0, 3.0, 1.0, 4.0, 6.0
             ],
-            "min_adjusted_gdhi": [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0],
-            "abs_adjustment_val": [1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0],
-            "over_adjusted_gdhi": [0.5, 6.5, 0.0, 7.0, 3.0, 1.0, 4.0, 6.0],
+            "no_neg_adjusted_gdhi": [0.0, 5.5, 0.0, 6.0, 3.0, 1.0, 4.0, 6.0],
+            "sum_neg_adjusted_gdhi": [
+                -1.5, -1.5, -1.5, -1.5, 0.0, 0.0, 0.0, 0.0
+            ],
+            "adjusted_gdhi_proportion": [
+                0.0, 0.4783, 0.0, 0.5217, 0.2143, 0.0714, 0.2857, 0.4286
+            ],
             "adjusted_con_gdhi": [
-                0.357, 4.643, 0.0, 5.0, 3.0, 1.0, 4.0, 6.0
+                0.0, 4.7826, 0.0, 5.2174, 3.0, 1.0, 4.0, 6.0
             ],
         })
 
@@ -173,38 +178,34 @@ class TestApportionNegativeAdjustment:
             "previously_adjusted_con_gdhi": [
                 0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0
             ],
-            "min_adjusted_gdhi": [0.5, 0.5, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0],
-            "abs_adjustment_val": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-            "over_adjusted_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
+            "no_neg_adjusted_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
+            "sum_neg_adjusted_gdhi": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            "adjusted_gdhi_proportion": [
+                0.05, 0.35, 0.1, 0.5, 0.2143, 0.0714, 0.2857, 0.4286
+            ],
             "adjusted_con_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
         })
 
         pd.testing.assert_frame_equal(
-            result_df, expected_df, check_dtype=False
+            result_df, expected_df, check_dtype=False, rtol=0.001,
         )
 
-    def test_apportion_negative_adjustment_remains_negative(self):
-        """Test apportion_negative_adjustment returns ValueError when the
-        adjusted_con_gdhi still contains a negative value after adjustment.
 
-        This is a viable scenario of negative lad_total, but this function
-        shouldn't run if negatives are to be accepted.
-        """
+class TestCheckNoNegativeValuesCol:
+    """Test suite for check_no_negative_values_col function."""
+    def test_check_no_negative_adjusted_gdhi_raises(self):
+        """Test that check_no_negative_values_col raises ValueError for
+        negatives."""
+        df = pd.DataFrame({"adjusted_con_gdhi": [1.0, -1.0]})
 
-        df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2"],
-            "lad_code": ["E01", "E01"],
-            "year": [2000, 2000],
-            "con_gdhi": [-1.0, -2.0],
-            "lad_total": [-3.0, -3.0],
-            "adjusted_con_gdhi": [-1.0, -2.0],
-        })
+        with pytest.raises(ValueError, match="Negative value check failed"):
+            check_no_negative_values_col(df, "adjusted_con_gdhi")
 
-        with pytest.raises(
-            ValueError,
-            match="Negative value check failed:"
-        ):
-            apportion_negative_adjustment(df)
+    def test_check_no_negative_adjusted_gdhi_passes(self):
+        """Test that check_no_negative_values_col passes for no negatives."""
+        df = pd.DataFrame({"adjusted_con_gdhi": [1.0, 2.0]})
+
+        check_no_negative_values_col(df, "adjusted_con_gdhi")
 
 
 class TestApportionRollbackYears:
@@ -219,14 +220,18 @@ class TestApportionRollbackYears:
             "lad_code": [
                 "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
             ],
-            "year": [2014, 2014, 2015, 2015, 2016, 2016, 2017, 2017],
+            "adjust": [True, False, True, False, True, False, True, False],
+            "year_to_adjust": [
+                [2014], [2014], [2014], [2014], [2014], [2014], [2014], [2014],
+            ],
+            "year": [2012, 2012, 2013, 2013, 2014, 2014, 2015, 2015],
             "con_gdhi": [5.0, 15.0, 15.0, 15.0, 16.0, 24.0, 15.0, 35.0],
             "lad_total": [20.0, 20.0, 30.0, 30.0, 40.0, 40.0, 50.0, 50.0],
             "adjusted_con_gdhi": [
                 6.0, 14.0, 14.0, 16.0, 17.0, 23.0, 16.0, 34.0
             ],
             "rollback_flag": [
-                True, True, True, True, True, True, False, False
+                True, False, True, False, True, False, False, False
             ],
         })
 
@@ -237,13 +242,23 @@ class TestApportionRollbackYears:
             "lad_code": [
                 "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
             ],
-            "year": [2014, 2014, 2015, 2015, 2016, 2016, 2017, 2017],
+            "adjust": [True, False, True, False, True, False, True, False],
+            "year_to_adjust": [
+                [2014], [2014], [2014], [2014], [2014], [2014], [2014], [2014],
+            ],
+            "year": [2012, 2012, 2013, 2013, 2014, 2014, 2015, 2015],
             "con_gdhi": [5.0, 15.0, 15.0, 15.0, 16.0, 24.0, 15.0, 35.0],
             "lad_total": [20.0, 20.0, 30.0, 30.0, 40.0, 40.0, 50.0, 50.0],
             "adjusted_con_gdhi": [
                 6.0, 14.0, 14.0, 16.0, 17.0, 23.0, 16.0, 34.0
             ],
             "rollback_flag": [
+                True, False, True, False, True, False, False, False
+            ],
+            "adjusted_rollback_flag": [
+                True, False, True, False, True, False, False, False
+            ],
+            "rollback_adjust_flag": [
                 True, True, True, True, True, True, False, False
             ],
             "rollback_con_gdhi": [
@@ -260,28 +275,128 @@ class TestApportionRollbackYears:
         when rollback_flag is False for all rows.
         """
         df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2", "E1", "E2"],
-            "lad_code": ["E01", "E01", "E01", "E01"],
-            "year": [2014, 2014, 2016, 2016],
-            "con_gdhi": [5.0, 15.0, 6.0, 14.0],
-            "lad_total": [20.0, 20.0, 20.0, 20.0],
-            "adjusted_con_gdhi": [5.0, 15.0, 6.0, 14.0],
-            "rollback_flag": [False, False, False, False],
+            "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2"],
+            "lad_code": [
+                "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
+            ],
+            "adjust": [True, True, True, True, True, True, False, False],
+            "year_to_adjust": [
+                [2014], [2014], [2014], [2014], [2014], [2014], [2014], [2014],
+            ],
+            "year": [2012, 2012, 2013, 2013, 2014, 2014, 2015, 2015],
+            "con_gdhi": [5.0, 15.0, 15.0, 15.0, 16.0, 24.0, 15.0, 35.0],
+            "lad_total": [20.0, 20.0, 30.0, 30.0, 40.0, 40.0, 50.0, 50.0],
+            "adjusted_con_gdhi": [
+                6.0, 14.0, 14.0, 16.0, 17.0, 23.0, 16.0, 34.0
+            ],
+            "rollback_flag": [
+                False, False, False, False, False, False, False, False
+            ],
         })
 
         result_df = apportion_rollback_years(df)
 
         expected_df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2", "E1", "E2"],
-            "lad_code": ["E01", "E01", "E01", "E01"],
-            "year": [2014, 2014, 2016, 2016],
-            "con_gdhi": [5.0, 15.0, 6.0, 14.0],
-            "lad_total": [20.0, 20.0, 20.0, 20.0],
-            "adjusted_con_gdhi": [5.0, 15.0, 6.0, 14.0],
-            "rollback_flag": [False, False, False, False],
-            "rollback_con_gdhi": [5.0, 15.0, 6.0, 14.0],
+            "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2", "E1", "E2"],
+            "lad_code": [
+                "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
+            ],
+            "adjust": [True, True, True, True, True, True, False, False],
+            "year_to_adjust": [
+                [2014], [2014], [2014], [2014], [2014], [2014], [2014], [2014],
+            ],
+            "year": [2012, 2012, 2013, 2013, 2014, 2014, 2015, 2015],
+            "con_gdhi": [5.0, 15.0, 15.0, 15.0, 16.0, 24.0, 15.0, 35.0],
+            "lad_total": [20.0, 20.0, 30.0, 30.0, 40.0, 40.0, 50.0, 50.0],
+            "adjusted_con_gdhi": [
+                6.0, 14.0, 14.0, 16.0, 17.0, 23.0, 16.0, 34.0
+            ],
+            "rollback_flag": [
+                False, False, False, False, False, False, False, False
+            ],
+            "adjusted_rollback_flag": [
+                False, False, False, False, False, False, False, False
+            ],
+            "rollback_adjust_flag": [
+                False, False, False, False, False, False, False, False
+            ],
+            "rollback_con_gdhi": [
+                6.0, 14.0, 14.0, 16.0, 17.0, 23.0, 16.0, 34.0
+            ],
         })
 
         pd.testing.assert_frame_equal(
-            result_df, expected_df, check_dtype=False
+            result_df, expected_df, rtol=0.001
+        )
+
+    def test_apportion_rollback_years_multi_lad(self):
+        """Test apportion_rollback_years correctly calculates rollback_con_gdhi
+        for rollback_flag rows for multiple LAD codes, both LADs have 2014
+        flagged for adjustment, but only one LSOA in one LAD contains rollback
+        years.
+        """
+        df = pd.DataFrame({
+            "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2",
+                          "E3", "E4", "E3", "E4", "E3", "E4"],
+            "lad_code": ["E01", "E01", "E01", "E01", "E01", "E01",
+                         "E02", "E02", "E02", "E02", "E02", "E02",
+                         ],
+            "adjust": [True, False, True, False, True, False,
+                       False, False, False, False, False, False],
+            "year_to_adjust": [
+                [2014], [2014], [2014], [2014], [2014], [2014],
+                [2014], [2014], [2014], [2014], [2014], [2014],
+            ],
+            "year": [2013, 2013, 2014, 2014, 2015, 2015,
+                     2013, 2013, 2014, 2014, 2015, 2015,],
+            "con_gdhi": [5.0, 15.0, 15.0, 15.0, 16.0, 24.0,
+                         1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+            "lad_total": [20.0, 20.0, 30.0, 30.0, 40.0, 40.0,
+                          10.0, 20.0, 30.0, 40.0, 50.0, 60.0],
+            "adjusted_con_gdhi": [6.0, 14.0, 14.0, 16.0, 17.0, 23.0,
+                                  1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+            "rollback_flag": [True, False, True, False, False, False,
+                              False, False, False, False, False, False],
+        })
+
+        result_df = apportion_rollback_years(df)
+
+        expected_df = pd.DataFrame({
+            "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2",
+                          "E3", "E4", "E3", "E4", "E3", "E4"],
+            "lad_code": ["E01", "E01", "E01", "E01", "E01", "E01",
+                         "E02", "E02", "E02", "E02", "E02", "E02",
+                         ],
+            "adjust": [True, False, True, False, True, False,
+                       False, False, False, False, False, False],
+            "year_to_adjust": [
+                [2014], [2014], [2014], [2014], [2014], [2014],
+                [2014], [2014], [2014], [2014], [2014], [2014],
+            ],
+            "year": [2013, 2013, 2014, 2014, 2015, 2015,
+                     2013, 2013, 2014, 2014, 2015, 2015,],
+            "con_gdhi": [5.0, 15.0, 15.0, 15.0, 16.0, 24.0,
+                         1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+            "lad_total": [20.0, 20.0, 30.0, 30.0, 40.0, 40.0,
+                          10.0, 20.0, 30.0, 40.0, 50.0, 60.0],
+            "adjusted_con_gdhi": [6.0, 14.0, 14.0, 16.0, 17.0, 23.0,
+                                  1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+            "rollback_flag": [True, False, True, False, False, False,
+                              False, False, False, False, False, False],
+            "adjusted_rollback_flag": [
+                True, False, True, False, False, False,
+                False, False, False, False, False, False,
+            ],
+            "rollback_adjust_flag": [
+                True, True, True, True, False, False,
+                False, False, False, False, False, False,
+            ],
+            "rollback_con_gdhi": [
+                9.333, 10.667, 14.0, 16.0, 17.0, 23.0,
+                1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+            ],
+        })
+
+        pd.testing.assert_frame_equal(
+            result_df, expected_df, rtol=0.001
         )

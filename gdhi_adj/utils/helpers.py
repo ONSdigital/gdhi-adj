@@ -1,7 +1,6 @@
 """Define helper functions that wrap regularly-used functions."""
 
 import logging
-import os
 import pathlib
 from typing import Union
 
@@ -25,10 +24,10 @@ def load_toml_config(path: Union[str, pathlib.Path]) -> dict | None:
         dict | None: The loaded toml file as a dictionary, or None on error.
     """
     logger = logging.getLogger("ConfigLoader")
-    if not os.path.exists(path):
+    if not path.exists():
         logger.error(f"Config file does not exist: {path}")
         return None
-    ext = os.path.splitext(path)[1]
+    ext = path.suffix
     if ext != ".toml":
         logger.error(f"Expected a .toml file. Got {ext}")
         return None
@@ -246,15 +245,11 @@ def write_with_schema(
 
     # Ensure output directory exists
     if new_filename:
-        new_output_path = os.path.join(
-            os.path.dirname(output_dir), new_filename
-        )
+        new_output_path = pathlib.Path(output_dir) / new_filename
     else:
         new_output_path = output_dir  # fallback to original
-    logger.debug(
-        f"Ensured output directory exists: {os.path.dirname(output_dir)}"
-    )
+    logger.debug(f"Ensured output directory exists: {output_dir}")
     # Convert DataFrame to CSV
     logger.info(f"Saving data to {new_output_path}")
-    df.to_csv(new_output_path, index=False)
+    df.to_csv(new_output_path, index=False, float_format="%.10f")
     logger.info("Data saved successfully")

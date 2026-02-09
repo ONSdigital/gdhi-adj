@@ -1,9 +1,9 @@
-"""Unit tests for mapping.py functions using pytest."""
+"""Unit tests for mapping_cord_prep.py functions using pytest."""
 
 import pandas as pd
 import pytest
 
-from gdhi_adj.mapping.mapping_main import (
+from gdhi_adj.cord_preparation.mapping_cord_prep import (
     aggregate_lad,
     clean_validate_mapper,
     join_mapper,
@@ -43,7 +43,7 @@ from gdhi_adj.mapping.mapping_main import (
 def test_rename_s30_to_lau(df_input, expected_columns, expected_mapping):
     """Test renaming S30 codes to LAU columns."""
     config = {
-        "mapping_settings": {
+        "user_settings": {
             "data_lad_code": "lad_code",
             "data_lad_name": "lad_name"
         }

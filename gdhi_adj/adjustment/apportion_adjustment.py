@@ -97,6 +97,23 @@ def apportion_adjustment(
     return adjusted_df
 
 
+def check_no_negative_values_col(df: pd.DataFrame, col: str) -> None:
+    """
+    Check that adjusted_con_gdhi has no negative values.
+
+    Args:
+        df (pd.DataFrame): DataFrame with adjusted_con_gdhi column.
+
+    Raises:
+        ValueError: If negative values are found.
+    """
+    if not df[df[col] < 0].empty:
+        raise ValueError(
+            "Negative value check failed: negative values found in "
+            f"{col} after adjustment."
+        )
+
+
 def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
     """
     Change negative values to 0 and apportion negative adjustment values to all
@@ -113,40 +130,27 @@ def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
         columns={"adjusted_con_gdhi": "previously_adjusted_con_gdhi"}
     )
 
-    adjusted_df["min_adjusted_gdhi"] = adjusted_df.groupby(
-        ["lad_code", "year"]
-    )["previously_adjusted_con_gdhi"].transform("min")
-
-    adjusted_df["abs_adjustment_val"] = np.where(
-        adjusted_df["min_adjusted_gdhi"] < 0,
-        abs(adjusted_df["min_adjusted_gdhi"]),
+    adjusted_df["no_neg_adjusted_gdhi"] = np.where(
+        adjusted_df["previously_adjusted_con_gdhi"] < 0,
         0,
+        adjusted_df["previously_adjusted_con_gdhi"],
     )
 
-    adjusted_df["over_adjusted_gdhi"] = (
-        adjusted_df["previously_adjusted_con_gdhi"]
-        + adjusted_df["abs_adjustment_val"]
-    )
+    adjusted_df["sum_neg_adjusted_gdhi"] = adjusted_df.groupby(
+        ["lad_code", "year"]
+    )["previously_adjusted_con_gdhi"].transform(lambda x: x[x < 0].sum())
+
+    adjusted_df["adjusted_gdhi_proportion"] = adjusted_df[
+        "no_neg_adjusted_gdhi"
+    ] / (adjusted_df["lad_total"] - adjusted_df["sum_neg_adjusted_gdhi"])
 
     adjusted_df["adjusted_con_gdhi"] = (
-        adjusted_df.groupby(["lad_code", "year"])[
-            "over_adjusted_gdhi"
-        ].transform(lambda x: x / x.sum())
-        * adjusted_df["lad_total"]
+        adjusted_df["adjusted_gdhi_proportion"] * adjusted_df["lad_total"]
     )
 
     # Checks after adjustment
     # Check that there are no negative values in adjusted_con_gdhi
-    adjusted_df_check = adjusted_df.copy()
-    negative_value_check = adjusted_df_check[
-        adjusted_df_check["adjusted_con_gdhi"] < 0
-    ].empty
-
-    if negative_value_check is False:
-        raise ValueError(
-            "Negative value check failed: negative values found in "
-            "adjusted_con_gdhi after adjustment."
-        )
+    check_no_negative_values_col(adjusted_df, "adjusted_con_gdhi")
 
     # Adjustment check: sums by (lad_code, year) should match pre- and post-
     # adjustment
@@ -178,22 +182,42 @@ def apportion_rollback_years(df: pd.DataFrame) -> pd.DataFrame:
     """
     adjusted_df = df.copy()
     max_rollback_year = adjusted_df[adjusted_df["rollback_flag"]]["year"].max()
+    min_rollback_year = adjusted_df[adjusted_df["rollback_flag"]]["year"].min()
+    # Not to include max year as that year itself has been adjusted
+    if max_rollback_year > 0:
+        rollback_years_to_adjust = list(
+            range(min_rollback_year, max_rollback_year)
+        )
+    else:
+        rollback_years_to_adjust = []
 
     # Get the last rollback year's gdhi per lsoa and sum per lad
     lsoa_max_rollback_gdhi = (
         adjusted_df[adjusted_df["year"] == max_rollback_year]
         .groupby("lsoa_code")["adjusted_con_gdhi"]
-        .min()
+        .first()
     )
     lad_max_rollback_sums = (
         adjusted_df[adjusted_df["year"] == max_rollback_year]
-        .groupby("lad_code")["adjusted_con_gdhi"]
-        .sum()
+        .groupby("lad_code")["lad_total"]
+        .first()
     )
+
+    adjusted_df["adjusted_rollback_flag"] = adjusted_df[
+        "rollback_flag"
+    ] & adjusted_df.apply(
+        lambda r: max_rollback_year in r["year_to_adjust"], axis=1
+    )
+    adjusted_df["rollback_adjust_flag"] = adjusted_df.groupby(
+        ["lad_code", "year"]
+    )["adjusted_rollback_flag"].transform("any")
 
     # Map back to dataframe and calculate
     adjusted_df["rollback_con_gdhi"] = np.where(
-        adjusted_df["rollback_flag"],
+        (
+            (adjusted_df["rollback_adjust_flag"])
+            & (adjusted_df["year"].isin(rollback_years_to_adjust))
+        ),
         (
             adjusted_df["lad_total"]
             * (
