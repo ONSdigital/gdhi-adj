@@ -138,17 +138,18 @@ def test_read_with_schema_missing_col(
         read_with_schema(test_csv_file, test_schema_file_wrong_col)
 
 
-def test_write_with_schema(
+def test_write_with_schema_pass(
         tmp_path, input_data, test_schema_file, expout_data
 ):
     # Write the output data to a csv using the write function
-    output_filepath = tmp_path / "test_output.csv"
+    output_filepath = tmp_path
     write_with_schema(
         input_data, test_schema_file, output_filepath, "test_output.csv"
     )
 
     # Read the output file back in
-    output_df = pd.read_csv(output_filepath)
+    new_output_filepath = tmp_path / "test_output.csv"
+    output_df = pd.read_csv(new_output_filepath)
 
     # Check that the output df is the same as the expected data
     pd.testing.assert_frame_equal(output_df, expout_data)

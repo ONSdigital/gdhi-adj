@@ -1,6 +1,6 @@
 """Module for pre-processing data in the gdhi_adj project."""
 
-import os
+import pathlib
 
 import pandas as pd
 
@@ -63,15 +63,16 @@ def run_preprocessing(config: dict) -> None:
     schema_dir = config["schema_paths"]["schema_dir"]
     root_dir = config["user_settings"]["shared_root_dir"]
 
-    input_unconstrained_file_path = os.path.join(
-        os.path.expanduser("~"),
-        root_dir,
-        module_config["input_unconstrained_file_path"],
+    input_unconstrained_file_path = pathlib.Path(
+        pathlib.Path.expanduser(
+            pathlib.Path(root_dir)
+            / module_config["input_unconstrained_file_path"],
+        )
     )
-    input_ra_lad_file_path = os.path.join(
-        os.path.expanduser("~"),
-        root_dir,
-        module_config["input_ra_lad_file_path"],
+    input_ra_lad_file_path = pathlib.Path(
+        pathlib.Path.expanduser(
+            pathlib.Path(root_dir) / module_config["input_ra_lad_file_path"],
+        )
     )
 
     # match = re.search(
@@ -82,10 +83,10 @@ def run_preprocessing(config: dict) -> None:
     #     gdhi_suffix = match.group(1) + "_"
     gdhi_suffix = config["user_settings"]["output_data_prefix"] + "_"
 
-    input_gdhi_schema_path = os.path.join(
+    input_gdhi_schema_path = pathlib.Path(
         schema_dir, config["schema_paths"]["input_gdhi_schema_name"]
     )
-    input_ra_lad_schema_path = os.path.join(
+    input_ra_lad_schema_path = pathlib.Path(
         schema_dir, config["schema_paths"]["input_ra_lad_schema_name"]
     )
 
@@ -101,10 +102,12 @@ def run_preprocessing(config: dict) -> None:
 
     transaction_name = config["user_settings"]["transaction_name"]
 
-    output_dir = os.path.join(
-        os.path.expanduser("~"), root_dir, module_config["output_dir"]
+    output_dir = pathlib.Path(
+        pathlib.Path.expanduser(
+            pathlib.Path(root_dir) / module_config["output_dir"]
+        )
     )
-    output_schema_path = os.path.join(
+    output_schema_path = pathlib.Path(
         schema_dir, config["schema_paths"]["output_preprocess_schema_path"]
     )
     interim_filename = gdhi_suffix + module_config.get(
@@ -209,7 +212,7 @@ def run_preprocessing(config: dict) -> None:
         }
     )
     qa_df.to_csv(
-        os.path.join(
+        pathlib.Path(
             output_dir, gdhi_suffix + "manual_adj_preprocessing_config.txt"
         ),
         index=False,
@@ -218,9 +221,9 @@ def run_preprocessing(config: dict) -> None:
 
     if config["user_settings"]["export_qa_files"]:
         logger.info("Exporting QA file")
-        logger.info(f"{os.path.join(output_dir, interim_filename)}")
+        logger.info(f"{pathlib.Path(output_dir, interim_filename)}")
         df.to_csv(
-            os.path.join(output_dir, interim_filename),
+            pathlib.Path(output_dir, interim_filename),
             index=False,
         )
         logger.info("Data saved successfully")

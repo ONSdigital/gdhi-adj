@@ -1,8 +1,7 @@
 """Module for imputing values ready for CORD in the gdhi_adj project."""
 
 import glob
-import os
-from pathlib import Path
+import pathlib
 from typing import List
 
 import pandas as pd
@@ -32,12 +31,14 @@ def append_all_sub_components(config: dict) -> pd.DataFrame:
         "input_subcomponent_folder"
     ]
     # Get all CSV files in the folder (adjust pattern as needed)
-    file_pattern = os.path.join(
-        os.path.expanduser("~"), root_dir, subcomponent_folder, "*.csv"
+    file_pattern = pathlib.Path(
+        pathlib.Path.expanduser(
+            pathlib.Path(root_dir) / subcomponent_folder / "*.csv"
+        )
     )
-    file_paths = glob.glob(file_pattern)
+    file_paths = glob.glob(str(file_pattern))
 
-    input_cord_prep_schema_path = Path(
+    input_cord_prep_schema_path = pathlib.Path(
         config["schema_paths"]["schema_dir"],
         config["schema_paths"]["input_cord_prep_schema_path"],
     )
