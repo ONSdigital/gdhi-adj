@@ -1,6 +1,6 @@
 """Module for local authority units mapped to LADs."""
 
-import os
+import pathlib
 import re
 
 import pandas as pd
@@ -183,13 +183,12 @@ def map_S30_to_S12(config: dict, df: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"Mapping needed: {need_mapping}")
     if need_mapping:
         mapper_df = read_with_schema(
-            input_file_path=os.path.join(
-                os.path.expanduser("~"),
-                root_dir,
-                config["cord_prep_settings"]["input_lau_lad_mapper_dir"],
-                config["cord_prep_settings"]["input_lau_lad_mapper_file"],
+            input_file_path=pathlib.Path.expanduser(
+                pathlib.Path(root_dir)
+                / config["cord_prep_settings"]["input_lau_lad_mapper_dir"]
+                / config["cord_prep_settings"]["input_lau_lad_mapper_file"]
             ),
-            input_schema_path=os.path.join(
+            input_schema_path=pathlib.Path(
                 config["schema_paths"]["schema_dir"],
                 config["schema_paths"]["input_mapping_lau_lad_schema_name"],
             ),

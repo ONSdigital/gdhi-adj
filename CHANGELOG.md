@@ -2,7 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.0] - 2026-02-02
+## [1.0.1] - unreleased
+
+### Added
+
+### Changed
+- GDHIDAP-82: Use Pathlib for filepaths.
+
+### Deprecated
+
+### Fixed
+
+### Removed
+
+
+## [1.0.0] - 2026-02-09
 
 ### Added
 - Additional config parameters.
@@ -32,6 +46,7 @@ All notable changes to this project will be documented in this file.
 - GDHIDAP-79: Change negative value apportionment to adjust on updated proportions.
 - GDHIDAP-80: Update conditions for calculating rollback_con_gdhi within apportion_rollback_years.
 - GDHIDAP-81: Integrate mapper module into CORD prep module.
+- GDHIDAP-83: updated apportion_rollback_years conditions.
 
 ### Deprecated
 

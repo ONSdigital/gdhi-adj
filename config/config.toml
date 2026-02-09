@@ -2,10 +2,11 @@
 # Module selection: Set to true to run module, not recommended to run multiple
 # modules at once.
 preprocessing = false
-adjustment = false
-cord_preparation = true
+adjustment = true
+cord_preparation = false
 # Common settings
-shared_root_dir = "Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments"
+# The shared root directory string must start with an ~/ to allow pathlib to expand the user local directory
+shared_root_dir = "~/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments"
 export_qa_files = false # Set to true to export interim QA files for preprocessing/adjustment modules
 output_data = true
 output_data_prefix = "ncc_test"
@@ -43,10 +44,10 @@ interim_filename = "manual_adj_preprocessing_interim_scores.csv" #Change name of
 output_filename = "manual_adj_preprocessing_output.csv" #Change name of file here
 
 [adjustment_settings]
-input_adj_file_path = "PowerBI_Tool/2025_Files/Manual_Classification_Files/Prepped for Pipeline/SBRSS__manual_adj_classifications_Run1_NI.csv"
-input_constrained_file_path = "Testing_Data/201125/251118_GDHI_LSOA_Apportioned_CORD_sbrss_only_names_fixed.csv"
-input_unconstrained_file_path = "Testing_Data/201125/251118_GDHI_Disclosure_HMRC_SBRSS_Unconstrained_names_fixed.csv"
-output_dir = "Testing_Data/Output/Adjustment/"
+input_adj_file_path = "System_Development/2025_Manual_Adjustments/Testing_Data/Output/Preprocessing/Run123_Combined/COE_ESC_Combined_123.csv"
+input_constrained_file_path = "DAP Exports/140126/apportioned/D12_C.csv"
+input_unconstrained_file_path = "DAP Exports/140126/unapportioned/GDHI_Disclosure_HMRC_COE_ESC_Unconstrained.csv"
+output_dir = "System_Development/2025_Manual_Adjustments/Testing_Data/Output/Adjustment/Run123_Adjustment/"
 interim_filename =  "manual_adj_adjustments_interim_QA.csv" #Change name of file here
 output_filename = "manual_adj_adjustments_output.csv" #Change name of file here
 

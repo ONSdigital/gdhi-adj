@@ -1,6 +1,6 @@
 """Module for adjusting data in the gdhi_adj project."""
 
-import os
+import pathlib
 
 import pandas as pd
 
@@ -84,18 +84,21 @@ def run_adjustment(config: dict) -> None:
     schema_dir = config["schema_paths"]["schema_dir"]
     root_dir = config["user_settings"]["shared_root_dir"]
 
-    input_adj_file_path = os.path.join(
-        os.path.expanduser("~"), root_dir, module_config["input_adj_file_path"]
+    input_adj_file_path = pathlib.Path.expanduser(
+        pathlib.Path(root_dir) / module_config["input_adj_file_path"]
     )
-    input_constrained_file_path = os.path.join(
-        os.path.expanduser("~"),
-        root_dir,
-        module_config["input_constrained_file_path"],
+
+    input_constrained_file_path = pathlib.Path(
+        pathlib.Path.expanduser(
+            pathlib.Path(root_dir)
+            / module_config["input_constrained_file_path"],
+        )
     )
-    input_unconstrained_file_path = os.path.join(
-        os.path.expanduser("~"),
-        root_dir,
-        module_config["input_unconstrained_file_path"],
+    input_unconstrained_file_path = pathlib.Path(
+        pathlib.Path.expanduser(
+            pathlib.Path(root_dir)
+            / module_config["input_unconstrained_file_path"],
+        )
     )
 
     # match = re.search(
@@ -106,13 +109,13 @@ def run_adjustment(config: dict) -> None:
     #     gdhi_suffix = match.group(1) + "_"
     gdhi_suffix = config["user_settings"]["output_data_prefix"] + "_"
 
-    input_adj_schema_path = os.path.join(
+    input_adj_schema_path = pathlib.Path(
         schema_dir, config["schema_paths"]["input_adj_schema_name"]
     )
-    input_constrained_schema_path = os.path.join(
+    input_constrained_schema_path = pathlib.Path(
         schema_dir, config["schema_paths"]["input_constrained_schema_name"]
     )
-    input_unconstrained_schema_path = os.path.join(
+    input_unconstrained_schema_path = pathlib.Path(
         schema_dir, config["schema_paths"]["input_unconstrained_schema_name"]
     )
 
@@ -120,10 +123,12 @@ def run_adjustment(config: dict) -> None:
     cord_code_filter = config["user_settings"]["cord_code_filter"]
     credit_debit_filter = config["user_settings"]["credit_debit_filter"]
 
-    output_dir = os.path.join(
-        os.path.expanduser("~"), root_dir, module_config["output_dir"]
+    output_dir = pathlib.Path(
+        pathlib.Path.expanduser(
+            pathlib.Path(root_dir) / module_config["output_dir"]
+        )
     )
-    output_schema_path = os.path.join(
+    output_schema_path = pathlib.Path(
         schema_dir, config["schema_paths"]["output_adjustment_schema_path"]
     )
     interim_filename = gdhi_suffix + module_config.get(
@@ -235,7 +240,7 @@ def run_adjustment(config: dict) -> None:
         }
     )
     qa_df.to_csv(
-        os.path.join(
+        pathlib.Path(
             output_dir, gdhi_suffix + "manual_adj_adjustments_config.txt"
         ),
         index=False,
@@ -244,9 +249,9 @@ def run_adjustment(config: dict) -> None:
 
     if config["user_settings"]["export_qa_files"]:
         logger.info("Exporting QA file")
-        logger.info(f"{os.path.join(output_dir, interim_filename)}")
+        logger.info(f"{pathlib.Path(output_dir, interim_filename)}")
         df.to_csv(
-            os.path.join(output_dir, interim_filename),
+            pathlib.Path(output_dir, interim_filename),
             index=False,
         )
         logger.info("Data saved successfully")
