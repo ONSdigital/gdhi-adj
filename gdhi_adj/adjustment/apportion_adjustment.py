@@ -182,29 +182,42 @@ def apportion_rollback_years(df: pd.DataFrame) -> pd.DataFrame:
     """
     adjusted_df = df.copy()
     max_rollback_year = adjusted_df[adjusted_df["rollback_flag"]]["year"].max()
+    min_rollback_year = adjusted_df[adjusted_df["rollback_flag"]]["year"].min()
+    # Not to include max year as that year itself has been adjusted
+    if max_rollback_year > 0:
+        rollback_years_to_adjust = list(
+            range(min_rollback_year, max_rollback_year)
+        )
+    else:
+        rollback_years_to_adjust = []
 
     # Get the last rollback year's gdhi per lsoa and sum per lad
     lsoa_max_rollback_gdhi = (
         adjusted_df[adjusted_df["year"] == max_rollback_year]
         .groupby("lsoa_code")["adjusted_con_gdhi"]
-        .min()
+        .first()
     )
     lad_max_rollback_sums = (
         adjusted_df[adjusted_df["year"] == max_rollback_year]
-        .groupby("lad_code")["adjusted_con_gdhi"]
-        .sum()
+        .groupby("lad_code")["lad_total"]
+        .first()
     )
 
-    condition = (
-        adjusted_df["adjust"]
-        & adjusted_df["rollback_flag"]
-        & adjusted_df.apply(
-            lambda r: max_rollback_year in r["year_to_adjust"], axis=1
-        )
+    adjusted_df["adjusted_rollback_flag"] = adjusted_df[
+        "rollback_flag"
+    ] & adjusted_df.apply(
+        lambda r: max_rollback_year in r["year_to_adjust"], axis=1
     )
+    adjusted_df["rollback_adjust_flag"] = adjusted_df.groupby(
+        ["lad_code", "year"]
+    )["adjusted_rollback_flag"].transform("any")
+
     # Map back to dataframe and calculate
     adjusted_df["rollback_con_gdhi"] = np.where(
-        condition,
+        (
+            (adjusted_df["rollback_adjust_flag"])
+            & (adjusted_df["year"].isin(rollback_years_to_adjust))
+        ),
         (
             adjusted_df["lad_total"]
             * (
