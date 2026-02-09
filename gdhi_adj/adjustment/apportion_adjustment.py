@@ -195,12 +195,12 @@ def apportion_rollback_years(df: pd.DataFrame) -> pd.DataFrame:
     lsoa_max_rollback_gdhi = (
         adjusted_df[adjusted_df["year"] == max_rollback_year]
         .groupby("lsoa_code")["adjusted_con_gdhi"]
-        .min()
+        .first()
     )
     lad_max_rollback_sums = (
         adjusted_df[adjusted_df["year"] == max_rollback_year]
         .groupby("lad_code")["lad_total"]
-        .min()
+        .first()
     )
 
     adjusted_df["adjusted_rollback_flag"] = adjusted_df[
