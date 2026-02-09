@@ -1,7 +1,7 @@
 [run]
 omit =
     */tests/*
-    gdhi_adj/__init__.py
+    */__init__.py
     gdhi_adj/_version.py
     gdhi_adj/adjustment/run_adjustment.py
     gdhi_adj/cord_preparation/run_cord_prep.py
