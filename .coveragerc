@@ -1,0 +1,13 @@
+[run]
+omit =
+    */tests/*
+    */__init__.py
+    gdhi_adj/_version.py
+    gdhi_adj/adjustment/run_adjustment.py
+    gdhi_adj/cord_preparation/run_cord_prep.py
+    gdhi_adj/pipeline.py
+    gdhi_adj/preprocess/run_preprocess.py
+    main.py
+    run_coverage.py
+    runlog.py
+    setup.py
