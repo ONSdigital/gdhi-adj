@@ -25,7 +25,7 @@ class TestCalcNoneOutlierProportions():
         result_df = calc_non_outlier_proportions(df)
 
         expected_df = pd.DataFrame({
-            "lsoa_code": ["E1000", "E2", "E1", "E2", "E1", "E2",],
+            "lsoa_code": ["E1", "E2", "E1", "E2", "E1", "E2",],
             "lad_code": ["E01", "E01", "E01", "E01", "E01", "E01"],
             "year": [2000, 2000, 2001, 2001, 2002, 2002],
             "con_gdhi": [3.0, 9.0, 8.0, 12.0, 10.0, 15.0],
