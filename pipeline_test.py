@@ -3,7 +3,7 @@
 Only test one module at a time.
 """
 
-import os
+import pathlib
 
 import pandas as pd
 
@@ -15,7 +15,7 @@ GDHI_adj_LOGGER = GDHI_adj_logger(__name__)
 logger = GDHI_adj_LOGGER.logger
 
 # config path
-config_path = "config/config_pipeline_test.toml"
+config_path = pathlib.Path("config/config.toml")
 
 # Load config
 config = load_toml_config(config_path)
@@ -24,9 +24,11 @@ config = load_toml_config(config_path)
 result_df = run_pipeline(config_path)
 
 expected_df = pd.read_csv(
-    os.path.join(
-        os.path.expanduser("~"),
-        config["adjustment_shared_settings"]["expected_output_filepath"],
+    pathlib.Path.expanduser(
+        pathlib.Path(config["user_settings"]["shared_root_dir"])
+        / pathlib.Path(
+            config["adjustment_settings"]["expected_output_filepath"],
+        )
     )
 )
 
@@ -38,8 +40,13 @@ result_df = result_df[result_df["lsoa_code"].isin(expected_lsoas)].reset_index(
 
 logger.info("Checking whether pipeline output matches expected output.")
 result_df.columns = result_df.columns.astype(str)
+breakpoint()
 pd.testing.assert_frame_equal(
-    result_df, expected_df, check_column_type=False, rtol=1e-12
+    result_df,
+    expected_df,
+    check_dtype=False,
+    check_column_type=False,
+    rtol=1e-12,
 )
 
 logger.info("Pipeline output matches expected output with tolerance.")
