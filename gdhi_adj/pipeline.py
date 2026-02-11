@@ -32,10 +32,10 @@ def run_pipeline(config_path):
 
     try:
         if config["user_settings"]["preprocessing"]:
-            run_preprocessing(config)
+            df = run_preprocessing(config)
 
         if config["user_settings"]["adjustment"]:
-            run_adjustment(config)
+            df = run_adjustment(config)
 
         if config["user_settings"]["cord_preparation"]:
             run_cord_preparation(config)
@@ -49,3 +49,5 @@ def run_pipeline(config_path):
     logger.info(
         f"Running time: {((time.time() - start_time) / 60):.2f} minutes."
     )
+
+    return df

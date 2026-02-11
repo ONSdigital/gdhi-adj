@@ -6,9 +6,9 @@ adjustment = true
 cord_preparation = false
 # Common settings
 # The shared root directory string must start with an ~/ to allow pathlib to expand the user local directory
-shared_root_dir = "~/Office for National Statistics/Subnational Statistics - GDHI/2010-2023/System_Development/2025_Manual_Adjustments"
+shared_root_dir = "~/Office for National Statistics/Subnational Statistics - GDHI/2010-2023" #/System_Development/2025_Manual_Adjustments"
 export_qa_files = false # Set to true to export interim QA files for preprocessing/adjustment modules
-output_data = true
+output_data = false
 output_data_prefix = "ncc_test"
 rollback_year_start = 2010
 rollback_year_end = 2014
@@ -50,6 +50,7 @@ input_unconstrained_file_path = "DAP Exports/140126/unapportioned/GDHI_Disclosur
 output_dir = "System_Development/2025_Manual_Adjustments/Testing_Data/Output/Adjustment/Run123_Adjustment/"
 interim_filename =  "manual_adj_adjustments_interim_QA.csv" #Change name of file here
 output_filename = "manual_adj_adjustments_output.csv" #Change name of file here
+expected_output_filepath = "System_Development/2025_Manual_Adjustments/Pipeline_functional_testing/Adjustment/Output_expected/pipeline_test_manual_adj_adjustments_output.csv"
 
 [cord_prep_settings]
 # All files will need to be placed in the CORD_conversion folder and contain the transaction and credit debit code columns

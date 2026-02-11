@@ -51,10 +51,9 @@ def run_preprocessing(config: dict) -> None:
 
     Args:
         config (dict): Configuration dictionary containing user settings and
-        pipeline settings.
+            pipeline settings.
     Returns:
-        None: The function does not return any value. It saves the processed
-        DataFrame to a CSV file.
+        pd.DataFrame: Pandas DataFrame containing preprocessed data.
     """
     logger.info("Preprocessing started")
 
@@ -264,3 +263,5 @@ def run_preprocessing(config: dict) -> None:
     if config["user_settings"]["output_data"]:
         # Write DataFrame to CSV
         write_with_schema(df, output_schema_path, output_dir, new_filename)
+
+    return df
