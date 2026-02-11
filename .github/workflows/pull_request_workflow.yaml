@@ -58,3 +58,6 @@ jobs:
           create-new-comment: true
           unique-id-for-comment: ${{ matrix.python-version }}-${{ matrix.os }}
           title: Coverage for Python ${{ matrix.python-version }} on ${{ matrix.os }}
+
+      - name: Run tests all versions
+        run: pytest
