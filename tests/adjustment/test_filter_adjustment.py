@@ -83,8 +83,11 @@ class TestFilterComponent:
             result_df, expected_df, check_dtype=False
         )
 
-    def test_filter_component_filter_not_found(self):
-        """Test filtering when component code is not present in DataFrame."""
+    def test_filter_component_sas_not_found(self):
+        """
+        Test filtering when sas_code component code is not present in
+        DataFrame.
+        """
         df = pd.DataFrame({
             "lsoa_code": ["E1", "E2", "E3"],
             "sas_code": ["A", "B", "C"],
@@ -100,6 +103,54 @@ class TestFilterComponent:
             filter_component(
                 df,
                 sas_code_filter="X",
-                cord_code_filter="Y",
-                credit_debit_filter="Z",
+                cord_code_filter="C1",
+                credit_debit_filter="D",
+            )
+
+    def test_filter_component_cord_not_found(self):
+        """
+        Test filtering when cord_code component code is not present in
+        DataFrame.
+        """
+        df = pd.DataFrame({
+            "lsoa_code": ["E1", "E2", "E3"],
+            "sas_code": ["A", "B", "C"],
+            "cord_code": ["C1", "C2", "C3"],
+            "credit_debit": ["D", "C", "D"],
+            "value": [100, 200, 300],
+        })
+
+        with pytest.raises(
+            ValueError,
+            match=("CORD code 'X' not found in data.")
+        ):
+            filter_component(
+                df,
+                sas_code_filter="A",
+                cord_code_filter="X",
+                credit_debit_filter="D",
+            )
+
+    def test_filter_component_credit_not_found(self):
+        """
+        Test filtering when credfit_debit component code is not present in
+        DataFrame.
+        """
+        df = pd.DataFrame({
+            "lsoa_code": ["E1", "E2", "E3"],
+            "sas_code": ["A", "B", "C"],
+            "cord_code": ["C1", "C2", "C3"],
+            "credit_debit": ["D", "C", "D"],
+            "value": [100, 200, 300],
+        })
+
+        with pytest.raises(
+            ValueError,
+            match=("Credit/Debit code 'X' not found in data.")
+        ):
+            filter_component(
+                df,
+                sas_code_filter="A",
+                cord_code_filter="C1",
+                credit_debit_filter="X",
             )

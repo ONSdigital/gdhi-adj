@@ -87,7 +87,7 @@ def validate_schema(df: pd.DataFrame, schema: dict):
             raise ValueError(f"Missing expected column: {column}")
         if expected_type and not df[column].map(type).eq(expected_type).all():
             raise TypeError(
-                f"Column '{column}' does not match expected type"
+                f"Column '{column}' does not match expected type "
                 f"{expected_type.__name__}"
             )
 
@@ -151,7 +151,7 @@ def convert_column_types(
                 if expected_type == int:
                     df[column] = pd.to_numeric(
                         df[column], errors="coerce"
-                    ).astype("Int64")
+                    ).astype("int64")
                 elif expected_type == float:
                     df[column] = pd.to_numeric(
                         df[column], errors="coerce"

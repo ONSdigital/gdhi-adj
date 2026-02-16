@@ -99,7 +99,30 @@ class TestCheckLSOACount:
         result = check_lsoa_count(df, df_unconstrained)
         pd.testing.assert_frame_equal(df, result)
 
-    def test_check_lsoa_count_fail(self):
+    def test_check_lsoa_count_missing_col(self):
+        """
+        Test that the function raises KeyError when lsoa_code column is
+        missing.
+        """
+        df = pd.DataFrame({
+            'transaction': ['T1', 'T1', 'T1'],
+            'account_entry': ['C', 'C', 'C'],
+            'value': [10, 20, 30]
+        })
+
+        df_unconstrained = pd.DataFrame({
+            'lsoa_code': ['E00', 'E02', 'E03', 'E04'],
+            'uncon_gdhi': [10, 20, 30, 40]
+        })
+
+        with pytest.raises(KeyError) as excinfo:
+            check_lsoa_count(df, df_unconstrained)
+
+        assert (
+            "The column 'lsoa_code' was not found in the DataFrame."
+        ) in str(excinfo.value)
+
+    def test_check_lsoa_count_count_mismatch(self):
         """
         Test that the function raises ValueError when LSOA count
         does not match expected.
