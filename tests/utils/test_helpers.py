@@ -1,11 +1,17 @@
 """Unit tests for helper functions."""
+import logging
+import pathlib
+
 import pandas as pd
 import pytest
 import toml
 
 from gdhi_adj.utils.helpers import (
+    convert_column_types,
+    load_toml_config,
     read_with_schema,
     rename_columns,
+    validate_schema,
     write_with_schema,
 )
 from gdhi_adj.utils.logger import GDHI_adj_logger
@@ -20,11 +26,30 @@ def test_schema() -> str:
     schema_content = """
     [new_col_name]
     old_name = "Old col name"
-    Deduced_Data_Type = "Int"
+    Deduced_Data_Type = "int"
 
     [lsoa_code]
     old_name = "LSOA code"
     Deduced_Data_Type = "str"
+
+    [2010]
+    old_name = "2010"
+    Deduced_Data_Type = "float"
+
+    [Adjust]
+    old_name = "Adjust"
+    Deduced_Data_Type = "bool"
+    """
+    return schema_content
+
+
+@pytest.fixture
+def test_schema_wrong_col_type() -> str:
+    """Create a sample schema to test incorrect data type."""
+    schema_content = """
+    [new_col_name]
+    old_name = "Old col name"
+    Deduced_Data_Type = "int"
     """
     return schema_content
 
@@ -44,7 +69,7 @@ def test_schema_wrong_col() -> str:
     schema_content = """
     [new_col_name]
     old_name = "Old col nom"
-    Deduced_Data_Type = "Int"
+    Deduced_Data_Type = "int"
 
     [lsoa_code]
     old_name = "LSOA code"
@@ -69,6 +94,8 @@ def input_data() -> pd.DataFrame:
         "Old col name": [1, 2],
         "LSOA code": ["A1", "B2"],
         "Additional col": ["test1", "test2"],
+        "2010": [1.1, 2.2],
+        "Adjust": [True, False],
     }
     return pd.DataFrame(data)
 
@@ -80,6 +107,8 @@ def expout_data() -> pd.DataFrame:
         "new_col_name": [1, 2],
         "lsoa_code": ["A1", "B2"],
         "Additional col": ["test1", "test2"],
+        "2010": [1.1, 2.2],
+        "Adjust": [True, False],
     }
     return pd.DataFrame(data)
 
@@ -91,6 +120,52 @@ def test_csv_file(tmp_path, input_data: pd.DataFrame) -> str:
     filepath = tmp_path / "test.csv"
     input_data.to_csv(filepath, index=False)
     return filepath
+
+
+class TestLoadTomlConfig:
+    def test_load_toml_config_path_not_exist(self, caplog):
+        """Test load_toml_config raises error when path does not exist."""
+        caplog.set_level(logging.ERROR)
+        load_toml_config(pathlib.Path("test_path.caml"))
+
+        assert "Config file does not exist" in caplog.text
+        assert "test_path.caml" in caplog.text
+
+    def test_load_toml_config_path_not_toml(
+        self, caplog, tmp_path, test_csv_file
+    ):
+        """Test load_toml_config raises error when path does not exist."""
+        caplog.set_level(logging.ERROR)
+        load_toml_config(pathlib.Path(tmp_path / "test.csv"))
+
+        assert "Expected a .toml file. Got" in caplog.text
+        assert ".csv" in caplog.text
+
+
+class TestValidateSchema:
+    def test_validate_schema_missing_col(self, expout_data, test_schema):
+        """Test validate_schema when columns in data do not match schema."""
+        df = expout_data.drop(columns=["lsoa_code"])  # Drop col for mismatch
+        test_schema = toml.loads(test_schema)
+
+        with pytest.raises(ValueError) as excinfo:
+            validate_schema(df, test_schema)
+
+        assert "Missing expected column:" in str(excinfo.value)
+        assert "lsoa_code" in str(excinfo.value)
+
+    def test_validate_schema_type_mismatch(self, expout_data, test_schema):
+        """Test validate_schema when column data types do not match schema."""
+        df = expout_data.copy()
+        df["new_col_name"] = df["new_col_name"].astype(str)
+        test_schema = toml.loads(test_schema)
+
+        with pytest.raises(TypeError) as excinfo:
+            validate_schema(df, test_schema)
+
+        assert "does not match expected type" in str(excinfo.value)
+        assert "new_col_name" in str(excinfo.value)
+        assert "int" in str(excinfo.value)
 
 
 def test_rename_columns(input_data, test_schema, expout_data):
@@ -108,13 +183,21 @@ def test_rename_columns(input_data, test_schema, expout_data):
         renamed_df["Old col name"]
 
 
-# def test_rename_columns_missing_col(input_data, test_schema_wrong_col):
-#     """Test renaming columns when the columns in data do not match schema."""
-#     with pytest.raises(
-#         expected_exception=ValueError,
-#         match="schema does not exist in DataFrame"
-#     ):
-#         rename_columns(input_data, test_schema_wrong_col, logger)
+def test_convert_column_types_wrong_col_type(
+    caplog, test_schema_wrong_col_type
+):
+    # make a value that will cause int conversion to fail after coercion
+    df = pd.DataFrame({"new_col_name": ["not_a_number", "2"]})
+    test_schema_wrong_col_type = toml.loads(test_schema_wrong_col_type)
+
+    caplog.set_level(logging.WARNING)
+    convert_column_types(
+        df.copy(), test_schema_wrong_col_type, GDHI_adj_LOGGER.logger
+    )
+
+    # ensure the warning about conversion was logged
+    assert "Failed to convert column 'new_col_name' from" in caplog.text
+    assert "to int" in caplog.text
 
 
 def test_read_with_schema(test_csv_file, test_schema_file, expout_data):

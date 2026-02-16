@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 from gdhi_adj.cord_preparation.transform_cord_prep import (
     append_all_sub_components,
@@ -139,34 +140,66 @@ class TestAppendAllSubComponents:
         assert mock_read.call_count == 2
 
 
-def test_impute_suppression_x():
-    """Test the impute_suppression_x function returns the expected midpoint row
-    """
-    df = pd.DataFrame({
-        "lsoa_code": ["E1", "E1", "S2", "S2", "95A", "95A",],
-        "transaction": ["D33", "D623", "D33", "D623", "D33", "D623",],
-        "2010": [10.0, 11.0, 12.0, 13.0, 14.0, 15.0,],
-        "2011": [20.0, 21.0, 22.0, 23.0, 24.0, 25.0,],
-        "2012": [30.0, 31.0, 32.0, 33.0, 34.0, 35.0,],
-        "2013": [40.0, 41.0, 42.0, 43.0, 44.0, 45.0,],
-    })
+class TestImputeSuppressionX:
+    def test_impute_suppression_x_pass(self):
+        """
+        Test the impute_suppression_x function returns the expected midpoint
+        row.
+        """
+        df = pd.DataFrame({
+            "lsoa_code": ["E1", "E1", "S2", "S2", "95A", "95A",],
+            "transaction": ["D33", "D623", "D33", "D623", "D33", "D623",],
+            "2010": [10.0, 11.0, 12.0, 13.0, 14.0, 15.0,],
+            "2011": [20.0, 21.0, 22.0, 23.0, 24.0, 25.0,],
+            "2012": [30.0, 31.0, 32.0, 33.0, 34.0, 35.0,],
+            "2013": [40.0, 41.0, 42.0, 43.0, 44.0, 45.0,],
+        })
 
-    result_df = impute_suppression_x(
-        df,
-        target_cols=["2010", "2011", "2012",],
-        transaction_col="transaction",
-        lsoa_col="lsoa_code",
-        transaction_value="D623",
-        lsoa_val=["95", "S"]
-    )
+        result_df = impute_suppression_x(
+            df,
+            target_cols=["2010", "2011", "2012",],
+            transaction_col="transaction",
+            lsoa_col="lsoa_code",
+            transaction_value="D623",
+            lsoa_val=["95", "S"]
+        )
 
-    expected_df = pd.DataFrame({
-        "lsoa_code": ["E1", "E1", "S2", "S2", "95A", "95A",],
-        "transaction": ["D33", "D623", "D33", "D623", "D33", "D623",],
-        "2010": ["10.0", "11.0", "12.0", "X", "14.0", "X",],
-        "2011": ["20.0", "21.0", "22.0", "X", "24.0", "X",],
-        "2012": ["30.0", "31.0", "32.0", "X", "34.0", "X",],
-        "2013": [40.0, 41.0, 42.0, 43.0, 44.0, 45.0,],
-    })
+        expected_df = pd.DataFrame({
+            "lsoa_code": ["E1", "E1", "S2", "S2", "95A", "95A",],
+            "transaction": ["D33", "D623", "D33", "D623", "D33", "D623",],
+            "2010": ["10.0", "11.0", "12.0", "X", "14.0", "X",],
+            "2011": ["20.0", "21.0", "22.0", "X", "24.0", "X",],
+            "2012": ["30.0", "31.0", "32.0", "X", "34.0", "X",],
+            "2013": [40.0, 41.0, 42.0, 43.0, 44.0, 45.0,],
+        })
 
-    pd.testing.assert_frame_equal(result_df, expected_df, check_dtype=False)
+        pd.testing.assert_frame_equal(
+            result_df, expected_df, check_dtype=False
+        )
+
+    def test_impute_suppression_x_missing_col(self):
+        """
+        Test the impute_suppression_x function returns KeyError for missing
+        column.
+        """
+        df = pd.DataFrame({
+            "lsoa_code": ["E1", "E1", "S2", "S2", "95A", "95A",],
+            "transaction": ["D33", "D623", "D33", "D623", "D33", "D623",],
+            "2010": [10.0, 11.0, 12.0, 13.0, 14.0, 15.0,],
+            "2011": [20.0, 21.0, 22.0, 23.0, 24.0, 25.0,],
+            "2012": [30.0, 31.0, 32.0, 33.0, 34.0, 35.0,],
+            "2013": [40.0, 41.0, 42.0, 43.0, 44.0, 45.0,],
+        })
+
+        with pytest.raises(KeyError) as excinfo:
+            impute_suppression_x(
+                df,
+                # Added 2009 to column target_cols list
+                target_cols=["2009", "2010", "2011", "2012",],
+                transaction_col="transaction",
+                lsoa_col="lsoa_code",
+                transaction_value="D623",
+                lsoa_val=["95", "S"]
+            )
+        assert "Target columns not found in DataFrame:" in str(excinfo.value)
+        assert "2009" in str(excinfo.value)
