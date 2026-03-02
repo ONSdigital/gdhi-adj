@@ -20,7 +20,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.12", "3.13"]
+        # Pair each python-version with an 'order' so we know which is first.
+        include:
+          - python-version: "3.12"
+            os: ubuntu-latest
+            order: 0
+          - python-version: "3.13"
+            os: ubuntu-latest
+            order: 1
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -35,5 +43,21 @@ jobs:
           python -m pip install --upgrade pip
           pip3 install -e .
 
-      - name: Run tests
+      - name: Run tests with coverage
+        # Run coverage only for the first python version to avoid repeated reports, but still run tests for all versions.
+        if: ${{ matrix.order == 0 }}
+        run: |
+          pytest --junitxml=pytest.xml --cov-report=term-missing --cov=gdhi_adj tests/ | tee pytest-coverage.txt
+
+      - name: Pytest coverage comment
+        if: ${{ matrix.order == 0 }}
+        uses: MishaKav/pytest-coverage-comment@main
+        with:
+          pytest-coverage-path: ./pytest-coverage.txt
+          junitxml-path: ./pytest.xml
+          create-new-comment: true
+          unique-id-for-comment: ${{ matrix.python-version }}-${{ matrix.os }}
+          title: Coverage for Python ${{ matrix.python-version }} on ${{ matrix.os }}
+
+      - name: Run tests all versions
         run: pytest
