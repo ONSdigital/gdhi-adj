@@ -8,6 +8,7 @@ from gdhi_adj.cord_preparation.run_cord_prep import run_cord_preparation
 from gdhi_adj.preprocess.run_preprocess import run_preprocessing
 from gdhi_adj.utils.helpers import load_toml_config
 from gdhi_adj.utils.logger import GDHI_adj_logger
+from gdhi_adj.utils.pydantic_validation import ConfigSchema
 
 # Initialize logger
 GDHI_adj_LOGGER = GDHI_adj_logger(__name__)
@@ -29,6 +30,9 @@ def run_pipeline(config_path):
 
     # Load config
     config = load_toml_config(config_path)
+    logger.info("Validating configuration settings.")
+    ConfigSchema(**config)
+    logger.info("Configuration settings validated successfully..")
 
     try:
         if config["user_settings"]["preprocessing"]:
