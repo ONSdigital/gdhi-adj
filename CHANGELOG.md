@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [1.0.1] - unreleased
 
 ### Added
+- Main configuration file validation via Pydantic.
 
 ### Changed
 - GDHIDAP-82: Use Pathlib for filepaths.
