@@ -106,7 +106,7 @@ def run_cord_preparation(config: dict) -> None:
         ],
         transaction_col="transaction",
         lsoa_col="lsoa_code",
-        transaction_value="D623",
+        transaction_value=["D621", "D623"],
         lsoa_val=["95", "S"],
     )
 
