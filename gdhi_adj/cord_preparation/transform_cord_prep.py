@@ -70,7 +70,7 @@ def impute_suppression_x(
     target_cols: List[str],
     transaction_col: str = "transaction",
     lsoa_col: str = "lsoa_code",
-    transaction_value: str = "D623",
+    transaction_value: List[str] = ["D621", "D623"],
     lsoa_val: List[str] = ["95", "S"],
 ) -> pd.DataFrame:
     """
@@ -83,7 +83,7 @@ def impute_suppression_x(
       target_cols (List[str]): list of column names to modify.
       transaction_col (str): name of the transaction column.
       lsoa_col (str): name of the LSOA column.
-      transaction_value (str): transaction value to match.
+      transaction_value (List[str]): list of transaction values to match.
       lsoa_val (List[str]): list of starting strings for LSOA codes to match (
         case sensitive).
 
@@ -100,7 +100,7 @@ def impute_suppression_x(
         df[c] = df[c].astype("string")
 
     # Create mask for rows matching both conditions
-    mask = (df[transaction_col] == transaction_value) & (
+    mask = (df[transaction_col].isin(transaction_value)) & (
         df[lsoa_col].str.startswith(tuple(lsoa_val))
     )
 

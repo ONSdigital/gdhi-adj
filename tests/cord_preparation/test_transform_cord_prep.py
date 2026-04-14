@@ -139,34 +139,109 @@ class TestAppendAllSubComponents:
         assert mock_read.call_count == 2
 
 
-def test_impute_suppression_x():
-    """Test the impute_suppression_x function returns the expected midpoint row
-    """
-    df = pd.DataFrame({
-        "lsoa_code": ["E1", "E1", "S2", "S2", "95A", "95A",],
-        "transaction": ["D33", "D623", "D33", "D623", "D33", "D623",],
-        "2010": [10.0, 11.0, 12.0, 13.0, 14.0, 15.0,],
-        "2011": [20.0, 21.0, 22.0, 23.0, 24.0, 25.0,],
-        "2012": [30.0, 31.0, 32.0, 33.0, 34.0, 35.0,],
-        "2013": [40.0, 41.0, 42.0, 43.0, 44.0, 45.0,],
-    })
+class TestImputeSuppressionX:
+    def test_impute_suppression_x_one_transaction_value(self):
+        """Test the impute_suppression_x function returns the expected
+        midpoint row with one transaction value.
+        """
+        df = pd.DataFrame({
+            "lsoa_code": ["E1", "E1", "S2", "S2", "95A", "95A",],
+            "transaction": ["D33", "D623", "D33", "D623", "D33", "D623",],
+            "2010": [10.0, 11.0, 12.0, 13.0, 14.0, 15.0,],
+            "2011": [20.0, 21.0, 22.0, 23.0, 24.0, 25.0,],
+            "2012": [30.0, 31.0, 32.0, 33.0, 34.0, 35.0,],
+            "2013": [40.0, 41.0, 42.0, 43.0, 44.0, 45.0,],
+        })
 
-    result_df = impute_suppression_x(
-        df,
-        target_cols=["2010", "2011", "2012",],
-        transaction_col="transaction",
-        lsoa_col="lsoa_code",
-        transaction_value="D623",
-        lsoa_val=["95", "S"]
-    )
+        result_df = impute_suppression_x(
+            df,
+            target_cols=["2010", "2011", "2012",],
+            transaction_col="transaction",
+            lsoa_col="lsoa_code",
+            transaction_value=["D621", "D623"],
+            lsoa_val=["95", "S"]
+        )
 
-    expected_df = pd.DataFrame({
-        "lsoa_code": ["E1", "E1", "S2", "S2", "95A", "95A",],
-        "transaction": ["D33", "D623", "D33", "D623", "D33", "D623",],
-        "2010": ["10.0", "11.0", "12.0", "X", "14.0", "X",],
-        "2011": ["20.0", "21.0", "22.0", "X", "24.0", "X",],
-        "2012": ["30.0", "31.0", "32.0", "X", "34.0", "X",],
-        "2013": [40.0, 41.0, 42.0, 43.0, 44.0, 45.0,],
-    })
+        expected_df = pd.DataFrame({
+            "lsoa_code": ["E1", "E1", "S2", "S2", "95A", "95A",],
+            "transaction": ["D33", "D623", "D33", "D623", "D33", "D623",],
+            "2010": ["10.0", "11.0", "12.0", "X", "14.0", "X",],
+            "2011": ["20.0", "21.0", "22.0", "X", "24.0", "X",],
+            "2012": ["30.0", "31.0", "32.0", "X", "34.0", "X",],
+            "2013": [40.0, 41.0, 42.0, 43.0, 44.0, 45.0,],
+        })
 
-    pd.testing.assert_frame_equal(result_df, expected_df, check_dtype=False)
+        pd.testing.assert_frame_equal(
+            result_df,
+            expected_df,
+            check_dtype=False
+        )
+
+    def test_impute_suppression_x_two_transaction_value(self):
+        """Test the impute_suppression_x function returns the expected
+        midpoint row with one transaction value.
+        """
+        df = pd.DataFrame({
+            "lsoa_code": [
+                "E1", "E1", "E1", "S2", "S2", "S2", "95A", "95A", "95A",
+            ],
+            "transaction": [
+                "D33",
+                "D621",
+                "D623",
+                "D33",
+                "D621",
+                "D623",
+                "D33",
+                "D621",
+                "D623",
+            ],
+            "2010": [10.0, 10.5, 11.0, 12.0, 12.5, 13.0, 14.0, 14.5, 15.0,],
+            "2011": [20.0, 20.5, 21.0, 22.0, 22.5, 23.0, 24.0, 24.5, 25.0,],
+            "2012": [30.0, 30.5, 31.0, 32.0, 32.5, 33.0, 34.0, 34.5, 35.0,],
+            "2013": [40.0, 40.5, 41.0, 42.0, 42.5, 43.0, 44.0, 44.5, 45.0,],
+        })
+
+        result_df = impute_suppression_x(
+            df,
+            target_cols=["2010", "2011", "2012",],
+            transaction_col="transaction",
+            lsoa_col="lsoa_code",
+            transaction_value=["D621", "D623"],
+            lsoa_val=["95", "S"]
+        )
+
+        expected_df = pd.DataFrame({
+            "lsoa_code": [
+                "E1", "E1", "E1", "S2", "S2", "S2", "95A", "95A", "95A",
+            ],
+            "transaction": [
+                "D33",
+                "D621",
+                "D623",
+                "D33",
+                "D621",
+                "D623",
+                "D33",
+                "D621",
+                "D623",
+            ],
+            "2010": [
+                "10.0", "10.5", "11.0", "12.0", "X", "X", "14.0", "X", "X",
+            ],
+            "2011": [
+                "20.0", "20.5", "21.0", "22.0", "X", "X", "24.0", "X", "X",
+            ],
+            "2012": [
+                "30.0", "30.5", "31.0", "32.0", "X", "X", "34.0", "X", "X",
+            ],
+            "2013": [
+                40.0, 40.5, 41.0, 42.0, 42.5, 43.0, 44.0, 44.5, 45.0,
+            ],
+        })
+
+        pd.testing.assert_frame_equal(
+            result_df,
+            expected_df,
+            check_dtype=False
+        )
