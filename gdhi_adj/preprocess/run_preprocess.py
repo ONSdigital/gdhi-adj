@@ -61,17 +61,15 @@ def run_preprocessing(config: dict) -> None:
     logger.info("Loading configuration settings")
     module_config = config["preprocessing_settings"]
     schema_dir = config["schema_paths"]["schema_dir"]
-    root_dir = config["user_settings"]["shared_root_dir"]
 
     input_unconstrained_file_path = pathlib.Path(
         pathlib.Path.expanduser(
-            pathlib.Path(root_dir)
-            / module_config["input_unconstrained_file_path"],
+            pathlib.Path(module_config["input_unconstrained_file_path"])
         )
     )
     input_ra_lad_file_path = pathlib.Path(
         pathlib.Path.expanduser(
-            pathlib.Path(root_dir) / module_config["input_ra_lad_file_path"],
+            pathlib.Path(module_config["input_ra_lad_file_path"])
         )
     )
 
@@ -103,9 +101,7 @@ def run_preprocessing(config: dict) -> None:
     transaction_name = config["user_settings"]["transaction_name"]
 
     output_dir = pathlib.Path(
-        pathlib.Path.expanduser(
-            pathlib.Path(root_dir) / module_config["output_dir"]
-        )
+        pathlib.Path.expanduser(pathlib.Path(module_config["output_dir"]))
     )
     output_schema_path = pathlib.Path(
         schema_dir, config["schema_paths"]["output_preprocess_schema_path"]

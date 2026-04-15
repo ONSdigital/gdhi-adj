@@ -26,15 +26,12 @@ def append_all_sub_components(config: dict) -> pd.DataFrame:
       pd.DataFrame: DataFrame with each LSOA having many sub-components
         component appended.
     """
-    root_dir = config["user_settings"]["shared_root_dir"]
     subcomponent_folder = config["cord_prep_settings"][
         "input_subcomponent_folder"
     ]
     # Get all CSV files in the folder (adjust pattern as needed)
     file_pattern = pathlib.Path(
-        pathlib.Path.expanduser(
-            pathlib.Path(root_dir) / subcomponent_folder / "*.csv"
-        )
+        pathlib.Path.expanduser(pathlib.Path(subcomponent_folder) / "*.csv")
     )
     file_paths = glob.glob(str(file_pattern))
 
