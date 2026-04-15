@@ -175,7 +175,6 @@ def map_S30_to_S12(config: dict, df: pd.DataFrame) -> pd.DataFrame:
 
     """
     logger.info("Started mapping LAUs to LADs")
-    root_dir = config["user_settings"]["shared_root_dir"]
 
     original_columns = df.columns.tolist()
     df, need_mapping = rename_s30_to_lau(config, df)
@@ -184,9 +183,9 @@ def map_S30_to_S12(config: dict, df: pd.DataFrame) -> pd.DataFrame:
     if need_mapping:
         mapper_df = read_with_schema(
             input_file_path=pathlib.Path.expanduser(
-                pathlib.Path(root_dir)
-                / config["cord_prep_settings"]["input_lau_lad_mapper_dir"]
-                / config["cord_prep_settings"]["input_lau_lad_mapper_file"]
+                pathlib.Path(
+                    config["cord_prep_settings"]["input_lau_lad_mapper_file"]
+                )
             ),
             input_schema_path=pathlib.Path(
                 config["schema_paths"]["schema_dir"],

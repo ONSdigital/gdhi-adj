@@ -49,13 +49,10 @@ def run_cord_preparation(config: dict) -> None:
     logger.info("Loading configuration settings")
     module_config = config["cord_prep_settings"]
     schema_dir = config["schema_paths"]["schema_dir"]
-    root_dir = config["user_settings"]["shared_root_dir"]
 
     output_data_prefix = config["user_settings"]["output_data_prefix"] + "_"
     output_dir = pathlib.Path(
-        pathlib.Path.expanduser(
-            pathlib.Path(root_dir) / module_config["output_dir"]
-        )
+        pathlib.Path.expanduser(pathlib.Path(module_config["output_dir"]))
     )
     output_schema_path = pathlib.Path(
         schema_dir, config["schema_paths"]["output_cord_prep_schema_path"]
@@ -68,16 +65,15 @@ def run_cord_preparation(config: dict) -> None:
     df = append_all_sub_components(config)
     subcomponent_lookup = pd.read_csv(
         pathlib.Path.expanduser(
-            pathlib.Path(root_dir)
-            / module_config["input_subcomponent_folder"]
-            / module_config["subcomponent_lookup_file_path"]
+            pathlib.Path(module_config["subcomponent_lookup_file_path"])
         )
     )
 
     df_unconstrained = read_with_schema(
         pathlib.Path.expanduser(
-            pathlib.Path(root_dir)
-            / config["adjustment_settings"]["input_unconstrained_file_path"]
+            pathlib.Path(
+                config["adjustment_settings"]["input_unconstrained_file_path"]
+            )
         ),
         pathlib.Path(
             schema_dir,
