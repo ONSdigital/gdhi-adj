@@ -50,26 +50,9 @@ def calc_non_outlier_proportions(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-def merge_imputed_values(df: pd.DataFrame, 
+
+def apportion_adjustment(df: pd.DataFrame,
                          imputed_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Merge the outlier imputed values onto the input dataset.
-
-    Args:
-        df (pd.DataFrame): DataFrame containing data to adjust.
-        imputed_df (pd.DataFrame): DataFrame containing outlier imputed values.
-
-    Returns:
-        pd.DataFrame: DataFrame with outlier values imputed.
-    """
-    adjusted_df =  df.merge(imputed_df[["lsoa_code", "year", "imputed_gdhi"]],
-        on=["lsoa_code", "year"],
-        how="left",
-    )
-
-def apportion_adjustment(
-    df: pd.DataFrame, imputed_df: pd.DataFrame
-) -> pd.DataFrame:
     """
     Apportion the adjustment values to all years for each LSOA.
 
@@ -79,13 +62,12 @@ def apportion_adjustment(
 
     Returns:
         pd.DataFrame: DataFrame with outlier values imputed and adjustment.
-            values apportioned accross all years within LSOA.
+            Values apportioned accross all years within LSOA.
     """
     adjusted_df = df.merge(
         imputed_df[["lsoa_code", "year", "imputed_gdhi"]],
         on=["lsoa_code", "year"],
-        how="left",
-    )
+        how="left")
 
     adjusted_df["adjusted_total"] = adjusted_df[
         "lad_total"

@@ -10,11 +10,11 @@ Private Functions:
 """
 import pandas as pd
 
-from gdhi_adj.utils.transform_helpers import (ensure_list, increment_until_not_in)
+from gdhi_adj.utils.transform_helpers import ensure_list, increment_until_not_in
 
 
-def identify_safe_years(df: pd.DataFrame, 
-                        start_year: int = 1900, 
+def identify_safe_years(df: pd.DataFrame,
+                        start_year: int = 1900,
                         end_year: int = 2100) -> pd.DataFrame:
     """
     Identify safe years for each LSOA where no adjustment is needed.
@@ -84,7 +84,7 @@ def flag_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
 
     Negative values are identified and flagged by setting the adjust column value to
     True. The year of the negative value is also checked to ensure it matches the
-    value in the year column. 
+    value in the year column.
 
     Args:
         df (pd.DataFrame): DataFrame containing data to adjust.
@@ -95,9 +95,9 @@ def flag_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
     """
     # identify and flag negative values in uncon_gdhi column
     df['adjust'] = df.apply(lambda x: True if x['uncon_gdhi'] < 0 else False, axis=1)
-    
+
     # update year_to_adjust column to contain the year of the negative value if adjust is True
-    df['year_to_adjust'] = df.apply(lambda x: 
-                                    [x['year']] if x['adjust'] and pd.notnull(x['year']) else [], 
+    df['year_to_adjust'] = df.apply(lambda x:
+                                    [x['year']] if x['adjust'] and pd.notnull(x['year']) else [],
                                     axis=1)
     return df

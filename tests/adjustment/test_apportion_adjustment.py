@@ -4,7 +4,7 @@ import pytest
 from gdhi_adj.adjustment.apportion_adjustment import (
     apportion_adjustment,
     apportion_rollback_years,
-    calc_non_outlier_proportions
+    calc_non_outlier_proportions,
 )
 
 
