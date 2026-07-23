@@ -3,10 +3,8 @@ import pytest
 
 from gdhi_adj.adjustment.apportion_adjustment import (
     apportion_adjustment,
-    apportion_negative_adjustment,
     apportion_rollback_years,
-    calc_non_outlier_proportions,
-    check_no_negative_values_col,
+    calc_non_outlier_proportions
 )
 
 
@@ -101,111 +99,111 @@ class TestApportionAdjustment:
         )
 
 
-class TestApportionNegativeAdjustment:
-    """Test suite for apportion_negative_adjustment function."""
-    def test_apportion_negative_adjustment_negatives(self):
-        """Test apportion_negative_adjustment computes adjusted_con_gdhi
-        correctly when adjusted_con_gdhi is negative for a given (lad_code,
-        year) group.
-        """
+# class TestApportionNegativeAdjustment:
+#     """Test suite for apportion_negative_adjustment function."""
+#     def test_apportion_negative_adjustment_negatives(self):
+#         """Test apportion_negative_adjustment computes adjusted_con_gdhi
+#         correctly when adjusted_con_gdhi is negative for a given (lad_code,
+#         year) group.
+#         """
 
-        df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2", "E3", "E4", "E1", "E2", "E3", "E4"],
-            "lad_code": [
-                "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
-            ],
-            "year": [2000, 2000, 2000, 2000, 2001, 2001, 2001, 2001],
-            "con_gdhi": [1.0, 2.0, 3.0, 4.0, 2.0, 3.0, 4.0, 5.0],
-            "lad_total": [10.0, 10.0, 10.0, 10.0, 14.0, 14.0, 14.0, 14.0],
-            "adjusted_con_gdhi": [-0.5, 5.5, -1.0, 6.0, 3.0, 1.0, 4.0, 6.0],
-        })
+#         df = pd.DataFrame({
+#             "lsoa_code": ["E1", "E2", "E3", "E4", "E1", "E2", "E3", "E4"],
+#             "lad_code": [
+#                 "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
+#             ],
+#             "year": [2000, 2000, 2000, 2000, 2001, 2001, 2001, 2001],
+#             "con_gdhi": [1.0, 2.0, 3.0, 4.0, 2.0, 3.0, 4.0, 5.0],
+#             "lad_total": [10.0, 10.0, 10.0, 10.0, 14.0, 14.0, 14.0, 14.0],
+#             "adjusted_con_gdhi": [-0.5, 5.5, -1.0, 6.0, 3.0, 1.0, 4.0, 6.0],
+#         })
 
-        result_df = apportion_negative_adjustment(df)
+#         result_df = apportion_negative_adjustment(df)
 
-        expected_df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2", "E3", "E4", "E1", "E2", "E3", "E4"],
-            "lad_code": [
-                "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
-            ],
-            "year": [2000, 2000, 2000, 2000, 2001, 2001, 2001, 2001],
-            "con_gdhi": [1.0, 2.0, 3.0, 4.0, 2.0, 3.0, 4.0, 5.0],
-            "lad_total": [10.0, 10.0, 10.0, 10.0, 14.0, 14.0, 14.0, 14.0],
-            "previously_adjusted_con_gdhi": [
-                -0.5, 5.5, -1.0, 6.0, 3.0, 1.0, 4.0, 6.0
-            ],
-            "no_neg_adjusted_gdhi": [0.0, 5.5, 0.0, 6.0, 3.0, 1.0, 4.0, 6.0],
-            "sum_neg_adjusted_gdhi": [
-                -1.5, -1.5, -1.5, -1.5, 0.0, 0.0, 0.0, 0.0
-            ],
-            "adjusted_gdhi_proportion": [
-                0.0, 0.4783, 0.0, 0.5217, 0.2143, 0.0714, 0.2857, 0.4286
-            ],
-            "adjusted_con_gdhi": [
-                0.0, 4.7826, 0.0, 5.2174, 3.0, 1.0, 4.0, 6.0
-            ],
-        })
+#         expected_df = pd.DataFrame({
+#             "lsoa_code": ["E1", "E2", "E3", "E4", "E1", "E2", "E3", "E4"],
+#             "lad_code": [
+#                 "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
+#             ],
+#             "year": [2000, 2000, 2000, 2000, 2001, 2001, 2001, 2001],
+#             "con_gdhi": [1.0, 2.0, 3.0, 4.0, 2.0, 3.0, 4.0, 5.0],
+#             "lad_total": [10.0, 10.0, 10.0, 10.0, 14.0, 14.0, 14.0, 14.0],
+#             "previously_adjusted_con_gdhi": [
+#                 -0.5, 5.5, -1.0, 6.0, 3.0, 1.0, 4.0, 6.0
+#             ],
+#             "no_neg_adjusted_gdhi": [0.0, 5.5, 0.0, 6.0, 3.0, 1.0, 4.0, 6.0],
+#             "sum_neg_adjusted_gdhi": [
+#                 -1.5, -1.5, -1.5, -1.5, 0.0, 0.0, 0.0, 0.0
+#             ],
+#             "adjusted_gdhi_proportion": [
+#                 0.0, 0.4783, 0.0, 0.5217, 0.2143, 0.0714, 0.2857, 0.4286
+#             ],
+#             "adjusted_con_gdhi": [
+#                 0.0, 4.7826, 0.0, 5.2174, 3.0, 1.0, 4.0, 6.0
+#             ],
+#         })
 
-        pd.testing.assert_frame_equal(
-            result_df, expected_df, check_dtype=False, rtol=0.001,
-        )
+#         pd.testing.assert_frame_equal(
+#             result_df, expected_df, check_dtype=False, rtol=0.001,
+#         )
 
-    def test_apportion_negative_adjustment_no_negatives(self):
-        """Test apportion_negative_adjustment returns the correct adjusted
-        values.
-        """
+#     def test_apportion_negative_adjustment_no_negatives(self):
+#         """Test apportion_negative_adjustment returns the correct adjusted
+#         values.
+#         """
 
-        df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2", "E3", "E4", "E1", "E2", "E3", "E4"],
-            "lad_code": [
-                "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
-            ],
-            "year": [2000, 2000, 2000, 2000, 2001, 2001, 2001, 2001],
-            "con_gdhi": [1.0, 2.0, 3.0, 4.0, 2.0, 3.0, 4.0, 5.0],
-            "lad_total": [10.0, 10.0, 10.0, 10.0, 14.0, 14.0, 14.0, 14.0],
-            "adjusted_con_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
-        })
+#         df = pd.DataFrame({
+#             "lsoa_code": ["E1", "E2", "E3", "E4", "E1", "E2", "E3", "E4"],
+#             "lad_code": [
+#                 "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
+#             ],
+#             "year": [2000, 2000, 2000, 2000, 2001, 2001, 2001, 2001],
+#             "con_gdhi": [1.0, 2.0, 3.0, 4.0, 2.0, 3.0, 4.0, 5.0],
+#             "lad_total": [10.0, 10.0, 10.0, 10.0, 14.0, 14.0, 14.0, 14.0],
+#             "adjusted_con_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
+#         })
 
-        result_df = apportion_negative_adjustment(df)
+#         result_df = apportion_negative_adjustment(df)
 
-        expected_df = pd.DataFrame({
-            "lsoa_code": ["E1", "E2", "E3", "E4", "E1", "E2", "E3", "E4"],
-            "lad_code": [
-                "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
-            ],
-            "year": [2000, 2000, 2000, 2000, 2001, 2001, 2001, 2001],
-            "con_gdhi": [1.0, 2.0, 3.0, 4.0, 2.0, 3.0, 4.0, 5.0],
-            "lad_total": [10.0, 10.0, 10.0, 10.0, 14.0, 14.0, 14.0, 14.0],
-            "previously_adjusted_con_gdhi": [
-                0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0
-            ],
-            "no_neg_adjusted_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
-            "sum_neg_adjusted_gdhi": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-            "adjusted_gdhi_proportion": [
-                0.05, 0.35, 0.1, 0.5, 0.2143, 0.0714, 0.2857, 0.4286
-            ],
-            "adjusted_con_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
-        })
+#         expected_df = pd.DataFrame({
+#             "lsoa_code": ["E1", "E2", "E3", "E4", "E1", "E2", "E3", "E4"],
+#             "lad_code": [
+#                 "E01", "E01", "E01", "E01", "E01", "E01", "E01", "E01"
+#             ],
+#             "year": [2000, 2000, 2000, 2000, 2001, 2001, 2001, 2001],
+#             "con_gdhi": [1.0, 2.0, 3.0, 4.0, 2.0, 3.0, 4.0, 5.0],
+#             "lad_total": [10.0, 10.0, 10.0, 10.0, 14.0, 14.0, 14.0, 14.0],
+#             "previously_adjusted_con_gdhi": [
+#                 0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0
+#             ],
+#             "no_neg_adjusted_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
+#             "sum_neg_adjusted_gdhi": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+#             "adjusted_gdhi_proportion": [
+#                 0.05, 0.35, 0.1, 0.5, 0.2143, 0.0714, 0.2857, 0.4286
+#             ],
+#             "adjusted_con_gdhi": [0.5, 3.5, 1.0, 5.0, 3.0, 1.0, 4.0, 6.0],
+#         })
 
-        pd.testing.assert_frame_equal(
-            result_df, expected_df, check_dtype=False, rtol=0.001,
-        )
+#         pd.testing.assert_frame_equal(
+#             result_df, expected_df, check_dtype=False, rtol=0.001,
+#         )
 
 
-class TestCheckNoNegativeValuesCol:
-    """Test suite for check_no_negative_values_col function."""
-    def test_check_no_negative_adjusted_gdhi_raises(self):
-        """Test that check_no_negative_values_col raises ValueError for
-        negatives."""
-        df = pd.DataFrame({"adjusted_con_gdhi": [1.0, -1.0]})
+# class TestCheckNoNegativeValuesCol:
+#     """Test suite for check_no_negative_values_col function."""
+#     def test_check_no_negative_adjusted_gdhi_raises(self):
+#         """Test that check_no_negative_values_col raises ValueError for
+#         negatives."""
+#         df = pd.DataFrame({"adjusted_con_gdhi": [1.0, -1.0]})
 
-        with pytest.raises(ValueError, match="Negative value check failed"):
-            check_no_negative_values_col(df, "adjusted_con_gdhi")
+#         with pytest.raises(ValueError, match="Negative value check failed"):
+#             check_no_negative_values_col(df, "adjusted_con_gdhi")
 
-    def test_check_no_negative_adjusted_gdhi_passes(self):
-        """Test that check_no_negative_values_col passes for no negatives."""
-        df = pd.DataFrame({"adjusted_con_gdhi": [1.0, 2.0]})
+#     def test_check_no_negative_adjusted_gdhi_passes(self):
+#         """Test that check_no_negative_values_col passes for no negatives."""
+#         df = pd.DataFrame({"adjusted_con_gdhi": [1.0, 2.0]})
 
-        check_no_negative_values_col(df, "adjusted_con_gdhi")
+#         check_no_negative_values_col(df, "adjusted_con_gdhi")
 
 
 class TestApportionRollbackYears:

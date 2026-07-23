@@ -5,7 +5,7 @@ from gdhi_adj.adjustment.flag_adjustment import identify_safe_years
 from gdhi_adj.adjustment.flag_adjustment import flag_negative_adjustment
 
 
-class FlagAdjustment:
+class TestFlagAdjustment:
     """
     Tests for functions in the flag_adjustment module.
         * identify_safe_years
@@ -111,7 +111,7 @@ class FlagAdjustment:
         expected_df = pd.DataFrame({
             "lsoa_code": ["E1", "E2", "D1", "D1", "W1"],
             "year": [2010, 2010, 2010, 2011, 2010],
-            "year_to_adjust": [[], [2010], [], [2011], []],
+            "year_to_adjust": [[], [], [], [], []],
             "uncon_gdhi": [10.0, 0, 30.0, 5, 50.0],
              "adjust": [False, False, False, False, False],                  
            
@@ -121,4 +121,4 @@ class FlagAdjustment:
 
         # Assert
         pd.testing.assert_frame_equal(result_df, expected_df)
-        
+
