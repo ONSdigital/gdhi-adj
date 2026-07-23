@@ -50,6 +50,22 @@ def calc_non_outlier_proportions(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
+def merge_imputed_values(df: pd.DataFrame, 
+                         imputed_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Merge the outlier imputed values onto the input dataset.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing data to adjust.
+        imputed_df (pd.DataFrame): DataFrame containing outlier imputed values.
+
+    Returns:
+        pd.DataFrame: DataFrame with outlier values imputed.
+    """
+    adjusted_df =  df.merge(imputed_df[["lsoa_code", "year", "imputed_gdhi"]],
+        on=["lsoa_code", "year"],
+        how="left",
+    )
 
 def apportion_adjustment(
     df: pd.DataFrame, imputed_df: pd.DataFrame
@@ -97,75 +113,74 @@ def apportion_adjustment(
     return adjusted_df
 
 
-def check_no_negative_values_col(df: pd.DataFrame, col: str) -> None:
-    """
-    Check that adjusted_con_gdhi has no negative values.
+# def check_no_negative_values_col(df: pd.DataFrame, col: str) -> None:
+#     """
+#     Check that adjusted_con_gdhi has no negative values.
 
-    Args:
-        df (pd.DataFrame): DataFrame with adjusted_con_gdhi column.
+#     Args:
+#         df (pd.DataFrame): DataFrame with adjusted_con_gdhi column.
 
-    Raises:
-        ValueError: If negative values are found.
-    """
-    if not df[df[col] < 0].empty:
-        raise ValueError(
-            "Negative value check failed: negative values found in "
-            f"{col} after adjustment."
-        )
+#     Raises:
+#         ValueError: If negative values are found.
+#     """
+#     if not df[df[col] < 0].empty:
+#         raise ValueError(
+#             "Negative value check failed: negative values found in "
+#             f"{col} after adjustment."
+#         )
 
+# def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
+#     """
+#     Change negative values to 0 and apportion negative adjustment values to all
+#     LSOAs within an LAD/year group.
 
-def apportion_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Change negative values to 0 and apportion negative adjustment values to all
-    LSOAs within an LAD/year group.
+#     Args:
+#         df (pd.DataFrame): DataFrame containing data to adjust.
 
-    Args:
-        df (pd.DataFrame): DataFrame containing data to adjust.
+#     Returns:
+#         pd.DataFrame: DataFrame with negative adjustment values apportioned
+#             across all years within LSOA.
+#     """
+#     adjusted_df = df.rename(
+#         columns={"adjusted_con_gdhi": "previously_adjusted_con_gdhi"}
+#     )
 
-    Returns:
-        pd.DataFrame: DataFrame with negative adjustment values apportioned
-            across all years within LSOA.
-    """
-    adjusted_df = df.rename(
-        columns={"adjusted_con_gdhi": "previously_adjusted_con_gdhi"}
-    )
+#     adjusted_df["no_neg_adjusted_gdhi"] = np.where(
+#         adjusted_df["previously_adjusted_con_gdhi"] < 0,
+#         0,
+#         adjusted_df["previously_adjusted_con_gdhi"],
+#     )
 
-    adjusted_df["no_neg_adjusted_gdhi"] = np.where(
-        adjusted_df["previously_adjusted_con_gdhi"] < 0,
-        0,
-        adjusted_df["previously_adjusted_con_gdhi"],
-    )
+#     adjusted_df["sum_neg_adjusted_gdhi"] = adjusted_df.groupby(
+#         ["lad_code", "year"]
+#     )["previously_adjusted_con_gdhi"].transform(lambda x: x[x < 0].sum())
 
-    adjusted_df["sum_neg_adjusted_gdhi"] = adjusted_df.groupby(
-        ["lad_code", "year"]
-    )["previously_adjusted_con_gdhi"].transform(lambda x: x[x < 0].sum())
+#     adjusted_df["adjusted_gdhi_proportion"] = adjusted_df[
+#         "no_neg_adjusted_gdhi"
+#     ] / (adjusted_df["lad_total"] - adjusted_df["sum_neg_adjusted_gdhi"])
 
-    adjusted_df["adjusted_gdhi_proportion"] = adjusted_df[
-        "no_neg_adjusted_gdhi"
-    ] / (adjusted_df["lad_total"] - adjusted_df["sum_neg_adjusted_gdhi"])
+#     adjusted_df["adjusted_con_gdhi"] = (
+#         adjusted_df["adjusted_gdhi_proportion"] * adjusted_df["lad_total"]
+#     )
 
-    adjusted_df["adjusted_con_gdhi"] = (
-        adjusted_df["adjusted_gdhi_proportion"] * adjusted_df["lad_total"]
-    )
+#     # Checks after adjustment
+#     # Check that there are no negative values in adjusted_con_gdhi
+#     check_no_negative_values_col(adjusted_df, "adjusted_con_gdhi")
 
-    # Checks after adjustment
-    # Check that there are no negative values in adjusted_con_gdhi
-    check_no_negative_values_col(adjusted_df, "adjusted_con_gdhi")
+#     # Adjustment check: sums by (lad_code, year) should match pre- and post-
+#     # adjustment
+#     adjusted_sum_check_df = adjusted_df.copy()
+#     sum_match_check(
+#         adjusted_sum_check_df,
+#         grouping_cols=["lad_code", "year"],
+#         unadjusted_col="con_gdhi",
+#         adjusted_col="adjusted_con_gdhi",
+#         sum_tolerance=0.000001,
+#     )
 
-    # Adjustment check: sums by (lad_code, year) should match pre- and post-
-    # adjustment
-    adjusted_sum_check_df = adjusted_df.copy()
-    sum_match_check(
-        adjusted_sum_check_df,
-        grouping_cols=["lad_code", "year"],
-        unadjusted_col="con_gdhi",
-        adjusted_col="adjusted_con_gdhi",
-        sum_tolerance=0.000001,
-    )
-
-    return adjusted_df.sort_values(by=["lad_code", "year"]).reset_index(
-        drop=True
-    )
+#     return adjusted_df.sort_values(by=["lad_code", "year"]).reset_index(
+#         drop=True
+#     )
 
 
 def apportion_rollback_years(df: pd.DataFrame) -> pd.DataFrame:

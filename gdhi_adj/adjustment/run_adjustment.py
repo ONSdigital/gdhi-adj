@@ -4,44 +4,28 @@ import pathlib
 
 import pandas as pd
 
-from gdhi_adj.adjustment.apportion_adjustment import (
-    apportion_adjustment,
-    apportion_negative_adjustment,
-    apportion_rollback_years,
-    calc_non_outlier_proportions,
-)
-from gdhi_adj.adjustment.calc_adjustment import (
-    extrapolate_imputed_val,
-    interpolate_imputed_val,
-)
-from gdhi_adj.adjustment.filter_adjustment import (
-    filter_adjust,
-    filter_component,
-    filter_year,
-)
-from gdhi_adj.adjustment.flag_adjustment import identify_safe_years
-from gdhi_adj.adjustment.join_adjustment import (
-    join_analyst_constrained_data,
-    join_analyst_unconstrained_data,
-)
-from gdhi_adj.adjustment.pivot_adjustment import (
-    pivot_adjustment_long,
-    pivot_wide_final_dataframe,
-)
-from gdhi_adj.adjustment.reformat_adjustment import (
-    reformat_adjust_col,
-    reformat_year_col,
-)
-from gdhi_adj.adjustment.validation_adjustment import (
-    check_adjust_year_not_empty,
-    check_lsoas_flagged,
-    check_years_flagged,
-)
+from gdhi_adj.adjustment.apportion_adjustment import (apportion_adjustment,
+                                                      apportion_negative_adjustment,
+                                                      apportion_rollback_years,
+                                                      calc_non_outlier_proportions)
+from gdhi_adj.adjustment.calc_adjustment import (extrapolate_imputed_val,
+                                                 interpolate_imputed_val)
+from gdhi_adj.adjustment.filter_adjustment import (filter_adjust,
+                                                   filter_component,
+                                                   filter_year)
+from gdhi_adj.adjustment.flag_adjustment import (flag_negative_adjustment,
+                                                 identify_safe_years)
+from gdhi_adj.adjustment.join_adjustment import (join_analyst_constrained_data,
+                                                 join_analyst_unconstrained_data)
+from gdhi_adj.adjustment.pivot_adjustment import (pivot_adjustment_long,
+                                                  pivot_wide_final_dataframe,)
+from gdhi_adj.adjustment.reformat_adjustment import (reformat_adjust_col,
+                                                     reformat_year_col)
+from gdhi_adj.adjustment.validation_adjustment import (check_adjust_year_not_empty,
+                                                       check_lsoas_flagged,
+                                                       check_years_flagged)
 from gdhi_adj.preprocess.calc_preprocess import calc_rate_of_change
-from gdhi_adj.preprocess.flag_preprocess import (
-    extract_start_end_years,
-    flag_rollback_years,
-)
+from gdhi_adj.preprocess.flag_preprocess import (extract_start_end_years, flag_rollback_years)
 from gdhi_adj.utils.helpers import read_with_schema, write_with_schema
 from gdhi_adj.utils.logger import GDHI_adj_logger
 
@@ -219,12 +203,15 @@ def run_adjustment(config: dict) -> None:
     logger.info("Calculating non-outlier proportions")
     df = calc_non_outlier_proportions(df)
 
+    logger.info("Flagging negative uncon_gdhi values for adjustment")
+    df = flag_negative_adjustment(df)
+
     logger.info("Apportioning adjustment values to all LSOAs")
     df = apportion_adjustment(df, imputed_df)
 
     if config["user_settings"]["accept_negatives_adjustment"] is False:
         logger.info("Apportioning negative adjusted values")
-        df = apportion_negative_adjustment(df)
+        # df = apportion_negative_adjustment(df)
 
     logger.info("Apportion rollback years.")
     df = apportion_rollback_years(df)
