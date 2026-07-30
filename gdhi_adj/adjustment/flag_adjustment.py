@@ -8,14 +8,15 @@ Public Functions:
 Private Functions:
     None.
 """
+
 import pandas as pd
 
 from gdhi_adj.utils.transform_helpers import ensure_list, increment_until_not_in
 
 
-def identify_safe_years(df: pd.DataFrame,
-                        start_year: int = 1900,
-                        end_year: int = 2100) -> pd.DataFrame:
+def identify_safe_years(
+    df: pd.DataFrame, start_year: int = 1900, end_year: int = 2100
+) -> pd.DataFrame:
     """
     Identify safe years for each LSOA where no adjustment is needed.
 
@@ -53,9 +54,7 @@ def identify_safe_years(df: pd.DataFrame,
         axis=1,
     )
     safe_years_df = safe_years_df.merge(
-        lookup.rename(
-            columns={"year": "prev_safe_year", "con_gdhi": "prev_con_gdhi"}
-        ),
+        lookup.rename(columns={"year": "prev_safe_year", "con_gdhi": "prev_con_gdhi"}),
         on=["lsoa_code", "prev_safe_year"],
         how="left",
     )
@@ -68,9 +67,7 @@ def identify_safe_years(df: pd.DataFrame,
         axis=1,
     )
     safe_years_df = safe_years_df.merge(
-        lookup.rename(
-            columns={"year": "next_safe_year", "con_gdhi": "next_con_gdhi"}
-        ),
+        lookup.rename(columns={"year": "next_safe_year", "con_gdhi": "next_con_gdhi"}),
         on=["lsoa_code", "next_safe_year"],
         how="left",
     )
@@ -94,10 +91,10 @@ def flag_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
         across all years with LSOA.
     """
     # identify and flag negative values in uncon_gdhi column
-    df['adjust'] = df.apply(lambda x: True if x['uncon_gdhi'] < 0 else False, axis=1)
+    df["adjust"] = df.apply(lambda x: True if x["uncon_gdhi"] < 0 else False, axis=1)
 
     # update year_to_adjust column to contain the year of the negative value if adjust is True
-    df['year_to_adjust'] = df.apply(lambda x:
-                                    [x['year']] if x['adjust'] and pd.notnull(x['year']) else [],
-                                    axis=1)
+    df["year_to_adjust"] = df.apply(
+        lambda x: [x["year"]] if x["adjust"] and pd.notnull(x["year"]) else [], axis=1
+    )
     return df
