@@ -6,16 +6,19 @@ Public Functions:
     * flag_negative_adjustment
 
 Private Functions:
-    None.
+    * _flag_uncon_negative_adjustment
+    * _flag_con_negative_adjustment
+    * _update_flagged_year_to_adjust
 """
+
 import pandas as pd
 
 from gdhi_adj.utils.transform_helpers import ensure_list, increment_until_not_in
 
 
-def identify_safe_years(df: pd.DataFrame,
-                        start_year: int = 1900,
-                        end_year: int = 2100) -> pd.DataFrame:
+def identify_safe_years(
+    df: pd.DataFrame, start_year: int = 1900, end_year: int = 2100
+) -> pd.DataFrame:
     """
     Identify safe years for each LSOA where no adjustment is needed.
 
@@ -53,9 +56,7 @@ def identify_safe_years(df: pd.DataFrame,
         axis=1,
     )
     safe_years_df = safe_years_df.merge(
-        lookup.rename(
-            columns={"year": "prev_safe_year", "con_gdhi": "prev_con_gdhi"}
-        ),
+        lookup.rename(columns={"year": "prev_safe_year", "con_gdhi": "prev_con_gdhi"}),
         on=["lsoa_code", "prev_safe_year"],
         how="left",
     )
@@ -68,9 +69,7 @@ def identify_safe_years(df: pd.DataFrame,
         axis=1,
     )
     safe_years_df = safe_years_df.merge(
-        lookup.rename(
-            columns={"year": "next_safe_year", "con_gdhi": "next_con_gdhi"}
-        ),
+        lookup.rename(columns={"year": "next_safe_year", "con_gdhi": "next_con_gdhi"}),
         on=["lsoa_code", "next_safe_year"],
         how="left",
     )
@@ -80,11 +79,11 @@ def identify_safe_years(df: pd.DataFrame,
 
 def flag_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Flag LSOAs that contain negative uncon_gdhi values.
+    Flag LSOAs that contain negative uncon_gdhi and con_gdhi values.
 
     Negative values are identified and flagged by setting the adjust column value to
-    True. The year of the negative value is also checked to ensure it matches the
-    value in the year column.
+    True. The year of the negative value is also checked to ensure the 'year_to_adjust'
+    column matches the value in the year column.
 
     Args:
         df (pd.DataFrame): DataFrame containing data to adjust.
@@ -93,11 +92,70 @@ def flag_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: DataFrame with negative adjustment values flagged
         across all years with LSOA.
     """
-    # identify and flag negative values in uncon_gdhi column
-    df['adjust'] = df.apply(lambda x: True if x['uncon_gdhi'] < 0 else False, axis=1)
+    df = _flag_uncon_negative_adjustment(df)
 
+    df = _flag_con_negative_adjustment(df)
+
+    df = _update_flagged_year_to_adjust(df)
+
+    return df
+
+
+def _flag_uncon_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Flag LSOAs that contain negative uncon_gdhi values.
+
+    Negative values are identified and flagged by setting the adjust column value to
+    True.
+    Args:
+        df (pd.DataFrame): DataFrame containing data to adjust.
+
+    Returns:
+        pd.DataFrame: DataFrame with negative adjustment values flagged
+        across all years with LSOA.
+    """
+    # identify and flag negative values in uncon_gdhi column
+    df["adjust"] = df.apply(lambda x: True if x["uncon_gdhi"] < 0 else False, axis=1)
+
+    return df
+
+
+def _flag_con_negative_adjustment(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Flag LSOAs that contain negative con_gdhi values.
+
+    Negative values are identified and flagged by setting the adjust column value to
+    True.
+    Args:
+        df (pd.DataFrame): DataFrame containing data to adjust.
+
+    Returns:
+        pd.DataFrame: DataFrame with negative adjustment values flagged
+        across all years with LSOA.
+    """
+    # identify and flag negative values in con_gdhi column
+    df["adjust"] = df.apply(lambda x: True if x["con_gdhi"] < 0 else False, axis=1)
+
+    return df
+
+
+def _update_flagged_year_to_adjust(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Update the year_to_adjust column for adjusted values.
+
+    If the 'Adjust' flag column is set to True, ensure that the 'year_to_adjust'
+    column contains the year of the negative value. If the 'Adjust' flag is False,
+    the 'year_to_adjust' column will be an empty list.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing data to adjust.
+
+    Returns:
+        pd.DataFrame: DataFrame with year_to_adjust column updated.
+    """
     # update year_to_adjust column to contain the year of the negative value if adjust is True
-    df['year_to_adjust'] = df.apply(lambda x:
-                                    [x['year']] if x['adjust'] and pd.notnull(x['year']) else [],
-                                    axis=1)
+    df["year_to_adjust"] = df.apply(
+        lambda x: [x["year"]] if x["adjust"] and pd.notnull(x["year"]) else [], axis=1
+    )
+
     return df
