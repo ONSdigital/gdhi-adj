@@ -13,7 +13,7 @@ repos:
           - id: trailing-whitespace
             name: Check for trailing whitespaces (auto-fixes)
     - repo: https://github.com/pycqa/isort
-      rev: 5.13.2
+      rev: 9.0.0b1
       hooks:
         - id: isort
           args: ["--profile", "black", "--line-length", "100"]
