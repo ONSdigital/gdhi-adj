@@ -51,9 +51,7 @@ def check_lsoas_flagged(df: pd.DataFrame) -> pd.DataFrame:
         logger.error(error_msg)
         raise ValueError(error_msg)
     else:
-        logger.info(
-            "All LADs have at least some LSOAs not marked for adjustment."
-        )
+        logger.info("All LADs have at least some LSOAs not marked for adjustment.")
 
     return df
 
@@ -76,19 +74,13 @@ def check_years_flagged(df: pd.DataFrame) -> pd.DataFrame:
         ValueError: If every year within an 'lsoa_code' is marked for
             adjustment.
     """
-    flagged_years = df[
-        ["lsoa_code", "year", "adjust", "year_to_adjust"]
-    ].copy()
+    flagged_years = df[["lsoa_code", "year", "adjust", "year_to_adjust"]].copy()
 
     # ensure year_to_adjust is list-like and normalize missing
-    flagged_years["year_to_adjust"] = flagged_years["year_to_adjust"].apply(
-        ensure_list
-    )
+    flagged_years["year_to_adjust"] = flagged_years["year_to_adjust"].apply(ensure_list)
 
     # Count years per LSOA
-    flagged_years["year_count"] = flagged_years.groupby("lsoa_code")[
-        "year"
-    ].transform("nunique")
+    flagged_years["year_count"] = flagged_years.groupby("lsoa_code")["year"].transform("nunique")
 
     # Count years flagged for adjustment per LSOA
     flagged_years["adjust_count"] = flagged_years["year_to_adjust"].apply(
@@ -96,9 +88,7 @@ def check_years_flagged(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Filter to LSOAs where all years are marked for adjustment
-    flagged_years = flagged_years[
-        (flagged_years["year_count"] == flagged_years["adjust_count"])
-    ]
+    flagged_years = flagged_years[(flagged_years["year_count"] == flagged_years["adjust_count"])]
 
     flagged_full_years_lsoas = flagged_years["lsoa_code"].unique().tolist()
 
@@ -133,9 +123,7 @@ def check_adjust_year_not_empty(df: pd.DataFrame) -> pd.DataFrame:
     adjust_df = df[["lsoa_code", "adjust", "year_to_adjust"]].copy()
 
     # ensure year_to_adjust is list-like and normalize missing
-    adjust_df["year_to_adjust"] = adjust_df["year_to_adjust"].apply(
-        ensure_list
-    )
+    adjust_df["year_to_adjust"] = adjust_df["year_to_adjust"].apply(ensure_list)
 
     # Count years flagged for adjustment per LSOA
     adjust_df["adjust_count"] = adjust_df["year_to_adjust"].apply(
@@ -143,9 +131,7 @@ def check_adjust_year_not_empty(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Filter to LSOAs marked for adjustment with empty year_to_adjust
-    adjust_df = adjust_df[
-        ((adjust_df["adjust"]) & (adjust_df["adjust_count"] == 0))
-    ]
+    adjust_df = adjust_df[((adjust_df["adjust"]) & (adjust_df["adjust_count"] == 0))]
 
     lsoas_missing_years_to_adjust = adjust_df["lsoa_code"].unique().tolist()
 
@@ -158,8 +144,6 @@ def check_adjust_year_not_empty(df: pd.DataFrame) -> pd.DataFrame:
         logger.error(error_msg)
         raise ValueError(error_msg)
     else:
-        logger.info(
-            "All LSOAs marked for adjustment have at least one year specified."
-        )
+        logger.info("All LSOAs marked for adjustment have at least one year specified.")
 
     return df

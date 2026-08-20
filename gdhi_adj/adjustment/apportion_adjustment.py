@@ -21,14 +21,10 @@ def calc_non_outlier_proportions(df: pd.DataFrame) -> pd.DataFrame:
     mask = df.apply(lambda r: (r["year"] in r["year_to_adjust"]), axis=1)
 
     # Calculate the total GDHI for each LAD per year
-    df["lad_total"] = df.groupby(["lad_code", "year"])["con_gdhi"].transform(
-        "sum"
-    )
+    df["lad_total"] = df.groupby(["lad_code", "year"])["con_gdhi"].transform("sum")
 
     # Calculate the total GDHI for each LAD per year for non outlier years
-    df["non_outlier_total"] = (
-        df[~mask].groupby(["lad_code", "year"])["con_gdhi"].transform("sum")
-    )
+    df["non_outlier_total"] = df[~mask].groupby(["lad_code", "year"])["con_gdhi"].transform("sum")
 
     # Guard: if any non_outlier_total is zero this will cause div-by-zero
     # when calculating proportions — raise a clear error with offending groups.
@@ -51,8 +47,7 @@ def calc_non_outlier_proportions(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def apportion_adjustment(df: pd.DataFrame,
-                         imputed_df: pd.DataFrame) -> pd.DataFrame:
+def apportion_adjustment(df: pd.DataFrame, imputed_df: pd.DataFrame) -> pd.DataFrame:
     """
     Apportion the adjustment values to all years for each LSOA.
 
@@ -65,15 +60,12 @@ def apportion_adjustment(df: pd.DataFrame,
             Values apportioned accross all years within LSOA.
     """
     adjusted_df = df.merge(
-        imputed_df[["lsoa_code", "year", "imputed_gdhi"]],
-        on=["lsoa_code", "year"],
-        how="left")
-
-    adjusted_df["adjusted_total"] = adjusted_df[
-        "lad_total"
-    ] - adjusted_df.groupby(["lad_code", "year"])["imputed_gdhi"].transform(
-        "sum"
+        imputed_df[["lsoa_code", "year", "imputed_gdhi"]], on=["lsoa_code", "year"], how="left"
     )
+
+    adjusted_df["adjusted_total"] = adjusted_df["lad_total"] - adjusted_df.groupby(
+        ["lad_code", "year"]
+    )["imputed_gdhi"].transform("sum")
 
     adjusted_df["adjusted_con_gdhi"] = np.where(
         adjusted_df["imputed_gdhi"].notna(),
@@ -182,9 +174,7 @@ def apportion_rollback_years(df: pd.DataFrame) -> pd.DataFrame:
     min_rollback_year = adjusted_df[adjusted_df["rollback_flag"]]["year"].min()
     # Not to include max year as that year itself has been adjusted
     if max_rollback_year > 0:
-        rollback_years_to_adjust = list(
-            range(min_rollback_year, max_rollback_year)
-        )
+        rollback_years_to_adjust = list(range(min_rollback_year, max_rollback_year))
     else:
         rollback_years_to_adjust = []
 
@@ -200,14 +190,12 @@ def apportion_rollback_years(df: pd.DataFrame) -> pd.DataFrame:
         .first()
     )
 
-    adjusted_df["adjusted_rollback_flag"] = adjusted_df[
-        "rollback_flag"
-    ] & adjusted_df.apply(
+    adjusted_df["adjusted_rollback_flag"] = adjusted_df["rollback_flag"] & adjusted_df.apply(
         lambda r: max_rollback_year in r["year_to_adjust"], axis=1
     )
-    adjusted_df["rollback_adjust_flag"] = adjusted_df.groupby(
-        ["lad_code", "year"]
-    )["adjusted_rollback_flag"].transform("any")
+    adjusted_df["rollback_adjust_flag"] = adjusted_df.groupby(["lad_code", "year"])[
+        "adjusted_rollback_flag"
+    ].transform("any")
 
     # Map back to dataframe and calculate
     adjusted_df["rollback_con_gdhi"] = np.where(

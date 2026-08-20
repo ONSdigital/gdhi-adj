@@ -27,9 +27,7 @@ def filter_adjust(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def filter_year(
-    df: pd.DataFrame, start_year: int, end_year: int
-) -> pd.DataFrame:
+def filter_year(df: pd.DataFrame, start_year: int, end_year: int) -> pd.DataFrame:
     """
     Filter DataFrame by a range of years inclusively.
     Args:
@@ -71,9 +69,7 @@ def filter_component(
     if cord_code_filter not in df["cord_code"].unique():
         raise ValueError(f"CORD code '{cord_code_filter}' not found in data.")
     if credit_debit_filter not in df["credit_debit"].unique():
-        raise ValueError(
-            f"Credit/Debit code '{credit_debit_filter}' not found in data."
-        )
+        raise ValueError(f"Credit/Debit code '{credit_debit_filter}' not found in data.")
 
     df = df[
         (df["sas_code"] == sas_code_filter)

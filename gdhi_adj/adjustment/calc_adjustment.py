@@ -16,11 +16,7 @@ def interpolate_imputed_val(df: pd.DataFrame) -> pd.DataFrame:
     """
     # Interpolate imputed_gdhi where both previous and next safe years exist
     df["imputed_gdhi"] = np.where(
-        (
-            df["prev_con_gdhi"].notna()
-            & df["next_con_gdhi"].notna()
-            & ~df["rollback_flag"]
-        ),
+        (df["prev_con_gdhi"].notna() & df["next_con_gdhi"].notna() & ~df["rollback_flag"]),
         (df["next_con_gdhi"] - df["prev_con_gdhi"])
         / (df["next_safe_year"] - df["prev_safe_year"])
         * (df["year"] - df["prev_safe_year"])
@@ -31,9 +27,7 @@ def interpolate_imputed_val(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def extrapolate_imputed_val(
-    df: pd.DataFrame, imputed_df: pd.DataFrame
-) -> pd.DataFrame:
+def extrapolate_imputed_val(df: pd.DataFrame, imputed_df: pd.DataFrame) -> pd.DataFrame:
     """
     Calculate the imputed value for a given LSOA code where the year that has
     been flagged as an outlier to adjust only has one valid safe year either
@@ -78,38 +72,23 @@ def extrapolate_imputed_val(
 
     # Extrapolate imputed_gdhi where only one side is available
     imputed_df["imputed_gdhi"] = np.where(
-        imputed_df["imputed_gdhi"].isna()
-        & imputed_df["additional_con_gdhi"].notna(),
+        imputed_df["imputed_gdhi"].isna() & imputed_df["additional_con_gdhi"].notna(),
         np.where(
             (imputed_df["prev_con_gdhi"].isna() | imputed_df["rollback_flag"]),
             imputed_df["next_con_gdhi"]
             - (
-                (
-                    imputed_df["additional_con_gdhi"]
-                    - imputed_df["next_con_gdhi"]
-                )
-                / (
-                    imputed_df["additional_safe_year"]
-                    - imputed_df["next_safe_year"]
-                )
+                (imputed_df["additional_con_gdhi"] - imputed_df["next_con_gdhi"])
+                / (imputed_df["additional_safe_year"] - imputed_df["next_safe_year"])
             )
             * (imputed_df["next_safe_year"] - imputed_df["year"]),
             imputed_df["prev_con_gdhi"]
             + (
-                (
-                    imputed_df["prev_con_gdhi"]
-                    - imputed_df["additional_con_gdhi"]
-                )
-                / (
-                    imputed_df["prev_safe_year"]
-                    - imputed_df["additional_safe_year"]
-                )
+                (imputed_df["prev_con_gdhi"] - imputed_df["additional_con_gdhi"])
+                / (imputed_df["prev_safe_year"] - imputed_df["additional_safe_year"])
             )
             * (imputed_df["year"] - imputed_df["prev_safe_year"]),
         ),
         imputed_df["imputed_gdhi"],
     )
 
-    return imputed_df.drop(
-        columns=["additional_safe_year", "additional_con_gdhi"]
-    )
+    return imputed_df.drop(columns=["additional_safe_year", "additional_con_gdhi"])

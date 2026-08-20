@@ -26,9 +26,7 @@ def pivot_years_long_dataframe(
     return df
 
 
-def pivot_output_long(
-    df: pd.DataFrame, uncon_gdhi: str, con_gdhi: str
-) -> pd.DataFrame:
+def pivot_output_long(df: pd.DataFrame, uncon_gdhi: str, con_gdhi: str) -> pd.DataFrame:
     """Pivots the output DataFrame to long format.
     Args:
         df (pd.DataFrame): The input DataFrame in wide format.
@@ -57,9 +55,7 @@ def pivot_output_long(
         var_name="metric",
         value_name="value",
     )
-    pivot_df["metric_date"] = (
-        pivot_df["metric"] + "_" + pivot_df["year"].astype(str)
-    )
+    pivot_df["metric_date"] = pivot_df["metric"] + "_" + pivot_df["year"].astype(str)
 
     return pivot_df
 
@@ -92,9 +88,7 @@ def pivot_wide_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     df = df.reset_index()
 
     df.rename(
-        columns=lambda col: (
-            col.replace("uncon_", "") if "uncon_" in col else col
-        ),
+        columns=lambda col: (col.replace("uncon_", "") if "uncon_" in col else col),
         inplace=True,
     )
 

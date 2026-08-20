@@ -31,18 +31,12 @@ def calc_rate_of_change(
         # If ascending, sort in ascending order
         df = df.sort_values(by=sort_cols).reset_index(drop=True)
 
-        df["forward_pct_change"] = (
-            df.groupby(group_col)[val_col].pct_change() + 1.0
-        )
+        df["forward_pct_change"] = df.groupby(group_col)[val_col].pct_change() + 1.0
 
     else:
         # If not ascending, sort in descending order
-        df = df.sort_values(by=sort_cols, ascending=ascending).reset_index(
-            drop=True
-        )
-        df["backward_pct_change"] = (
-            df.groupby(group_col)[val_col].pct_change() + 1.0
-        )
+        df = df.sort_values(by=sort_cols, ascending=ascending).reset_index(drop=True)
+        df["backward_pct_change"] = df.groupby(group_col)[val_col].pct_change() + 1.0
 
     return df
 
@@ -93,12 +87,8 @@ def calc_zscores(
     ]
     descriptors = ["upper", "lower"]
 
-    df[f"{score_prefix}_zscore_threshold"] = np.select(
-        conditions, descriptors, default=None
-    )
-    df[f"z_{score_prefix}_flag"] = np.select(
-        conditions, [True, True], default=False
-    )
+    df[f"{score_prefix}_zscore_threshold"] = np.select(conditions, descriptors, default=None)
+    df[f"z_{score_prefix}_flag"] = np.select(conditions, [True, True], default=False)
 
     return df
 
@@ -166,15 +156,11 @@ def calc_iqr(
     ]
     descriptors = ["upper", "lower"]
 
-    df[f"{iqr_prefix}_iqr_threshold"] = np.select(
-        conditions, descriptors, default=None
-    )
+    df[f"{iqr_prefix}_iqr_threshold"] = np.select(conditions, descriptors, default=None)
 
     # If the value column is 1, the data has been rolled back so should not be
     # flagged
-    df[f"iqr_{iqr_prefix}_flag"] = np.select(
-        conditions, [True, True], default=False
-    )
+    df[f"iqr_{iqr_prefix}_flag"] = np.select(conditions, [True, True], default=False)
 
     return df
 

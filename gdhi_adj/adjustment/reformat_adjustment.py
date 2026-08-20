@@ -28,9 +28,7 @@ def reformat_adjust_col(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def reformat_year_col(
-    df: pd.DataFrame, start_year: int, end_year: int
-) -> pd.DataFrame:
+def reformat_year_col(df: pd.DataFrame, start_year: int, end_year: int) -> pd.DataFrame:
     """
     Reformat data within the year column.
 
@@ -57,9 +55,7 @@ def reformat_year_col(
 
     def _ensure_no_duplicates(seq):
         if len(seq) != len(set(seq)):
-            raise ValueError(
-                "Duplicate years found in year column within LSOA."
-            )
+            raise ValueError("Duplicate years found in year column within LSOA.")
 
     df["year"].apply(_ensure_no_duplicates)
 
@@ -68,12 +64,9 @@ def reformat_year_col(
         for year in years:
             if year < start_year or year > end_year:
                 raise ValueError(
-                    f"Year {year} in year column is out of valid range "
-                    f"{start_year}-{end_year}."
+                    f"Year {year} in year column is out of valid range " f"{start_year}-{end_year}."
                 )
 
-    df["year"].apply(
-        lambda years: _ensure_years_in_range(years, start_year, end_year)
-    )
+    df["year"].apply(lambda years: _ensure_years_in_range(years, start_year, end_year))
 
     return df

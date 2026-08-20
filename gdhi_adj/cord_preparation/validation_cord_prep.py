@@ -8,9 +8,7 @@ GDHI_adj_LOGGER = GDHI_adj_logger(__name__)
 logger = GDHI_adj_LOGGER.logger
 
 
-def check_subcomponent_lookup(
-    df: pd.DataFrame, lookup_df: pd.DataFrame
-) -> pd.DataFrame:
+def check_subcomponent_lookup(df: pd.DataFrame, lookup_df: pd.DataFrame) -> pd.DataFrame:
     """
     This function verifies that each unique value combination in the
     'transaction' and 'account_entry' columns from the subcomponent lookup are
@@ -35,9 +33,7 @@ def check_subcomponent_lookup(
     lookup_df = lookup_df[["transaction", "account_entry"]].drop_duplicates()
 
     # Create sets of tuples for unique combinations
-    lookup_combinations = set(
-        zip(lookup_df["transaction"], lookup_df["account_entry"])
-    )
+    lookup_combinations = set(zip(lookup_df["transaction"], lookup_df["account_entry"]))
     df_combinations = set(zip(df["transaction"], df["account_entry"]))
 
     # Find missing combinations
@@ -53,16 +49,13 @@ def check_subcomponent_lookup(
         raise ValueError(error_msg)
     else:
         logger.info(
-            "All subcomponent combinations from the lookup are present in the "
-            "main DataFrame."
+            "All subcomponent combinations from the lookup are present in the " "main DataFrame."
         )
 
     return df
 
 
-def check_lsoa_count(
-    df: pd.DataFrame, df_unconstrained: pd.DataFrame
-) -> pd.DataFrame:
+def check_lsoa_count(df: pd.DataFrame, df_unconstrained: pd.DataFrame) -> pd.DataFrame:
     """
     Perform a validation check to ensure that the unique lsoa_codes in the
     constrained DataFrame matches that in the unconstrained DataFrame.
@@ -86,16 +79,12 @@ def check_lsoa_count(
     logger.info("Starting LSOA count check on DataFrame.")
 
     if "lsoa_code" not in df.columns:
-        raise KeyError(
-            "The column 'lsoa_code' was not found in the DataFrame."
-        )
+        raise KeyError("The column 'lsoa_code' was not found in the DataFrame.")
 
     # Create sets of unique lsoa_codes
     unique_lsoas_constrained = set(zip(df["lsoa_code"].drop_duplicates()))
 
-    unique_lsoas_unconstrained = set(
-        zip(df_unconstrained["lsoa_code"].drop_duplicates())
-    )
+    unique_lsoas_unconstrained = set(zip(df_unconstrained["lsoa_code"].drop_duplicates()))
 
     # Find missing combinations
     missing = unique_lsoas_unconstrained - unique_lsoas_constrained
@@ -142,14 +131,10 @@ def check_lsoa_consistency(df: pd.DataFrame) -> pd.DataFrame:
     logger.info("Starting internal consistency check on DataFrame.")
 
     if "lsoa_code" not in df.columns:
-        raise KeyError(
-            "The column 'lsoa_code' was not found in the DataFrame."
-        )
+        raise KeyError("The column 'lsoa_code' was not found in the DataFrame.")
 
     n_lsoas_unique = df["lsoa_code"].nunique()
-    n_unique_identifiers = (
-        df[["transaction", "account_entry"]].drop_duplicates().shape[0]
-    )
+    n_unique_identifiers = df[["transaction", "account_entry"]].drop_duplicates().shape[0]
     n_unqiue_total = n_lsoas_unique * n_unique_identifiers
     n_rows = len(df)
 
@@ -283,10 +268,7 @@ def check_year_column_completeness(df: pd.DataFrame) -> pd.DataFrame:
             year_cols.append(int(col))
 
     if not year_cols:
-        error_msg = (
-            "Year Column Check Failed: No numeric/year "
-            "columns found in DataFrame."
-        )
+        error_msg = "Year Column Check Failed: No numeric/year " "columns found in DataFrame."
         logger.error(error_msg)
         raise ValueError(error_msg)
 
@@ -309,8 +291,7 @@ def check_year_column_completeness(df: pd.DataFrame) -> pd.DataFrame:
         raise ValueError(error_msg)
 
     logger.info(
-        "Year column completeness check passed: "
-        f"Continuous range {min_year}-{max_year} present."
+        "Year column completeness check passed: " f"Continuous range {min_year}-{max_year} present."
     )
 
     return df

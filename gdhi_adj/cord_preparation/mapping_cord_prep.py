@@ -39,15 +39,10 @@ def rename_s30_to_lau(config, df):
     has_lad_column = lad_code_col in df.columns
     if has_lad_column:
         logger.info(f"Dataframe has column {lad_code_col}")
-        has_S30_codes = (
-            df[lad_code_col].astype(str).str.startswith("S30").any()
-        )
+        has_S30_codes = df[lad_code_col].astype(str).str.startswith("S30").any()
         if has_S30_codes:
             logger.info("Detected S30 codes in LAD code column")
-            logger.info(
-                f"Renaming {lad_code_col} to LAU code and "
-                f"{lad_name_col} to LAU name"
-            )
+            logger.info(f"Renaming {lad_code_col} to LAU code and " f"{lad_name_col} to LAU name")
             df = df.rename(
                 columns={
                     lad_code_col: "data_lau_code",
@@ -132,9 +127,7 @@ def aggregate_lad(df):
 
     # Filter columns matching the pattern
     value_columns = [col for col in all_columns if re.match(pattern, col)]
-    other_columns = [
-        col for col in all_columns if col not in geo_columns + value_columns
-    ]
+    other_columns = [col for col in all_columns if col not in geo_columns + value_columns]
 
     agg_columns = geo_columns + other_columns
     agg_df = df.groupby(agg_columns, as_index=False)[value_columns].sum()
