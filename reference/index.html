@@ -724,15 +724,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#gdhi_adj.adjustment.apportion_adjustment.apportion_negative_adjustment" class="md-nav__link">
-    <span class="md-ellipsis">
-      apportion_negative_adjustment
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#gdhi_adj.adjustment.apportion_adjustment.apportion_rollback_years" class="md-nav__link">
     <span class="md-ellipsis">
       apportion_rollback_years
@@ -745,15 +736,6 @@
   <a href="#gdhi_adj.adjustment.apportion_adjustment.calc_non_outlier_proportions" class="md-nav__link">
     <span class="md-ellipsis">
       calc_non_outlier_proportions
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#gdhi_adj.adjustment.apportion_adjustment.check_no_negative_values_col" class="md-nav__link">
-    <span class="md-ellipsis">
-      check_no_negative_values_col
     </span>
   </a>
   
@@ -848,6 +830,15 @@
   
     <nav class="md-nav" aria-label="flag_adjustment">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gdhi_adj.adjustment.flag_adjustment.flag_negative_adjustment" class="md-nav__link">
+    <span class="md-ellipsis">
+      flag_negative_adjustment
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#gdhi_adj.adjustment.flag_adjustment.identify_safe_years" class="md-nav__link">
@@ -3132,81 +3123,7 @@ pd.DataFrame: The pivoted DataFrame.</p>
             <td>
               <div class="doc-md-description">
                 <p>pd.DataFrame: DataFrame with outlier values imputed and adjustment.
-values apportioned accross all years within LSOA.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="gdhi_adj.adjustment.apportion_adjustment.apportion_negative_adjustment" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">apportion_negative_adjustment</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span></code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Change negative values to 0 and apportion negative adjustment values to all
-LSOAs within an LAD/year group.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>df</code>
-            </td>
-            <td>
-                  <code><span title="pandas.DataFrame">DataFrame</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>DataFrame containing data to adjust.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="pandas.DataFrame">DataFrame</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>pd.DataFrame: DataFrame with negative adjustment values apportioned
-across all years within LSOA.</p>
+Values apportioned accross all years within LSOA.</p>
               </div>
             </td>
           </tr>
@@ -3354,78 +3271,6 @@ and rollback years.</p>
               <div class="doc-md-description">
                 <p>pd.DataFrame: DataFrame with LAD totals and proportions for non-outlier
 LSOAs calculated per year/LAD group.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="gdhi_adj.adjustment.apportion_adjustment.check_no_negative_values_col" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">check_no_negative_values_col</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">col</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Check that adjusted_con_gdhi has no negative values.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>df</code>
-            </td>
-            <td>
-                  <code><span title="pandas.DataFrame">DataFrame</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>DataFrame with adjusted_con_gdhi column.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<p><span class="doc-section-title">Raises:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="ValueError">ValueError</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>If negative values are found.</p>
               </div>
             </td>
           </tr>
@@ -3915,6 +3760,23 @@ Returns:
         <p>Module for flagging data to adjust data in the gdhi_adj project.</p>
 
 
+<details class="public-functions" open>
+  <summary>Public Functions</summary>
+  <ul>
+<li>identify_safe_years</li>
+<li>flag_negative_adjustment</li>
+</ul>
+</details>
+
+<details class="private-functions" open>
+  <summary>Private Functions</summary>
+  <ul>
+<li>_flag_uncon_negative_adjustment</li>
+<li>_flag_con_negative_adjustment</li>
+<li>_update_flagged_year_to_adjust</li>
+</ul>
+</details>
+
 
 
 
@@ -3933,6 +3795,91 @@ Returns:
 
 
 
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="gdhi_adj.adjustment.flag_adjustment.flag_negative_adjustment" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">flag_negative_adjustment</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Flag LSOAs that contain negative uncon_gdhi and con_gdhi values.</p>
+<p>Negative values are identified and flagged by setting the adjust column value to
+True. The year of the negative value is also checked to ensure the 'year_to_adjust'
+column matches the value in the year column.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>df</code>
+            </td>
+            <td>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>DataFrame containing data to adjust.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pd.DataFrame: DataFrame with negative adjustment values flagged</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>across all years with LSOA.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-function">
 
@@ -7892,7 +7839,7 @@ Raises ValueError if an item cannot be converted to int.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 19, 2026 15:39:15 UTC">August 19, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 20, 2026 12:06:49 UTC">August 20, 2026</span>
   </span>
 
     
