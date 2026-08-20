@@ -41,14 +41,11 @@ def join_analyst_constrained_data(
 
     if df["adjust"].sum() != df_analyst["adjust"].sum():
         raise ValueError(
-            "Number of rows to adjust between analyst and constrained data"
-            " do not match."
+            "Number of rows to adjust between analyst and constrained data" " do not match."
         )
 
     if df.shape[0] != df_constrained.shape[0]:
-        raise ValueError(
-            "Number of rows of constrained data after join has increased."
-        )
+        raise ValueError("Number of rows of constrained data after join has increased.")
 
     return df
 
@@ -76,13 +73,10 @@ def join_analyst_unconstrained_data(
 
     if df["adjust"].sum() != df_analyst["adjust"].sum():
         raise ValueError(
-            "Number of rows to adjust between analyst and unconstrained data"
-            " do not match."
+            "Number of rows to adjust between analyst and unconstrained data" " do not match."
         )
 
     if df.shape[0] != df_unconstrained.shape[0]:
-        raise ValueError(
-            "Number of rows of unconstrained data after join has increased."
-        )
+        raise ValueError("Number of rows of unconstrained data after join has increased.")
 
     return df

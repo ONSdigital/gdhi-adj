@@ -1,4 +1,4 @@
-"""Main file to run pipeine"""
+"""Main file to run the GDHI pipeine"""
 
 from gdhi_adj.pipeline import run_pipeline
 

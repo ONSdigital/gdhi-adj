@@ -87,14 +87,11 @@ def validate_schema(df: pd.DataFrame, schema: dict):
             raise ValueError(f"Missing expected column: {column}")
         if expected_type and not df[column].map(type).eq(expected_type).all():
             raise TypeError(
-                f"Column '{column}' does not match expected type"
-                f"{expected_type.__name__}"
+                f"Column '{column}' does not match expected type" f"{expected_type.__name__}"
             )
 
 
-def rename_columns(
-    df: pd.DataFrame, schema: dict, logger: logging.Logger
-) -> pd.DataFrame:
+def rename_columns(df: pd.DataFrame, schema: dict, logger: logging.Logger) -> pd.DataFrame:
     """
     Rename columns in the DataFrame based on the schema.
     Schema should be a dict where keys are new column names and values are
@@ -112,8 +109,7 @@ def rename_columns(
         old_name = props.get("old_name")
         if old_name not in df.columns:
             raise ValueError(
-                f"Column '{old_name}' specified in schema does not exist"
-                " in DataFrame"
+                f"Column '{old_name}' specified in schema does not exist" " in DataFrame"
             )
         elif old_name and old_name in df.columns and old_name != new_name:
             df.rename(columns={old_name: new_name}, inplace=True)
@@ -121,9 +117,7 @@ def rename_columns(
     return df
 
 
-def convert_column_types(
-    df: pd.DataFrame, schema: dict, logger: logging.Logger
-) -> pd.DataFrame:
+def convert_column_types(df: pd.DataFrame, schema: dict, logger: logging.Logger) -> pd.DataFrame:
     """
     Convert DataFrame columns data types as specified in the schema.
 
@@ -149,20 +143,15 @@ def convert_column_types(
             original_dtype = df[column].dtype
             try:
                 if expected_type == int:
-                    df[column] = pd.to_numeric(
-                        df[column], errors="coerce"
-                    ).astype("Int64")
+                    df[column] = pd.to_numeric(df[column], errors="coerce").astype("Int64")
                 elif expected_type == float:
-                    df[column] = pd.to_numeric(
-                        df[column], errors="coerce"
-                    ).astype("float")
+                    df[column] = pd.to_numeric(df[column], errors="coerce").astype("float")
                 elif expected_type == str:
                     df[column] = df[column].astype(str)
                 elif expected_type == bool:
                     df[column] = df[column].astype(bool)
                 logger.info(
-                    f"Converted column '{column}' from {original_dtype} to "
-                    f"{expected_type_str}."
+                    f"Converted column '{column}' from {original_dtype} to " f"{expected_type_str}."
                 )
             except Exception as e:
                 logger.warning(
@@ -174,9 +163,7 @@ def convert_column_types(
     return df
 
 
-def read_with_schema(
-    input_file_path: str, input_schema_path: str
-) -> pd.DataFrame:
+def read_with_schema(input_file_path: str, input_schema_path: str) -> pd.DataFrame:
     """
     Reads in a csv file and compares it to a data dictionary schema.
 

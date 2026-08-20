@@ -65,8 +65,7 @@ def run_preprocessing(config: dict) -> None:
 
     input_unconstrained_file_path = pathlib.Path(
         pathlib.Path.expanduser(
-            pathlib.Path(root_dir)
-            / module_config["input_unconstrained_file_path"],
+            pathlib.Path(root_dir) / module_config["input_unconstrained_file_path"],
         )
     )
     input_ra_lad_file_path = pathlib.Path(
@@ -103,35 +102,25 @@ def run_preprocessing(config: dict) -> None:
     transaction_name = config["user_settings"]["transaction_name"]
 
     output_dir = pathlib.Path(
-        pathlib.Path.expanduser(
-            pathlib.Path(root_dir) / module_config["output_dir"]
-        )
+        pathlib.Path.expanduser(pathlib.Path(root_dir) / module_config["output_dir"])
     )
     output_schema_path = pathlib.Path(
         schema_dir, config["schema_paths"]["output_preprocess_schema_path"]
     )
-    interim_filename = gdhi_suffix + module_config.get(
-        "interim_filename", None
-    )
+    interim_filename = gdhi_suffix + module_config.get("interim_filename", None)
     new_filename = gdhi_suffix + module_config.get("output_filename", None)
     logger.info("Configuration settings loaded successfully")
 
     logger.info("Reading in data with schemas")
-    df = read_with_schema(
-        input_unconstrained_file_path, input_gdhi_schema_path
-    )
+    df = read_with_schema(input_unconstrained_file_path, input_gdhi_schema_path)
     ra_lad = read_with_schema(input_ra_lad_file_path, input_ra_lad_schema_path)
 
     logger.info("Extracting start and end years from data")
     start_year, end_year = extract_start_end_years(df)
 
     logger.info("Pivoting data to long format")
-    df = pivot_years_long_dataframe(
-        df, new_var_col="year", new_val_col="uncon_gdhi"
-    )
-    ra_lad = pivot_years_long_dataframe(
-        ra_lad, new_var_col="year", new_val_col="uncon_gdhi"
-    )
+    df = pivot_years_long_dataframe(df, new_var_col="year", new_val_col="uncon_gdhi")
+    ra_lad = pivot_years_long_dataframe(ra_lad, new_var_col="year", new_val_col="uncon_gdhi")
 
     logger.info("Filtering data for specified years")
     df = filter_year(df, start_year, end_year)
@@ -212,9 +201,7 @@ def run_preprocessing(config: dict) -> None:
         }
     )
     qa_df.to_csv(
-        pathlib.Path(
-            output_dir, gdhi_suffix + "manual_adj_preprocessing_config.txt"
-        ),
+        pathlib.Path(output_dir, gdhi_suffix + "manual_adj_preprocessing_config.txt"),
         index=False,
         header=False,
     )

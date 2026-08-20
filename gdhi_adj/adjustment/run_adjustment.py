@@ -4,44 +4,27 @@ import pathlib
 
 import pandas as pd
 
-from gdhi_adj.adjustment.apportion_adjustment import (
+from gdhi_adj.adjustment.apportion_adjustment import (  # apportion_negative_adjustment,
     apportion_adjustment,
-    apportion_negative_adjustment,
     apportion_rollback_years,
     calc_non_outlier_proportions,
 )
-from gdhi_adj.adjustment.calc_adjustment import (
-    extrapolate_imputed_val,
-    interpolate_imputed_val,
-)
-from gdhi_adj.adjustment.filter_adjustment import (
-    filter_adjust,
-    filter_component,
-    filter_year,
-)
-from gdhi_adj.adjustment.flag_adjustment import identify_safe_years
+from gdhi_adj.adjustment.calc_adjustment import extrapolate_imputed_val, interpolate_imputed_val
+from gdhi_adj.adjustment.filter_adjustment import filter_adjust, filter_component, filter_year
+from gdhi_adj.adjustment.flag_adjustment import flag_negative_adjustment, identify_safe_years
 from gdhi_adj.adjustment.join_adjustment import (
     join_analyst_constrained_data,
     join_analyst_unconstrained_data,
 )
-from gdhi_adj.adjustment.pivot_adjustment import (
-    pivot_adjustment_long,
-    pivot_wide_final_dataframe,
-)
-from gdhi_adj.adjustment.reformat_adjustment import (
-    reformat_adjust_col,
-    reformat_year_col,
-)
+from gdhi_adj.adjustment.pivot_adjustment import pivot_adjustment_long, pivot_wide_final_dataframe
+from gdhi_adj.adjustment.reformat_adjustment import reformat_adjust_col, reformat_year_col
 from gdhi_adj.adjustment.validation_adjustment import (
     check_adjust_year_not_empty,
     check_lsoas_flagged,
     check_years_flagged,
 )
 from gdhi_adj.preprocess.calc_preprocess import calc_rate_of_change
-from gdhi_adj.preprocess.flag_preprocess import (
-    extract_start_end_years,
-    flag_rollback_years,
-)
+from gdhi_adj.preprocess.flag_preprocess import extract_start_end_years, flag_rollback_years
 from gdhi_adj.utils.helpers import read_with_schema, write_with_schema
 from gdhi_adj.utils.logger import GDHI_adj_logger
 
@@ -90,14 +73,12 @@ def run_adjustment(config: dict) -> None:
 
     input_constrained_file_path = pathlib.Path(
         pathlib.Path.expanduser(
-            pathlib.Path(root_dir)
-            / module_config["input_constrained_file_path"],
+            pathlib.Path(root_dir) / module_config["input_constrained_file_path"],
         )
     )
     input_unconstrained_file_path = pathlib.Path(
         pathlib.Path.expanduser(
-            pathlib.Path(root_dir)
-            / module_config["input_unconstrained_file_path"],
+            pathlib.Path(root_dir) / module_config["input_unconstrained_file_path"],
         )
     )
 
@@ -124,25 +105,17 @@ def run_adjustment(config: dict) -> None:
     credit_debit_filter = config["user_settings"]["credit_debit_filter"]
 
     output_dir = pathlib.Path(
-        pathlib.Path.expanduser(
-            pathlib.Path(root_dir) / module_config["output_dir"]
-        )
+        pathlib.Path.expanduser(pathlib.Path(root_dir) / module_config["output_dir"])
     )
     output_schema_path = pathlib.Path(
         schema_dir, config["schema_paths"]["output_adjustment_schema_path"]
     )
-    interim_filename = gdhi_suffix + module_config.get(
-        "interim_filename", None
-    )
+    interim_filename = gdhi_suffix + module_config.get("interim_filename", None)
     new_filename = gdhi_suffix + module_config.get("output_filename", None)
 
     logger.info("Reading in data with schemas")
-    df_powerbi_output = read_with_schema(
-        input_adj_file_path, input_adj_schema_path
-    )
-    df_constrained = read_with_schema(
-        input_constrained_file_path, input_constrained_schema_path
-    )
+    df_powerbi_output = read_with_schema(input_adj_file_path, input_adj_schema_path)
+    df_constrained = read_with_schema(input_constrained_file_path, input_constrained_schema_path)
     df_unconstrained = read_with_schema(
         input_unconstrained_file_path, input_unconstrained_schema_path
     )
@@ -153,9 +126,7 @@ def run_adjustment(config: dict) -> None:
     logger.info("Reformatting adjust and year columns")
     df_powerbi_output = reformat_adjust_col(df_powerbi_output)
 
-    df_powerbi_output = reformat_year_col(
-        df_powerbi_output, start_year, end_year
-    )
+    df_powerbi_output = reformat_year_col(df_powerbi_output, start_year, end_year)
 
     logger.info("Filtering for data that requires adjustment")
     df_powerbi_output = filter_adjust(df_powerbi_output)
@@ -219,12 +190,15 @@ def run_adjustment(config: dict) -> None:
     logger.info("Calculating non-outlier proportions")
     df = calc_non_outlier_proportions(df)
 
+    logger.info("Flagging negative uncon_gdhi and con_gdhi values for adjustment")
+    df = flag_negative_adjustment(df)
+
     logger.info("Apportioning adjustment values to all LSOAs")
     df = apportion_adjustment(df, imputed_df)
 
     if config["user_settings"]["accept_negatives_adjustment"] is False:
         logger.info("Apportioning negative adjusted values")
-        df = apportion_negative_adjustment(df)
+        # df = apportion_negative_adjustment(df)
 
     logger.info("Apportion rollback years.")
     df = apportion_rollback_years(df)
@@ -240,9 +214,7 @@ def run_adjustment(config: dict) -> None:
         }
     )
     qa_df.to_csv(
-        pathlib.Path(
-            output_dir, gdhi_suffix + "manual_adj_adjustments_config.txt"
-        ),
+        pathlib.Path(output_dir, gdhi_suffix + "manual_adj_adjustments_config.txt"),
         index=False,
         header=False,
     )

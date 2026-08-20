@@ -35,9 +35,7 @@ def constrain_to_reg_acc(
 
     # Remove commas separating thousands and convert to numeric
     if reg_acc["uncon_gdhi"].dtype == "object":
-        reg_acc["uncon_gdhi"] = (
-            reg_acc["uncon_gdhi"].str.replace(",", "").astype("float64")
-        )
+        reg_acc["uncon_gdhi"] = reg_acc["uncon_gdhi"].str.replace(",", "").astype("float64")
 
     reg_acc.rename(columns={"uncon_gdhi": "conlad_gdhi"}, inplace=True)
 
@@ -49,16 +47,12 @@ def constrain_to_reg_acc(
 
     df["unconlad"] = df["uncon_gdhi"] + df["mean_non_out_gdhi"]
 
-    df["rate"] = np.where(
-        df["unconlad"] == 0, 0, df["conlad_gdhi"] / df["unconlad"]
-    )
+    df["rate"] = np.where(df["unconlad"] == 0, 0, df["conlad_gdhi"] / df["unconlad"])
 
     df["conlsoa_gdhi"] = df["uncon_gdhi"] * df["rate"]
     df["conlsoa_mean"] = df["mean_non_out_gdhi"] * df["rate"]
 
-    df["master_flag"] = df["master_flag"].replace(
-        {True: "TRUE", False: "MEAN"}
-    )
+    df["master_flag"] = df["master_flag"].replace({True: "TRUE", False: "MEAN"})
 
     return df.drop(
         columns=[
@@ -84,9 +78,7 @@ def concat_wide_dataframes(
     """
     # Join DataFrames and sort to match desired output for PowerBI
     df_wide = pd.concat([df_wide_outlier, df_wide_mean], ignore_index=True)
-    df_wide.sort_values(
-        by=["lsoa_code", "master_flag"], ascending=[True, False], inplace=True
-    )
+    df_wide.sort_values(by=["lsoa_code", "master_flag"], ascending=[True, False], inplace=True)
     df_wide.reset_index(drop=True, inplace=True)
 
     return df_wide

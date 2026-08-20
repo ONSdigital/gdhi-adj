@@ -61,9 +61,7 @@ def to_int_list(cell: Any) -> List[int]:
             try:
                 out.append(int(float(token)))
             except Exception:
-                raise ValueError(
-                    f"Cannot convert value {token!r} to int in cell {cell!r}"
-                )
+                raise ValueError(f"Cannot convert value {token!r} to int in cell {cell!r}")
     return out
 
 
@@ -80,16 +78,12 @@ def increment_until_not_in(
         int: The first year not in adjust_years list.
     """
     if is_increasing:
-        adjust_years_set = (
-            set(adjust_years) if adjust_years is not None else set()
-        )
+        adjust_years_set = set(adjust_years) if adjust_years is not None else set()
         while year in adjust_years_set and year < (limit_year + 1):
             year += 1
         return year
     else:
-        adjust_years_set = (
-            set(adjust_years) if adjust_years is not None else set()
-        )
+        adjust_years_set = set(adjust_years) if adjust_years is not None else set()
         while year in adjust_years_set and year > (limit_year - 1):
             year -= 1
         return year
@@ -119,13 +113,9 @@ def sum_match_check(
     Returns:
         ValueError: if adjusted and unadjusted sums do not match.
     """
-    df["unadjusted_sum"] = df.groupby(grouping_cols)[unadjusted_col].transform(
-        "sum"
-    )
+    df["unadjusted_sum"] = df.groupby(grouping_cols)[unadjusted_col].transform("sum")
 
-    df["adjusted_sum"] = df.groupby(grouping_cols)[adjusted_col].transform(
-        "sum"
-    )
+    df["adjusted_sum"] = df.groupby(grouping_cols)[adjusted_col].transform("sum")
 
     df["adjustment_check"] = abs(df["unadjusted_sum"] - df["adjusted_sum"])
 
@@ -141,6 +131,4 @@ def sum_match_check(
             "adjustment_check",
         ] + list(con_gdhi_cols)
         print(df[selected_cols])
-        raise ValueError(
-            "Adjustment check failed: LAD sums do not match after adjustment."
-        )
+        raise ValueError("Adjustment check failed: LAD sums do not match after adjustment.")

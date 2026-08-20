@@ -53,16 +53,12 @@ def run_cord_preparation(config: dict) -> None:
 
     output_data_prefix = config["user_settings"]["output_data_prefix"] + "_"
     output_dir = pathlib.Path(
-        pathlib.Path.expanduser(
-            pathlib.Path(root_dir) / module_config["output_dir"]
-        )
+        pathlib.Path.expanduser(pathlib.Path(root_dir) / module_config["output_dir"])
     )
     output_schema_path = pathlib.Path(
         schema_dir, config["schema_paths"]["output_cord_prep_schema_path"]
     )
-    output_filename = output_data_prefix + module_config.get(
-        "output_filename", None
-    )
+    output_filename = output_data_prefix + module_config.get("output_filename", None)
 
     logger.info("Reading in mapped data for CORD preparation")
     df = append_all_sub_components(config)
@@ -76,8 +72,7 @@ def run_cord_preparation(config: dict) -> None:
 
     df_unconstrained = read_with_schema(
         pathlib.Path.expanduser(
-            pathlib.Path(root_dir)
-            / config["adjustment_settings"]["input_unconstrained_file_path"]
+            pathlib.Path(root_dir) / config["adjustment_settings"]["input_unconstrained_file_path"]
         ),
         pathlib.Path(
             schema_dir,
@@ -118,9 +113,7 @@ def run_cord_preparation(config: dict) -> None:
     year_cols = [col for col in df.columns if col.isdigit()]
     id_cols = ["transaction", "lsoa_code", "account_entry"]
     df = df.reindex(columns=id_cols + year_cols)
-    df = df.sort_values(
-        by=["lsoa_code", "transaction", "account_entry"]
-    ).reset_index(drop=True)
+    df = df.sort_values(by=["lsoa_code", "transaction", "account_entry"]).reset_index(drop=True)
 
     # Save prepared CORD data file with new filename if specified
     if config["user_settings"]["output_data"]:

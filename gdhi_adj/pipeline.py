@@ -46,6 +46,4 @@ def run_pipeline(config_path):
             exc_info=True,
         )
 
-    logger.info(
-        f"Running time: {((time.time() - start_time) / 60):.2f} minutes."
-    )
+    logger.info(f"Running time: {((time.time() - start_time) / 60):.2f} minutes.")
