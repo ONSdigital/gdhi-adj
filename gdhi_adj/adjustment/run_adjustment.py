@@ -4,7 +4,7 @@ import pathlib
 
 import pandas as pd
 
-from gdhi_adj.adjustment.apportion_adjustment import (  # apportion_negative_adjustment,
+from gdhi_adj.adjustment.apportion_adjustment import (
     apportion_adjustment,
     apportion_rollback_years,
     calc_non_outlier_proportions,
@@ -82,12 +82,6 @@ def run_adjustment(config: dict) -> None:
         )
     )
 
-    # match = re.search(
-    #     r".*GDHI_Disclosure_(.*?)_[^_]+\.csv", input_unconstrained_file_path
-    # )
-
-    # if match:
-    #     gdhi_suffix = match.group(1) + "_"
     gdhi_suffix = config["user_settings"]["output_data_prefix"] + "_"
 
     input_adj_schema_path = pathlib.Path(
@@ -195,10 +189,6 @@ def run_adjustment(config: dict) -> None:
 
     logger.info("Apportioning adjustment values to all LSOAs")
     df = apportion_adjustment(df, imputed_df)
-
-    if config["user_settings"]["accept_negatives_adjustment"] is False:
-        logger.info("Apportioning negative adjusted values")
-        # df = apportion_negative_adjustment(df)
 
     logger.info("Apportion rollback years.")
     df = apportion_rollback_years(df)
