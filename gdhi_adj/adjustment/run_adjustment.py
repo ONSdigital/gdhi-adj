@@ -21,6 +21,7 @@ from gdhi_adj.adjustment.reformat_adjustment import reformat_adjust_col, reforma
 from gdhi_adj.adjustment.validation_adjustment import (
     check_adjust_year_not_empty,
     check_lsoas_flagged,
+    check_negative_values,
     check_years_flagged,
 )
 from gdhi_adj.preprocess.calc_preprocess import calc_rate_of_change
@@ -192,6 +193,9 @@ def run_adjustment(config: dict) -> None:
 
     logger.info("Apportion rollback years.")
     df = apportion_rollback_years(df)
+
+    logger.info("Checking for negative values after apportioning data.")
+    check_negative_values(df)
 
     logger.info("Saving interim data")
     qa_df = pd.DataFrame(

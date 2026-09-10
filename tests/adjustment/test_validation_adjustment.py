@@ -1,9 +1,12 @@
+from unittest.mock import patch
+
 import pandas as pd
 import pytest
 
 from gdhi_adj.adjustment.validation_adjustment import (
     check_adjust_year_not_empty,
     check_lsoas_flagged,
+    check_negative_values,
     check_years_flagged,
 )
 
@@ -111,3 +114,21 @@ class TestCheckAdjustYearNotEmpty:
                 "no years specified: LSOA2"),
         ):
             check_adjust_year_not_empty(df)
+
+    def test_check_negative_values_raises(self):
+        """
+        Test check_negative_values raises a warning if negative values are present.
+        """
+        # Arrange
+        test_df = pd.DataFrame({
+            "lsoa_code": ["E1", "E2", "D1", "D1", "W1"],
+            "year": [2010, 2010, 2010, 2011, 2010],
+            "year_to_adjust": [[], [2010], [], [2011], [2010]],
+            "imputed_gdhi": [10.0, -2, 30.0, 100, 50.0],
+            "adjusted_con_gdhi": [10.0, -20.0, 30.0, 40.0, -50.0],
+            "adjust": [False, True, False, True, True]})
+
+        # Act-Assert
+        with patch("gdhi_adj.adjustment.validation_adjustment.logger.warning") as mock_warning:
+            check_negative_values(test_df)
+            assert mock_warning.called
