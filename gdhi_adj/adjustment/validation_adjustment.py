@@ -147,3 +147,34 @@ def check_adjust_year_not_empty(df: pd.DataFrame) -> pd.DataFrame:
         logger.info("All LSOAs marked for adjustment have at least one year specified.")
 
     return df
+
+
+def check_negative_values(df: pd.DataFrame) -> None:
+    """
+    Check if negative values exist after adjustments have been applied.
+
+    Checks for negative values in either the "imputed_gdhi" or "adjusted_con_gdhi"
+    columns of the data. If negative values exist, a warning is raised informing the
+    user of the LSOA codes and years where these negative values exist.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing adjusted GDHI data.
+
+    Returns:
+        None.
+
+    Raises:
+        Warning if negative values are found in the 'imputed_gdhi' or 'adjusted_con_gdhi'
+        columns.
+    """
+    # filter for negative values in the "imputed_gdhi" or "adjusted_con_gdhi" columns
+    negative_df = df[(df["imputed_gdhi"] < 0) | (df["adjusted_con_gdhi"] < 0)]
+
+    # raise warning if negative values exist
+    if not negative_df.empty:
+        negative_values_info = negative_df[["lsoa_code", "year"]]
+        logger.warning(
+            "Negative values found after applying adjustments. "
+            "Negative values exist in the following LSOA codes and years:\n%s",
+            f"{negative_values_info.to_string(index=False)}",
+        )
