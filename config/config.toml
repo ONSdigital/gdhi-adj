@@ -2,7 +2,8 @@
 # Module selection: Set to true to run module, not recommended to run multiple
 # modules at once.
 preprocessing = false
-adjustment = true
+deduplication = true
+adjustment = false
 cord_preparation = false
 # Common settings
 # The shared root directory string must start with an ~/ to allow pathlib to expand the user local directory
@@ -43,6 +44,12 @@ output_dir = "Testing_Data/Output/Preprocessing/"
 interim_filename = "manual_adj_preprocessing_interim_scores.csv" #Change name of file here
 output_filename = "manual_adj_preprocessing_output.csv" #Change name of file here
 
+[deduplication_settings]
+input_preprocess_file_path = "Testing_Data/Output/Preprocessing/Run123_Combined/COE_WS_Combined_123.csv"
+input_disclosure_file_path = Testing_Data/Negatives/GDHI_Disclosure_HMRC_COE_WS_Unconstrained_names_fixed_neg_cases.csv"
+output_dir = "Testing_Data/Output/Preprocessing/Run123_Combined/"
+output_filename = "COE_WS_Combined_123.csv"
+
 [adjustment_settings]
 input_adj_file_path = "Testing_Data/Output/Preprocessing/Run123_Combined/COE_ESC_Combined_123.csv"
 input_constrained_file_path = "Testing_Data/Constrained_final/D12_C.csv"
@@ -70,6 +77,7 @@ output_preprocess_schema_path = "output_preprocess_schema.toml"
 input_adj_schema_name = "input_adj_schema.toml"
 input_constrained_schema_name = "input_constrained_schema.toml"
 input_unconstrained_schema_name = "input_unconstrained_schema.toml"
+input_dedup_schema_name = "input_dedup_schema.toml"
 output_adjustment_schema_path = "output_adjustment_schema.toml"
 input_mapping_lau_lad_schema_name = "input_lau_lad_schema.toml"
 input_cord_prep_schema_path = "input_cord_prep_schema.toml"
