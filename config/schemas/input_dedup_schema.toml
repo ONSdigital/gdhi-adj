@@ -1,0 +1,23 @@
+[lsoa_code]
+old_name = "LSOA code"
+Deduced_Data_Type = "str"
+
+[lsoa_name]
+old_name = "LSOA name"
+Deduced_Data_Type = "str"
+
+[lad_code]
+old_name = "LAD code"
+Deduced_Data_Type = "str"
+
+[lad_name]
+old_name = "LAD name"
+Deduced_Data_Type = "str"
+
+[adjust]
+old_name = "Adjust"
+Deduced_Data_Type = "str" # Alhough adjust is boolean, it is treated as a string due to the input having a lot of missing values or other values.
+
+[year]
+old_name = "Year"
+Deduced_Data_Type = "str" # Although year is numeric, it is treated as a string due to the input possibly being a list of years separated by commas.
