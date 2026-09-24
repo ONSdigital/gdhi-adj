@@ -37,18 +37,13 @@ accept_negatives_cord = true # Set to true to keep negative values in CORD data 
 #To run from SharePoint, you need to to go the Subnational Statistics -
 #Regional Accounts sharepoint site, go into the subfolder 'GDHI' and click
 #the 'sync' button to sync to your local OneDrive.
+
 [preprocessing_settings]
 input_unconstrained_file_path = "Testing_Data/DAP_exported_311025/GDHI_Disclosure_CIS_BIDS_Total_Benefits_Unconstrained.csv"
 input_ra_lad_file_path = "Testing_Data/Reg_Accounts/GDHI_1997_2023_LAD_Wide_Form.csv"
 output_dir = "Testing_Data/Output/Preprocessing/"
 interim_filename = "manual_adj_preprocessing_interim_scores.csv" #Change name of file here
 output_filename = "manual_adj_preprocessing_output.csv" #Change name of file here
-
-[deduplication_settings]
-input_preprocess_file_path = "Testing_Data/Output/Preprocessing/Run123_Combined/COE_WS_Combined_123.csv"
-input_disclosure_file_path = Testing_Data/Negatives/GDHI_Disclosure_HMRC_COE_WS_Unconstrained_names_fixed_neg_cases.csv"
-output_dir = "Testing_Data/Output/Preprocessing/Run123_Combined/"
-output_filename = "COE_WS_Combined_123.csv"
 
 [adjustment_settings]
 input_adj_file_path = "Testing_Data/Output/Preprocessing/Run123_Combined/COE_ESC_Combined_123.csv"
@@ -57,6 +52,12 @@ input_unconstrained_file_path = "Testing_Data/Amended_Pipeline_Run/GDHI_Disclosu
 output_dir = "Testing_Data/Output/Adjustment/Run123_Adjustment/"
 interim_filename =  "manual_adj_adjustments_interim_QA.csv" #Change name of file here
 output_filename = "manual_adj_adjustments_output.csv" #Change name of file here
+
+[deduplication_settings]
+# input filepaths used in deduplication process
+input_filepaths = ["Testing_Data/Output/Preprocessing/Run123_Combined/COE_WS_Combined_123.csv", "Testing_Data/Negatives/GDHI_Disclosure_HMRC_COE_WS_Unconstrained_names_fixed_neg_cases.csv"]
+output_dir = "Testing_Data/Output/Preprocessing/Run123_Combined/"
+output_filename = "COE_WS_Combined_123.csv"
 
 [cord_prep_settings]
 # All files will need to be placed in the CORD_conversion folder and contain the transaction and credit debit code columns

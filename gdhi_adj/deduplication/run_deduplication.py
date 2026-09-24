@@ -27,30 +27,19 @@ def run_deduplication(config: dict) -> None:
     module_config = config["deduplication_settings"]
     schema_dir = config["schema_paths"]["schema_dir"]
     root_dir = config["user_settings"]["shared_root_dir"]
+    input_paths = module_config["input_filepaths"]
 
-    input_preprocess_file_path = pathlib.Path.expanduser(
-        pathlib.Path(root_dir) / module_config["input_preprocess_file_path"]
-    )
-
-    input_disclosure_file_path = pathlib.Path(
-        pathlib.Path.expanduser(
-            pathlib.Path(root_dir) / module_config["input_disclosure_file_path"]
-        )
-    )
-
-    # gdhi_suffix = config["user_settings"]["output_data_prefix"] + "_"
-
+    input_paths = [pathlib.Path(root_dir).joinpath(path).expanduser() for path in input_paths]
     input_dedup_schema_path = pathlib.Path(
         schema_dir, config["schema_paths"]["input_dedup_schema_name"]
     )
     logger.info("Configuration settings loaded successfully")
 
     logger.info("Reading in data with schemas")
-    preprocess_df = read_with_schema(input_preprocess_file_path, input_dedup_schema_path)
-    disc_df = read_with_schema(input_disclosure_file_path, input_dedup_schema_path)
+    input_dfs = [read_with_schema(file_path, input_dedup_schema_path) for file_path in input_paths]
 
     logger.info("Combining preprocessing and disclosure data")
-    df = combine_outputs(preprocess_df, disc_df)
+    df = combine_outputs(input_dfs)
 
     logger.info("Dropping duplicate values.")
     df = drop_duplicate_LSAO_codes(df)
