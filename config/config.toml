@@ -2,7 +2,8 @@
 # Module selection: Set to true to run module, not recommended to run multiple
 # modules at once.
 preprocessing = false
-adjustment = true
+deduplication = true
+adjustment = false
 cord_preparation = false
 # Common settings
 # The shared root directory string must start with an ~/ to allow pathlib to expand the user local directory
@@ -36,6 +37,7 @@ accept_negatives_cord = true # Set to true to keep negative values in CORD data 
 #To run from SharePoint, you need to to go the Subnational Statistics -
 #Regional Accounts sharepoint site, go into the subfolder 'GDHI' and click
 #the 'sync' button to sync to your local OneDrive.
+
 [preprocessing_settings]
 input_unconstrained_file_path = "Testing_Data/DAP_exported_311025/GDHI_Disclosure_CIS_BIDS_Total_Benefits_Unconstrained.csv"
 input_ra_lad_file_path = "Testing_Data/Reg_Accounts/GDHI_1997_2023_LAD_Wide_Form.csv"
@@ -50,6 +52,12 @@ input_unconstrained_file_path = "Testing_Data/Amended_Pipeline_Run/GDHI_Disclosu
 output_dir = "Testing_Data/Output/Adjustment/Run123_Adjustment/"
 interim_filename =  "manual_adj_adjustments_interim_QA.csv" #Change name of file here
 output_filename = "manual_adj_adjustments_output.csv" #Change name of file here
+
+[deduplication_settings]
+# input filepaths used in deduplication process
+input_filepaths = ["Testing_Data/Output/Preprocessing/Run123_Combined/COE_WS_Combined_123.csv", "Testing_Data/Negatives/GDHI_Disclosure_HMRC_COE_WS_Unconstrained_names_fixed_neg_cases.csv"]
+output_dir = "Testing_Data/Output/Preprocessing/Run123_Combined/"
+output_filename = "COE_WS_Combined_123.csv"
 
 [cord_prep_settings]
 # All files will need to be placed in the CORD_conversion folder and contain the transaction and credit debit code columns
@@ -70,6 +78,7 @@ output_preprocess_schema_path = "output_preprocess_schema.toml"
 input_adj_schema_name = "input_adj_schema.toml"
 input_constrained_schema_name = "input_constrained_schema.toml"
 input_unconstrained_schema_name = "input_unconstrained_schema.toml"
+input_dedup_schema_name = "input_dedup_schema.toml"
 output_adjustment_schema_path = "output_adjustment_schema.toml"
 input_mapping_lau_lad_schema_name = "input_lau_lad_schema.toml"
 input_cord_prep_schema_path = "input_cord_prep_schema.toml"
