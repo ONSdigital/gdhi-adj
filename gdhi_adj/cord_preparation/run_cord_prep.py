@@ -56,7 +56,7 @@ def run_cord_preparation(config: dict) -> None:
         pathlib.Path.expanduser(pathlib.Path(root_dir) / module_config["output_dir"])
     )
     output_schema_path = pathlib.Path(
-        schema_dir, config["schema_paths"]["output_cord_prep_schema_path"]
+        schema_dir, config["schema_paths"]["output_cord_prep_schema_name"]
     )
     output_filename = output_data_prefix + module_config.get("output_filename", None)
 
