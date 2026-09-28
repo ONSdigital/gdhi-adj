@@ -1,8 +1,16 @@
-"""Runs the deduplication module of the GDHI adjustment pipeline."""
+"""
+Runs the deduplication module of the GDHI adjustment pipeline.
+
+Public Functions:
+    * run_deduplication
+
+Private Functions:
+    * None.
+"""
 
 import pathlib
 
-from gdhi_adj.deduplication.deduplication import combine_outputs, drop_duplicate_LSAO_codes
+from gdhi_adj.deduplication.deduplication import combine_outputs, drop_duplicate_LSOA_codes
 from gdhi_adj.utils.helpers import read_with_schema
 from gdhi_adj.utils.logger import GDHI_adj_logger
 
@@ -42,7 +50,7 @@ def run_deduplication(config: dict) -> None:
     df = combine_outputs(input_dfs)
 
     logger.info("Dropping duplicate values.")
-    df = drop_duplicate_LSAO_codes(df)
+    df = drop_duplicate_LSOA_codes(df)
 
     # Save output file with new filename if specified
     # if config["user_settings"]["output_data"]:
