@@ -4,7 +4,7 @@ import pathlib
 
 import pandas as pd
 
-from gdhi_adj.adjustment.apportion_adjustment import (  # apportion_negative_adjustment,
+from gdhi_adj.adjustment.apportion_adjustment import (
     apportion_adjustment,
     apportion_rollback_years,
     calc_non_outlier_proportions,
@@ -21,6 +21,7 @@ from gdhi_adj.adjustment.reformat_adjustment import reformat_adjust_col, reforma
 from gdhi_adj.adjustment.validation_adjustment import (
     check_adjust_year_not_empty,
     check_lsoas_flagged,
+    check_negative_values,
     check_years_flagged,
 )
 from gdhi_adj.preprocess.calc_preprocess import calc_rate_of_change
@@ -82,12 +83,6 @@ def run_adjustment(config: dict) -> None:
         )
     )
 
-    # match = re.search(
-    #     r".*GDHI_Disclosure_(.*?)_[^_]+\.csv", input_unconstrained_file_path
-    # )
-
-    # if match:
-    #     gdhi_suffix = match.group(1) + "_"
     gdhi_suffix = config["user_settings"]["output_data_prefix"] + "_"
 
     input_adj_schema_path = pathlib.Path(
@@ -196,12 +191,11 @@ def run_adjustment(config: dict) -> None:
     logger.info("Apportioning adjustment values to all LSOAs")
     df = apportion_adjustment(df, imputed_df)
 
-    if config["user_settings"]["accept_negatives_adjustment"] is False:
-        logger.info("Apportioning negative adjusted values")
-        # df = apportion_negative_adjustment(df)
-
     logger.info("Apportion rollback years.")
     df = apportion_rollback_years(df)
+
+    logger.info("Checking for negative values after apportioning data.")
+    check_negative_values(df)
 
     logger.info("Saving interim data")
     qa_df = pd.DataFrame(
