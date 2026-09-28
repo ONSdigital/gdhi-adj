@@ -105,7 +105,7 @@ def run_preprocessing(config: dict) -> None:
         pathlib.Path.expanduser(pathlib.Path(root_dir) / module_config["output_dir"])
     )
     output_schema_path = pathlib.Path(
-        schema_dir, config["schema_paths"]["output_preprocess_schema_path"]
+        schema_dir, config["schema_paths"]["output_preprocess_schema_name"]
     )
     interim_filename = gdhi_suffix + module_config.get("interim_filename", None)
     new_filename = gdhi_suffix + module_config.get("output_filename", None)

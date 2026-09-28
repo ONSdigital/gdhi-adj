@@ -38,7 +38,7 @@ def drop_duplicate_LSOA_codes(combined_df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Deduplicated data.
     """
-    dedup_df = combined_df.drop_duplicates("lsoa_code", ignore_index=True)
+    dedup_df = combined_df.drop_duplicates("LSOA code", ignore_index=True)
 
     return dedup_df
 
@@ -58,6 +58,6 @@ def standardise_deduplicated_df(deduplicated_df: pd.DataFrame) -> pd.DataFrame:
     """
     df = deduplicated_df.loc[:, ~deduplicated_df.columns.str.contains("^Unnamed")]
 
-    df["year"] = df.year.str.replace(r"\..*", "", regex=True)
+    df["Year"] = df.Year.str.replace(r"\..*", "", regex=True)
 
     return df

@@ -21,7 +21,7 @@ class TestDeduplication:
         Tests functionality of combine outputs.
         """
         # Arrange
-        test_df_1_columns = ["lsoa_code", "lsoa_name", "2010", "adjust", "year"]
+        test_df_1_columns = ["LSOA code", "LSOA name", "2010", "Adjust", "Year"]
 
         test_df_1_values = [["E0100", "Barnet", -0.087, True, "2010"],
                             ["E0101", "Camden", 200, False, ""],
@@ -29,7 +29,7 @@ class TestDeduplication:
 
         test_1_df = pd.DataFrame(test_df_1_values, columns=test_df_1_columns)
 
-        test_df_2_columns = ["lsoa_code", "lsoa_name", "2010", "adjust", "year"]
+        test_df_2_columns = ["LSOA code", "LSOA name", "2010", "Adjust", "Year"]
 
         test_df_2_values = [["E0100", "Barnet", -0.087, True, "2010"],  # duplicate row
                             ["E0103", "Haringey", -0892.0, True, "2010"],
@@ -38,9 +38,9 @@ class TestDeduplication:
 
         test_2_df = pd.DataFrame(test_df_2_values, columns=test_df_2_columns)
 
-        expected_cols = ["lsoa_code", "lsoa_name", "2010", "adjust", "year"]
+        expected_cols = ["LSOA code", "LSOA name", "2010", "Adjust", "Year"]
 
-        test_df_3_cols = ["lsoa_code", "lsoa_name", "2010", "adjust", "year"]
+        test_df_3_cols = ["LSOA code", "LSOA name", "2010", "Adjust", "Year"]
 
         test_df_3_values = [["E0100", "Barnet", -0.087, True, "2010"],
                             ["E0101", "Camden", 200, False, ""],  # duplicate row
@@ -71,7 +71,7 @@ class TestDeduplication:
     def test_drop_duplicate_LSOA_codes(self):
         """Tests functionality of drop_duplicate_LSOA_codes."""
         # Arrange
-        test_cols = ["lsoa_code", "lsoa_name", "2010", "adjust", "year"]
+        test_cols = ["LSOA code", "LSOA name", "2010", "Adjust", "Year"]
 
         test_data = [["E0100", "Barnet", -0.087, True, "2010"],
                      ["E0101", "Camden", 200, False, ""],
@@ -86,7 +86,7 @@ class TestDeduplication:
 
         test_df = pd.DataFrame(test_data, columns=test_cols)
 
-        expected_cols = ["lsoa_code", "lsoa_name", "2010", "adjust", "year"]
+        expected_cols = ["LSOA code", "LSOA name", "2010", "Adjust", "Year"]
 
         expected_data = [["E0100", "Barnet", -0.087, True, "2010"],
                          ["E0101", "Camden", 200, False, ""],
@@ -108,7 +108,7 @@ class TestDeduplication:
         Tests functionality of standardise_deduplicated_df.
         """
         # Arrange
-        test_cols = ["lsoa_code", "lsoa_name", "2010", "adjust", "year", "Unnamed_year", "Unnamed"]
+        test_cols = ["LSOA code", "LSOA name", "2010", "Adjust", "Year", "Unnamed_year", "Unnamed"]
 
         test_data = [["E0100", "Barnet", -0.087, True, "2010.00", "", ""],
                      ["E0101", "Camden", 200, False, "", "", ""],
@@ -119,7 +119,7 @@ class TestDeduplication:
 
         test_df = pd.DataFrame(test_data, columns=test_cols)
 
-        expected_cols = ["lsoa_code", "lsoa_name", "2010", "adjust", "year"]
+        expected_cols = ["LSOA code", "LSOA name", "2010", "Adjust", "Year"]
 
         expected_data = [["E0100", "Barnet", -0.087, True, "2010"],
                          ["E0101", "Camden", 200, False, ""],
