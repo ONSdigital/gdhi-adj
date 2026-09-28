@@ -119,7 +119,6 @@ class TestCheckAdjustYearNotEmpty:
         """
         Test check_negative_values raises a warning if negative values are present.
         """
-        # Arrange
         test_df = pd.DataFrame({
             "lsoa_code": ["E1", "E2", "D1", "D1", "W1"],
             "year": [2010, 2010, 2010, 2011, 2010],
@@ -128,7 +127,6 @@ class TestCheckAdjustYearNotEmpty:
             "adjusted_con_gdhi": [10.0, -20.0, 30.0, 40.0, -50.0],
             "adjust": [False, True, False, True, True]})
 
-        # Act-Assert
         with patch("gdhi_adj.adjustment.validation_adjustment.logger.warning") as mock_warning:
             check_negative_values(test_df)
             assert mock_warning.called

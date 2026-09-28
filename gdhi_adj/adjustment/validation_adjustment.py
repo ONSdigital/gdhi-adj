@@ -167,7 +167,6 @@ def check_negative_values(df: pd.DataFrame) -> None:
         Warning if negative values are found in the 'imputed_gdhi' or 'adjusted_con_gdhi'
         columns.
     """
-    # filter for negative values in the "imputed_gdhi" or "adjusted_con_gdhi" columns
     negative_df = df[(df["imputed_gdhi"] < 0) | (df["adjusted_con_gdhi"] < 0)]
 
     # raise warning if negative values exist
