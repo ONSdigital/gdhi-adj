@@ -57,7 +57,7 @@ output_filename = "manual_adj_adjustments_output.csv" #Change name of file here
 # input filepaths used in deduplication process
 input_filepaths = ["Testing_Data/Output/Preprocessing/Run123_Combined/COE_WS_Combined_123.csv", "Testing_Data/Negatives/GDHI_Disclosure_HMRC_COE_WS_Unconstrained_names_fixed_neg_cases.csv"]
 output_dir = "Testing_Data/Output/Preprocessing/Run123_Combined/"
-output_filename = "COE_WS_Combined_123.csv"
+output_filename = ""
 
 [cord_prep_settings]
 # All files will need to be placed in the CORD_conversion folder and contain the transaction and credit debit code columns
