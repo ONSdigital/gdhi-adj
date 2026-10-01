@@ -42,6 +42,8 @@ input_ra_lad_file_path = "Testing_Data/Reg_Accounts/GDHI_1997_2023_LAD_Wide_Form
 output_dir = "Testing_Data/Output/Preprocessing/"
 interim_filename = "manual_adj_preprocessing_interim_scores.csv" #Change name of file here
 output_filename = "manual_adj_preprocessing_output.csv" #Change name of file here
+first_run = "True"
+previous_classifications = [""]
 
 [adjustment_settings]
 input_adj_file_path = "Testing_Data/Output/Preprocessing/Run123_Combined/COE_ESC_Combined_123.csv"
