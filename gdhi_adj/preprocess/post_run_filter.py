@@ -34,15 +34,3 @@ def apply_post_run_filter(prev_class_df: pd.DataFrame, preprocess_df: pd.DataFra
     ]
 
     return filtered_df
-
-
-def export_filtered_output(filtered_df: pd.DataFrame, output_path: str, output_name: str) -> None:
-    """
-    Export the post-run filtered DataFrame to a CSV file.
-
-    Args:
-        filtered_df (pd.DataFrame): The filtered DataFrame to be exported.
-        output_path (str): The file path where the filtered DataFrame will be saved.
-        output_name (str): The name of the filtered CSV file.
-    """
-    filtered_df.to_csv(output_path + output_name, index=False)
