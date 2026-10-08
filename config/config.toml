@@ -1,8 +1,8 @@
 [user_settings]
 # Module selection: Set to true to run module, not recommended to run multiple
 # modules at once.
-preprocessing = false
-adjustment = true
+preprocessing = true
+adjustment = false
 cord_preparation = false
 # Common settings
 # The shared root directory string must start with an ~/ to allow pathlib to expand the user local directory
@@ -42,8 +42,10 @@ input_ra_lad_file_path = "Testing_Data/Reg_Accounts/GDHI_1997_2023_LAD_Wide_Form
 output_dir = "Testing_Data/Output/Preprocessing/"
 interim_filename = "manual_adj_preprocessing_interim_scores.csv" #Change name of file here
 output_filename = "manual_adj_preprocessing_output.csv" #Change name of file here
-first_run = "True"
-previous_classifications = [""]
+prev_preprocess = true #Assign to True if preprocessing has previously been run, otherwise False
+prev_classifications = ["Testing_Data/Output/Preprocessing/May26_Run2/nja_may26_Run2_SBRSS_IQR2080__manual_adj_preprocessing_output.csv"] #A list of files containing LSOAs classified by analysts
+post_run_output_path = "Testing_Data/Output/Preprocessing/"
+post_run_output_name = "man_adj_filtered_preprocessing_output.csv"
 
 [adjustment_settings]
 input_adj_file_path = "Testing_Data/Output/Preprocessing/Run123_Combined/COE_ESC_Combined_123.csv"
@@ -66,6 +68,7 @@ transaction_value = ["D621", "D623"]
 
 [schema_paths]
 schema_dir = "config/schemas/"
+input_classification_schema_name = "input_classification_schema.toml"
 input_gdhi_schema_name = "input_gdhi_schema.toml"
 input_ra_lad_schema_name = "input_ra_lad_schema.toml"
 output_preprocess_schema_path = "output_preprocess_schema.toml"

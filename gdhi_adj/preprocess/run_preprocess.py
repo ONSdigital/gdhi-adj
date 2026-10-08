@@ -25,6 +25,7 @@ from gdhi_adj.preprocess.pivot_preprocess import (
     pivot_wide_dataframe,
     pivot_years_long_dataframe,
 )
+from gdhi_adj.preprocess.post_run_filter import apply_post_run_filter
 from gdhi_adj.utils.helpers import read_with_schema, write_with_schema
 from gdhi_adj.utils.logger import GDHI_adj_logger
 
@@ -48,6 +49,8 @@ def run_preprocessing(config: dict) -> None:
     9. Constrain outliers to regional accounts.
     10. Pivot the DataFrame back to wide format.
     11. Save the preprocessed data ready for PowerBI analysis.
+    12. Apply post-run filter for a second run.
+    13. Save the filtered preprocessed data.
 
     Args:
         config (dict): Configuration dictionary containing user settings and
@@ -62,6 +65,13 @@ def run_preprocessing(config: dict) -> None:
     module_config = config["preprocessing_settings"]
     schema_dir = config["schema_paths"]["schema_dir"]
     root_dir = config["user_settings"]["shared_root_dir"]
+    prev_preprocess = module_config["prev_preprocess"]
+    filtered_output_dir = module_config["post_run_output_path"]
+    filtered_output_name = module_config["post_run_output_name"]
+    classification_paths = module_config["prev_classifications"]
+    classification_paths = [
+        pathlib.Path(root_dir).joinpath(path).expanduser() for path in classification_paths
+    ]
 
     input_unconstrained_file_path = pathlib.Path(
         pathlib.Path.expanduser(
@@ -84,6 +94,9 @@ def run_preprocessing(config: dict) -> None:
 
     input_gdhi_schema_path = pathlib.Path(
         schema_dir, config["schema_paths"]["input_gdhi_schema_name"]
+    )
+    input_classification_schema_path = pathlib.Path(
+        schema_dir, config["schema_paths"]["input_classification_schema_name"]
     )
     input_ra_lad_schema_path = pathlib.Path(
         schema_dir, config["schema_paths"]["input_ra_lad_schema_name"]
@@ -248,6 +261,13 @@ def run_preprocessing(config: dict) -> None:
     df = concat_wide_dataframes(df_outlier, df_mean)
 
     # Save output file with new filename if specified
-    if config["user_settings"]["output_data"]:
+    if config["user_settings"]["output_data"] and not prev_preprocess:
         # Write DataFrame to CSV
         write_with_schema(df, output_schema_path, output_dir, new_filename)
+
+    else:
+        for path in classification_paths:
+            prev_classified_df = read_with_schema(path, input_classification_schema_path)
+            df = apply_post_run_filter(prev_classified_df, df)
+
+        write_with_schema(df, output_schema_path, filtered_output_dir, filtered_output_name)
