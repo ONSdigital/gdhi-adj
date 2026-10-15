@@ -10,7 +10,7 @@ Private Functions:
 
 import pathlib
 
-from gdhi_adj.deduplication.deduplication import combine_outputs, drop_duplicate_LSOA_codes
+from gdhi_adj.deduplication.deduplication import drop_duplicate_LSOA_codes
 from gdhi_adj.utils.helpers import read_with_schema, write_with_schema
 from gdhi_adj.utils.logger import GDHI_adj_logger
 
@@ -52,11 +52,7 @@ def run_deduplication(config: dict) -> None:
     logger.info("Reading in data with schemas")
     input_dfs = [read_with_schema(file_path, input_dedup_schema_path) for file_path in input_paths]
 
-    logger.info("Combining preprocessing and disclosure data")
-    df = combine_outputs(input_dfs)
-
-    logger.info("Dropping duplicate values.")
-    df = drop_duplicate_LSOA_codes(df)
+    df = drop_duplicate_LSOA_codes(input_dfs)
 
     if config["user_settings"]["output_data"]:
         if not output_dir.exists():
