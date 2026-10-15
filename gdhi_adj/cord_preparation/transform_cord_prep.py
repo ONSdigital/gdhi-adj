@@ -36,7 +36,7 @@ def append_all_sub_components(config: dict) -> pd.DataFrame:
 
     input_cord_prep_schema_path = pathlib.Path(
         config["schema_paths"]["schema_dir"],
-        config["schema_paths"]["input_cord_prep_schema_path"],
+        config["schema_paths"]["input_cord_prep_schema_name"],
     )
 
     # Initialize empty list to store DataFrames
