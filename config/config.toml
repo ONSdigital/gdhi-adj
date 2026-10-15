@@ -43,7 +43,7 @@ output_dir = "Testing_Data/Output/Preprocessing/"
 interim_filename = "manual_adj_preprocessing_interim_scores.csv" #Change name of file here
 output_filename = "manual_adj_preprocessing_output.csv" #Change name of file here
 prev_preprocess = true #Assign to True if preprocessing has previously been run, otherwise False
-prev_classifications = ["Testing_Data/Output/Preprocessing/May26_Run2/nja_may26_Run2_SBRSS_IQR2080__manual_adj_preprocessing_output.csv"] #A list of files containing LSOAs classified by analysts
+prev_classifications = ["Testing_Data/Output/Preprocessing/Run123_Combined/COE_ESC_Combined_123.csv"] #A list of files containing LSOAs classified by analysts
 post_run_output_path = "Testing_Data/Output/Preprocessing/"
 post_run_output_name = "man_adj_filtered_preprocessing_output.csv"
 

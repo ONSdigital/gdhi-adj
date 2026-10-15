@@ -16,7 +16,7 @@ import pandas as pd
 
 def apply_post_run_filter(prev_class_df: pd.DataFrame, preprocess_df: pd.DataFrame) -> pd.DataFrame:
     """
-    Apply post-run filtering to the preprocessed GDHI output data.
+    Apply post-run filtering to the preprocessed GDHI data.
 
     Preprocessed data is compared to previously classified data to check for LSOAs
     that have already been examined. If the LSOA exists in the classified data and 'Adjust'
@@ -26,11 +26,8 @@ def apply_post_run_filter(prev_class_df: pd.DataFrame, preprocess_df: pd.DataFra
         prev_class_df (pd.DataFrame): Data containing previously examined LSOAs.
         preprocess_df (pd.DataFrame): The current preprocessed data.
     """
-    filtered_df = preprocess_df.loc[
-        (
-            (~preprocess_df["LSOA code"].isin(prev_class_df["LSOA code"]))
-            & (preprocess_df["Adjust"] is False)
-        )
-    ]
+    examined_df = prev_class_df.loc[prev_class_df["Adjust"] is False, "lsoa_code"]
+
+    filtered_df = preprocess_df.loc[~preprocess_df["lsoa_code"].isin(examined_df)].copy()
 
     return filtered_df
